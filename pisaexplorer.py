@@ -47,6 +47,23 @@ prefered_naming = {}
 independent_groups = {}
 
 ### Groups of Depenent Variables
-# Dictionary containing lists. Each list is a group of variable names.
-# The variables in a group must be numeric.
+# Dictionary containing list. List is a group of variable names.
+# The variables must be numeric.
 dependent_group = {}
+
+
+#%% outline wrangling in shorthand
+
+# df = a PISA sample or subset of interest
+
+# intialize(df, independent_groups, dependent_group)
+
+#     select_columns_and_drop_nulls()
+
+#     strings_to_known_types()
+
+#         get_categories()
+
+#         apply_preferred_values()
+
+#     return df
