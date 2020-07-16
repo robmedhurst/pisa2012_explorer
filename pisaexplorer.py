@@ -26,7 +26,27 @@ PISADICT2012 = pd.read_csv(
     sep=',', encoding='latin-1', error_bad_lines=False, 
     dtype='unicode', index_col=False).rename(
         columns={'Unnamed: 0':'varname', 'x': 'description'})
-        
 
-### NEXT COMMITS:
-### outline function structure
+
+
+#%% Define terms
+
+### Known Categories
+# Dictionary containing lists. Each list contains the values of known
+# PISA variables. The key is a short string description of the category.
+known_categories = {}
+
+### Preferred Category Values
+# Dictionary containing lists. Each list contains preferred values for
+# known category associated with key.
+prefered_naming = {}
+
+### Groups of Indepenent Variables
+# Dictionary containing lists. Each list is a group of variable names.
+# The variables in a group must be of same type (float, y/, category X).
+independent_groups = {}
+
+### Groups of Depenent Variables
+# Dictionary containing lists. Each list is a group of variable names.
+# The variables in a group must be numeric.
+dependent_group = {}
