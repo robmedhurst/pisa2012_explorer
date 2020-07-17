@@ -122,12 +122,26 @@ PISADICT2012 = pd.read_csv(
 ### Known Categories
 # Dictionary containing lists. Each list contains the values of known
 # PISA variables. The key is a short string description of the category.
-known_categories = {}
+known_categories = {
+    'work_status':[
+        'Working full-time <for pay>',
+        'Working part-time <for pay>',
+        'Not working, but looking for a job',
+        'Other (e.g. home duties, retired)'],
+    'binary_yn':['Yes', 'No']
+}
 
 ### Preferred Category Values
 # Dictionary containing lists. Each list contains preferred values for
 # known category associated with key.
-prefered_naming = {}
+preferred_naming = {
+    'work_status':[
+        'Full-time',
+        'Part-time',
+        'Not working',
+        'Other'],
+    'binary_yn':[True, False]
+    }
 
 ### Groups of Indepenent Variables
 #
