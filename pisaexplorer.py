@@ -51,15 +51,16 @@ def wrangle(pisa_df):
     ### Solution:   reduce variable sets after finding interactions
     select_columns_and_drop_nulls()
 
-    # for pisa_group in (
-    #         list(independent_groups.values()) +
-    #         list(dependent_groups.values())):
-    #     strings_to_known_categories(pisa_group, df)
+    ### match variable type and update each
+    for pisa_group in (
+            list(independent_groups.values()) +
+            list(dependent_groups.values())):
+        strings_to_known_categories(pisa_group, pisa_df)
 
     return pisa_df
 
 
-def strings_to_known_categories(pisa_set, pisa_df):
+def strings_to_known_categories(pisa_group, pisa_df):
     """
     Get variable type from of known_categories.
     Apply formatting if value types of group memebers is not mismatched.
@@ -78,9 +79,16 @@ def strings_to_known_categories(pisa_set, pisa_df):
             # raise ValueError(var + ': incomplete preferred values.')
 
     ### Use try and execpt to test for numeric types
-    # try convert int:
-    # except: try: convert float
-    # except: apply_preferred_values(get_category(pisa_set, pisa_df))
+    try:
+        pisa_df[pisa_group] = pisa_df[pisa_group].astype(int)
+    except:
+        try:
+            pisa_df[pisa_group] = pisa_df[pisa_group].astype(float)
+        except:
+            # treat set object types as string if not int or float
+            pisa_df[pisa_group] = pisa_df[pisa_group].astype(str)
+            # attempt to match and update values to known PISA category
+            apply_preferred_values(get_category(pisa_group, pisa_df))
 
     return pisa_df
 
