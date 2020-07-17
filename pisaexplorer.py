@@ -66,7 +66,7 @@ def strings_to_known_categories(pisa_group, pisa_df):
     Apply formatting if value types of group memebers is not mismatched.
     """
     def apply_preferred_values(category_key):
-        """ \
+        """
         update strings to preferred values (ex: "Yes" == True)
         raise ValueError if incomplete preferred values found
         """
@@ -77,6 +77,7 @@ def strings_to_known_categories(pisa_group, pisa_df):
         # confirm values are from preferred_naming, none overlooked
         # if unique_values not a subset of preferred_values[key]:
             # raise ValueError(var + ': incomplete preferred values.')
+        pass
 
     ### Use try and execpt to test for numeric types
     try:
@@ -93,22 +94,36 @@ def strings_to_known_categories(pisa_group, pisa_df):
     return pisa_df
 
 
-def get_category(pisa_set, pisa_df):
+def get_category(pisa_group, pisa_df):
     """
-    Determine if variables in pisa_set match a known categoy.
-    Determine if variables in pisa_set each have same category.
-    (Return category name) or (raise ValueError if mismatched).
+    Determine if variables in pisa_group match a known categoy.
+    Determine if variables in pisa_group each have same category.
+    If consistent category found, return associated category_key.
+    Otherwise returns "text_response", indicating group is 
+    treated as plain text responses rather than categoricals.
     """
-    category_key = "String"   # default to plain text
+    # check each variable in group: all must be same category
+    for index, variable_name in enumerate(pisa_group):
+        # stop checking if group if any variable failed category check
+        if category_key == "text_response":
+            break
 
-    ### check first variable against known categories
-    # get and store unique values
-    # check if those unique values are a subset of a known category
-    ### if matched: category_key = known_key
+        # gather unique values for this variable
+        uniques_values = set({})
+        for unique_value in set(pisa_df[variable_name].unique()):
+            uniques_values.add(unique_value.strip())
 
-    ### iterate over group
-    # verify same category in each
-    ### if not: raise ValueError("category mismatch in set " + pisa_set)
+        # first variable for potential group category will suffice
+        if index == 0:
+            for known_category in known_categories:
+                if uniques_values.issubset(known_categories[known_category]):
+                    category_key = known_category
+                else:
+                    category_key = "text_response"
+
+        # if variable is not in groups suspected category, group fails check
+        if not uniques_values.issubset(known_categories[category_key]):
+            category_key = "text_response"
 
     return category_key
 
