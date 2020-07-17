@@ -89,7 +89,36 @@ def strings_to_known_categories(pisa_group, pisa_df):
                         preferred_naming[category_key]):
                     raise ValueError(var + ': incomplete preferred values.')
 
-    ### assume numeric types and try to force conversion
+    def get_category():
+        """
+        Determine if variables in pisa_group match a known categoy.
+        Determine if variables in pisa_group each have same category.
+        If consistent category found, return associated category_key.
+        Otherwise returns "text_response", indicating group is 
+        treated as plain text responses rather than categoricals.
+        """
+        # check each variable in group: all must be same category
+        for index, variable_name in enumerate(pisa_group):
+            # gather unique values for this variable
+            unique_values = set({})
+            for unique_val in set(pisa_df[variable_name].unique()):
+                # trailing white spaces do occur in the dataset
+                unique_values.add(unique_val.strip())
+
+            # first variable for potential group category will suffice
+            if index == 0:
+                for known_cat in known_categories:
+                    if unique_values.issubset(known_categories[known_cat]):
+                        category_key = known_cat
+
+            # if variable isnt in suspected category, group fails check
+            if not unique_values.issubset(known_categories[category_key]):
+                category_key = "text_response"
+                break
+
+        return category_key
+
+    ### assume numeric and try to force conversion
     numeric = True
     try:
         pisa_df[pisa_group] = pisa_df[pisa_group].astype(int)
@@ -97,6 +126,7 @@ def strings_to_known_categories(pisa_group, pisa_df):
         try:
             pisa_df[pisa_group] = pisa_df[pisa_group].astype(float)
         except:
+            # if conversion not possible, assume non numeric
             numeric = False
     if not numeric:
         pisa_df[pisa_group] = pisa_df[pisa_group].astype(str)
@@ -104,37 +134,6 @@ def strings_to_known_categories(pisa_group, pisa_df):
         apply_preferred_values(get_category(pisa_group, pisa_df))
 
     return pisa_df
-
-
-def get_category(pisa_group, pisa_df):
-    """
-    Determine if variables in pisa_group match a known categoy.
-    Determine if variables in pisa_group each have same category.
-    If consistent category found, return associated category_key.
-    Otherwise returns "text_response", indicating group is 
-    treated as plain text responses rather than categoricals.
-    """
-    # check each variable in group: all must be same category
-    for index, variable_name in enumerate(pisa_group):
-
-        # gather unique values for this variable
-        unique_values = set({})
-        for unique_val in set(pisa_df[variable_name].unique()):
-            # trailing white spaces do occur in the dataset
-            unique_values.add(unique_val.strip())
-
-        # first variable for potential group category will suffice
-        if index == 0:
-            for known_category in known_categories:
-                if unique_values.issubset(known_categories[known_category]):
-                    category_key = known_category
-
-        # if variable isnt in suspected category, group fails check
-        if not unique_values.issubset(known_categories[category_key]):
-            category_key = "text_response"
-            break
-
-    return category_key
 
 
 
@@ -212,13 +211,8 @@ dependent_groups = {
     }
 
 
+sample_size = 500
 
-#%%% __main__
+pisa_sample = PISA2012.sample(sample_size)
 
-if __name__ == "__main__":
-
-    sample_size = 500
-
-    pisa_sample = PISA2012.sample(sample_size)
-
-    initialize(pisa_sample)
+initialize(pisa_sample)
