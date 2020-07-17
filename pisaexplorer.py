@@ -13,54 +13,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-#%% Load CSVs
-
-# unzip and load original csv data
-PISA2012 = pd.read_csv(
-    zipfile.ZipFile('pisa2012.csv.zip', 'r').open('pisa2012.csv'),
-    sep=',', encoding='latin-1', error_bad_lines=False, 
-    dtype='unicode', index_col=False)
-
-
-# load csv pisa variable descriptions
-PISADICT2012 = pd.read_csv(
-    'pisadict2012.csv', 
-    sep=',', encoding='latin-1', error_bad_lines=False, 
-    dtype='unicode', index_col=False).rename(
-        columns={'Unnamed: 0':'varname', 'x': 'description'})
-
-
-#%%TERMS
-
-### Known Categories
-# Dictionary containing lists. Each list contains the values of known
-# PISA variables. The key is a short string description of the category.
-known_categories = {}
-
-### Preferred Category Values
-# Dictionary containing lists. Each list contains preferred values for
-# known category associated with key.
-prefered_naming = {}
-
-### Groups of Indepenent Variables
-# Dictionary containing lists. Each list is a group of variable names.
-# The variables in a group must be of same type (float, y/, category X).
-independent_groups = {}
-
-### Groups of Depenent Variables
-# Dictionary containing list. List is a group of variable names.
-# The variables must be numeric.
-dependent_group = {}
-
-
 #%% FUNCTIONS
 
 
-def initialize(pisa_df, indep_groups, dep_group):
+def initialize(pisa_df):
     """
     general wrapper
     """
-    wrangle(pisa_df, indep_groups, dep_group)
+    wrangle(pisa_df)
 
     # df is edited in place, return is for pipeline
     return pisa_df
@@ -68,7 +28,7 @@ def initialize(pisa_df, indep_groups, dep_group):
 
 #%%% Wrangling Functions
 
-def wrangle(pisa_df, indep_groups, dep_group):
+def wrangle(pisa_df):
     """
     wrangling wrapper
     """
@@ -90,7 +50,7 @@ def wrangle(pisa_df, indep_groups, dep_group):
     return pisa_df
 
 
-def strings_to_known_categories(pisa_set, pisa_df, known_cats, pref_cats):
+def strings_to_known_categories(pisa_set, pisa_df):
     """
     Get variable type from of known_categories.
     Apply formatting if value types of group memebers is not mismatched.
@@ -135,3 +95,57 @@ def get_category(pisa_set, pisa_df):
 
     return category_key
 
+
+
+#%% MAIN
+
+
+#%%% Load CSVs
+
+### raw csv data
+PISA2012 = pd.read_csv(
+    zipfile.ZipFile('pisa2012.csv.zip', 'r').open('pisa2012.csv'),
+    sep=',', encoding='latin-1', error_bad_lines=False,
+    dtype='unicode', index_col=False)
+
+
+### variable descriptions
+PISADICT2012 = pd.read_csv(
+    'pisadict2012.csv',
+    sep=',', encoding='latin-1', error_bad_lines=False,
+    dtype='unicode', index_col=False).rename(
+        columns={'Unnamed: 0':'varname', 'x': 'description'})
+
+
+#%%% Load Terms
+
+### Known Categories
+# Dictionary containing lists. Each list contains the values of known
+# PISA variables. The key is a short string description of the category.
+known_categories = {}
+
+### Preferred Category Values
+# Dictionary containing lists. Each list contains preferred values for
+# known category associated with key.
+prefered_naming = {}
+
+### Groups of Indepenent Variables
+# Dictionary containing lists. Each list is a group of variable names.
+# The variables in a group must be of same type (float, y/, category X).
+independent_groups = {}
+
+### Groups of Depenent Variables
+# Dictionary containing list. List is a group of variable names.
+# The variables must be numeric.
+dependent_group = {}
+
+
+#%%% __main__
+
+if __name__ == "__main__":
+
+    sample_size = 500
+
+    pisa_sample = PISA2012.sample(sample_size)
+
+    initialize(pisa_sample)
