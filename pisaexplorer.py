@@ -102,6 +102,7 @@ def get_category(pisa_group, pisa_df):
     Otherwise returns "text_response", indicating group is 
     treated as plain text responses rather than categoricals.
     """
+    category_key = None
     # check each variable in group: all must be same category
     for index, variable_name in enumerate(pisa_group):
         # stop checking if group if any variable failed category check
