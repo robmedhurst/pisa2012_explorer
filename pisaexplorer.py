@@ -6,7 +6,6 @@
 
 import zipfile
 
-import numpy as np
 import pandas as pd
 
 import matplotlib.pyplot as plt
@@ -33,9 +32,19 @@ def wrangle(pisa_df):
     wrangling wrapper
     """
     def select_columns_and_drop_nulls():
-        ### drop unused columns
-        ### drop nulls
-        pass
+        """
+        Remove columns from that are not in any given groups.
+        Remove observations containing nulls.
+        """
+        # drop unused columns
+        pisa_df.drop(pisa_df.columns.difference(
+            [var_name for sublist in list(independent_groups.values())
+             for var_name in sublist] +
+            [var_name for sublist in list(dependent_groups.values())
+             for var_name in sublist]),
+            axis='columns', inplace = True)
+        # drop nulls
+        pisa_df.dropna(inplace=True)
 
     ### CAUTION:    large sets of variables will reduce the sample size
     ### Reason:     each variable has its own set of nulls
@@ -120,8 +129,10 @@ PISADICT2012 = pd.read_csv(
 #%%% Load Terms
 
 ### Known Categories
+#
 # Dictionary containing lists. Each list contains the values of known
 # PISA variables. The key is a short string description of the category.
+#
 known_categories = {
     'work_status':[
         'Working full-time <for pay>',
@@ -132,8 +143,10 @@ known_categories = {
 }
 
 ### Preferred Category Values
+#
 # Dictionary containing lists. Each list contains preferred values for
 # known category associated with key.
+#
 preferred_naming = {
     'work_status':[
         'Full-time',
@@ -148,7 +161,6 @@ preferred_naming = {
 # Dictionary containing lists. Each list is a group of variable names.
 # The variables in a group must be of same type (float, y/, category X).
 #
-# TODO    --input independent groups--
 independent_groups = {
     'family_home': ['ST11Q01', 'ST11Q02', 'ST11Q03', 'ST11Q04', 'ST11Q05'],
     'parent_work': ['ST15Q01', 'ST19Q01'],
@@ -159,11 +171,10 @@ independent_groups = {
 
 ### Groups of Depenent Variables
 #
-# Dictionary containing list. List is a group of variable names.
+# Dictionary containing list. Lists are groups of variable names.
 # The variables must be numeric.
 #
-# TODO    --input dependent groups--
-dependent_group = {
+dependent_groups = {
     'math_result': ['PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH', 'PV5MATH'],
     'read_result': ['PV1READ', 'PV2READ', 'PV3READ', 'PV4READ', 'PV5READ']
     }
