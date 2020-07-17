@@ -130,14 +130,27 @@ known_categories = {}
 prefered_naming = {}
 
 ### Groups of Indepenent Variables
+#
 # Dictionary containing lists. Each list is a group of variable names.
 # The variables in a group must be of same type (float, y/, category X).
-independent_groups = {}
+#
+# TODO    --input independent groups--
+independent_groups = {
+    'family_home': ['ST11Q01', 'ST11Q02', 'ST11Q03', 'ST11Q04', 'ST11Q05'],
+    'parent_work': ['ST15Q01', 'ST19Q01'],
+    'parent_isei': ['BFMJ2', 'BMMJ1', 'HISEI'],
+    'HOMEPOS'    : ['HOMEPOS'],
+    'person_item': ['ST26Q02', 'ST26Q03', 'ST26Q08', 
+                    'ST26Q09', 'ST26Q10', 'ST26Q11']}
 
 ### Groups of Depenent Variables
+#
 # Dictionary containing list. List is a group of variable names.
 # The variables must be numeric.
+#
+#
 dependent_group = {}
+
 
 
 #%%% __main__
