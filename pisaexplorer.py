@@ -70,26 +70,38 @@ def strings_to_known_categories(pisa_group, pisa_df):
         update strings to preferred values (ex: "Yes" == True)
         raise ValueError if incomplete preferred values found
         """
-        # chek category_key member of preferred_values
-        # one column at a time, update to corresponding preferred values
-            # strip white space so values are uniform
-            # replace each known value
-        # confirm values are from preferred_naming, none overlooked
-        # if unique_values not a subset of preferred_values[key]:
-            # raise ValueError(var + ': incomplete preferred values.')
-        pass
+        # ignore numerical and text_response types
+        if category_key in known_categories:
+            # update to corresponding preferred values
+            for var in pisa_group:
 
-    ### Use try and execpt to test for numeric types
+                # strip white space to match know_categories
+                pisa_df[var] = pisa_df[var].map(lambda x: x.strip())
+
+                # replace each known value
+                for known, preferred  in zip(
+                        known_categories[category_key],
+                        preferred_naming[category_key]):
+                    pisa_df.loc[pisa_df[var] == known, var] = preferred
+
+                # confirm values are from preferred_naming, none overlooked
+                if not set(pisa_df[var].unique()).issubset(
+                        preferred_naming[category_key]):
+                    raise ValueError(var + ': incomplete preferred values.')
+
+    ### assume numeric types and try to force conversion
+    numeric = True
     try:
         pisa_df[pisa_group] = pisa_df[pisa_group].astype(int)
     except:
         try:
             pisa_df[pisa_group] = pisa_df[pisa_group].astype(float)
         except:
-            # treat set object types as string if not int or float
-            pisa_df[pisa_group] = pisa_df[pisa_group].astype(str)
-            # attempt to match and update values to known PISA category
-            apply_preferred_values(get_category(pisa_group, pisa_df))
+            numeric = False
+    if not numeric:
+        pisa_df[pisa_group] = pisa_df[pisa_group].astype(str)
+        # attempt to match and update values to known PISA category
+        apply_preferred_values(get_category(pisa_group, pisa_df))
 
     return pisa_df
 
@@ -102,29 +114,25 @@ def get_category(pisa_group, pisa_df):
     Otherwise returns "text_response", indicating group is 
     treated as plain text responses rather than categoricals.
     """
-    category_key = None
     # check each variable in group: all must be same category
     for index, variable_name in enumerate(pisa_group):
-        # stop checking if group if any variable failed category check
-        if category_key == "text_response":
-            break
 
         # gather unique values for this variable
-        uniques_values = set({})
-        for unique_value in set(pisa_df[variable_name].unique()):
-            uniques_values.add(unique_value.strip())
+        unique_values = set({})
+        for unique_val in set(pisa_df[variable_name].unique()):
+            # trailing white spaces do occur in the dataset
+            unique_values.add(unique_val.strip())
 
         # first variable for potential group category will suffice
         if index == 0:
             for known_category in known_categories:
-                if uniques_values.issubset(known_categories[known_category]):
+                if unique_values.issubset(known_categories[known_category]):
                     category_key = known_category
-                else:
-                    category_key = "text_response"
 
-        # if variable is not in groups suspected category, group fails check
-        if not uniques_values.issubset(known_categories[category_key]):
+        # if variable isnt in suspected category, group fails check
+        if not unique_values.issubset(known_categories[category_key]):
             category_key = "text_response"
+            break
 
     return category_key
 
