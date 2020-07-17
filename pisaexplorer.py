@@ -148,8 +148,11 @@ independent_groups = {
 # Dictionary containing list. List is a group of variable names.
 # The variables must be numeric.
 #
-#
-dependent_group = {}
+# TODO    --input dependent groups--
+dependent_group = {
+    'math_result': ['PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH', 'PV5MATH'],
+    'read_result': ['PV1READ', 'PV2READ', 'PV3READ', 'PV4READ', 'PV5READ']
+    }
 
 
 
