@@ -8,3 +8,5 @@ pisadict2012.csv
 
 # Local spyder project files are not tracked
 .spyproject/
+# Local cache not tracked
+__pycache__/
