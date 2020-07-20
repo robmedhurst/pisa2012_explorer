@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from pisaexplorer_wrangler import wrangle
+from wrangle import wrangle as wrangle_and_get_categories
 
 
 # Dataset can take a few minutes to load on older sytems.
@@ -17,12 +17,6 @@ if 'PISA2012' not in locals():
         sep=',', encoding='latin-1', error_bad_lines=False,
         dtype='unicode', index_col=False)
 
-    ### variable descriptions
-    PISADICT2012 = pd.read_csv(
-        'pisadict2012.csv',
-        sep=',', encoding='latin-1', error_bad_lines=False,
-        dtype='unicode', index_col=False).rename(
-            columns={'Unnamed: 0':'varname', 'x': 'description'})
 
 ### Known Categories
 #
@@ -80,9 +74,30 @@ def initialize(pisa_df, inputs):
     """
     general wrapper
     """
-    wrangle(pisa_df, inputs)
+    group_category_actions(wrangle_and_get_categories(pisa_df, inputs))
     return pisa_df
 
+
+def get_longnames(names):
+    """
+    Return list of PISA variable descriptions corresponding to variable 
+    shortnames given by list name.
+    Resource is read from local copy of pisadict2012.csv
+    """
+    pisadict2012 = pd.read_csv(
+        'pisadict2012.csv',
+        sep=',', encoding='latin-1', error_bad_lines=False,
+        dtype='unicode', index_col=False).rename(
+            columns={'Unnamed: 0':'varname', 'x': 'description'})
+    names = list(names)
+    return list(pisadict2012.query("varname in @names")['description'])
+
+
+def group_category_actions(group_category_matches, pisa_df, inputs):
+    """
+    apply category specific actions for each group
+    """
+    pass
 
 temp_df = initialize(
     PISA2012.sample(500),
