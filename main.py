@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from wrangle import wrangle as wrangle_and_get_categories
+import category_specific
 
 
 # Dataset can take a few minutes to load on older sytems.
@@ -29,8 +30,7 @@ KNOWN_CATEGORIES = {
         'Working part-time <for pay>',
         'Not working, but looking for a job',
         'Other (e.g. home duties, retired)'],
-    'binary_yn':['Yes', 'No']
-}
+    'binary_yn':['Yes', 'No']}
 
 ### Preferred Category Values
 #
@@ -43,8 +43,7 @@ PREFERRED_NAMING = {
         'Part-time',
         'Not working',
         'Other'],
-    'binary_yn':[True, False]
-    }
+    'binary_yn':[True, False]}
 
 ### Groups of Indepenent Variables
 #
@@ -66,17 +65,16 @@ INDEPENDENT_GROUPS = {
 #
 DEPENDENT_GROUPS = {
     'math_result': ['PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH', 'PV5MATH'],
-    'read_result': ['PV1READ', 'PV2READ', 'PV3READ', 'PV4READ', 'PV5READ']
-    }
+    'read_result': ['PV1READ', 'PV2READ', 'PV3READ', 'PV4READ', 'PV5READ']}
 
 
 def initialize(pisa_df, inputs):
     """
     general wrapper
     """
-    group_category_actions(wrangle_and_get_categories(pisa_df, inputs))
-    return pisa_df
-
+    return group_post_wrangle(
+        *wrangle_and_get_categories(
+            pisa_df, inputs))
 
 def get_longnames(names):
     """
@@ -92,12 +90,26 @@ def get_longnames(names):
     names = list(names)
     return list(pisadict2012.query("varname in @names")['description'])
 
-
-def group_category_actions(group_category_matches, pisa_df, inputs):
+def group_post_wrangle(group_category_matches, pisa_df, inputs):
     """
     apply category specific actions for each group
+    raise ValueError if no corresponding function found
     """
-    pass
+    # iterate group category matches
+    for group_name in group_category_matches:
+        category = group_category_matches[group_name]
+
+        # check if associated post wrangling group actions are available
+        if (category + "_group_post_wrangle") in dir(category_specific):
+
+            # function call using getattr
+            getattr(category_specific, (category + "_group_post_wrangle"))(
+                group_name, pisa_df, inputs)
+        else:
+            raise ValueError(
+                "No post wrangle funcion found for group: '" + 
+                group_category_matches[group_name])
+    return pisa_df
 
 temp_df = initialize(
     PISA2012.sample(500),
