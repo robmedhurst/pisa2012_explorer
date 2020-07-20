@@ -115,4 +115,4 @@ def wrangle(pisa_df, inputs):
     group_category_matches = process_pisa_set_of_groups(
         {**independent_groups, **dependent_groups})
 
-    return group_category_matches, pisa_df, inputs
+    return pisa_df, inputs, group_category_matches

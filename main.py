@@ -74,7 +74,7 @@ def initialize(pisa_df, inputs):
     """
     return group_post_wrangle(
         *wrangle_and_get_categories(
-            pisa_df, inputs))
+            pisa_df, inputs))[0]
 
 def get_longnames(names):
     """
@@ -90,7 +90,7 @@ def get_longnames(names):
     names = list(names)
     return list(pisadict2012.query("varname in @names")['description'])
 
-def group_post_wrangle(group_category_matches, pisa_df, inputs):
+def group_post_wrangle(pisa_df, inputs, group_category_matches):
     """
     apply category specific actions for each group
     raise ValueError if no corresponding function found
@@ -109,7 +109,7 @@ def group_post_wrangle(group_category_matches, pisa_df, inputs):
             raise ValueError(
                 "No post wrangle funcion found for group: '" + 
                 group_category_matches[group_name])
-    return pisa_df
+    return pisa_df, inputs, group_category_matches
 
 temp_df = initialize(
     PISA2012.sample(500),
