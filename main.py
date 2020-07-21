@@ -4,8 +4,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
 from wrangle import wrangle as wrangle_and_get_categories
-import category_specific
+import category_functions
+import category_definitions
 
 
 # Dataset can take a few minutes to load on older sytems.
@@ -18,32 +20,6 @@ if 'PISA2012' not in locals():
         sep=',', encoding='latin-1', error_bad_lines=False,
         dtype='unicode', index_col=False)
 
-
-### Known Categories
-#
-# Dictionary containing lists. Each list contains the values of known
-# PISA variables. The key is a short string description of the category.
-#
-KNOWN_CATEGORIES = {
-    'work_status':[
-        'Working full-time <for pay>',
-        'Working part-time <for pay>',
-        'Not working, but looking for a job',
-        'Other (e.g. home duties, retired)'],
-    'binary_yn':['Yes', 'No']}
-
-### Preferred Category Values
-#
-# Dictionary containing lists. Each list contains preferred values for
-# known category associated with key.
-#
-PREFERRED_NAMING = {
-    'work_status':[
-        'Full-time',
-        'Part-time',
-        'Not working',
-        'Other'],
-    'binary_yn':[True, False]}
 
 ### Groups of Indepenent Variables
 #
@@ -98,10 +74,10 @@ def group_post_wrangle(pisa_df, inputs, group_category_matches):
         category = group_category_matches[group_name]
 
         # check if associated post wrangling group actions are available
-        if (category + "_group_post_wrangle") in dir(category_specific):
+        if (category + "_group_post_wrangle") in dir(category_functions):
 
             # function call using getattr
-            getattr(category_specific, (category + "_group_post_wrangle"))(
+            getattr(category_functions, (category + "_group_post_wrangle"))(
                 group_name, pisa_df, inputs)
         else:
             raise ValueError(
@@ -111,5 +87,9 @@ def group_post_wrangle(pisa_df, inputs, group_category_matches):
 
 temp_df = initialize(
     PISA2012.sample(500),
-    [KNOWN_CATEGORIES, PREFERRED_NAMING,
-     INDEPENDENT_GROUPS, DEPENDENT_GROUPS])
+    [category_definitions.KNOWN_CATEGORIES, 
+     category_definitions.PREFERRED_NAMING,
+     INDEPENDENT_GROUPS, 
+     DEPENDENT_GROUPS])
+
+
