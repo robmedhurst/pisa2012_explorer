@@ -14,7 +14,17 @@ def float_group_post_wrangle(group_name, pisa_df, inputs):
     apply float group operations:
         - create mean value column
     """
-    pass
+    independent_groups, dependent_groups = inputs[2:4]
+    def create_mean(nm, grp):
+        pisa_df[nm + '_mean'] = pisa_df[grp].transpose().mean().astype(float)
+
+    # handle dependent and independent variable groups seperately
+    if group_name in independent_groups:
+        if len(independent_groups[group_name]) > 1:
+            create_mean(group_name, independent_groups[group_name])
+    elif group_name in dependent_groups:
+        if len(dependent_groups[group_name]) > 1:
+            create_mean(group_name, dependent_groups[group_name])
 
 ### binary_yn
 def binary_yn_group_post_wrangle(group_name, pisa_df, inputs):
@@ -23,14 +33,14 @@ def binary_yn_group_post_wrangle(group_name, pisa_df, inputs):
         - create total column for binary group given
     """
     independent_groups, dependent_groups = inputs[2:4]
+    def create_count(nm, grp):
+        pisa_df[nm + '_count'] = pisa_df[grp].transpose().sum().astype(int)
 
-    def apply_count(nm, grp):
-        pisa_df[nm + 'Count'] = pisa_df[grp].transpose().sum().astype(int)
-
+    # handle dependent and independent variable groups seperately
     if group_name in independent_groups:
-        apply_count(group_name, independent_groups[group_name])
+        create_count(group_name, independent_groups[group_name])
     elif group_name in dependent_groups:
-        apply_count(group_name, dependent_groups[group_name])
+        create_count(group_name, dependent_groups[group_name])
 
 ### work_status
 def work_status_group_post_wrangle(group_name, pisa_df, inputs):

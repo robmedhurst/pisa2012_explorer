@@ -72,9 +72,7 @@ def initialize(pisa_df, inputs):
     """
     general wrapper
     """
-    return group_post_wrangle(
-        *wrangle_and_get_categories(
-            pisa_df, inputs))[0]
+    return group_post_wrangle(*wrangle_and_get_categories(pisa_df, inputs))
 
 def get_longnames(names):
     """
