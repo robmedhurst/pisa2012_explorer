@@ -7,6 +7,9 @@ def text_response_group_post_wrangle(group_name, pisa_df, inputs):
     """
     pass
 
+
+
+
 ### integer
 def integer_group_post_wrangle(group_name, pisa_df, inputs):
     """
@@ -33,6 +36,9 @@ def float_group_post_wrangle(group_name, pisa_df, inputs):
         if len(dependent_groups[group_name]) > 1:
             create_mean(group_name, dependent_groups[group_name])
 
+
+
+
 ### binary_yn
 def binary_yn_group_post_wrangle(group_name, pisa_df, inputs):
     """
@@ -49,6 +55,9 @@ def binary_yn_group_post_wrangle(group_name, pisa_df, inputs):
     elif group_name in dependent_groups:
         create_count(group_name, dependent_groups[group_name])
 
+
+
+
 ### work_status
 def work_status_group_post_wrangle(group_name, pisa_df, inputs):
     """
@@ -56,3 +65,21 @@ def work_status_group_post_wrangle(group_name, pisa_df, inputs):
         - None
     """
     pass
+
+### about_year
+def about_year_group_post_wrangle(group_name, pisa_df, inputs):
+    """
+    apply about_year group operations:
+        - None
+    """
+    pass
+
+### likelihood
+def likelihood_group_post_wrangle(group_name, pisa_df, inputs):
+    """
+    apply likelihood group operations:
+        - None
+    """
+    pass
+
+

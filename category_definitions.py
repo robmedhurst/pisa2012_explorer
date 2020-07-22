@@ -4,16 +4,29 @@
 # PISA variables. The key is a short string description of the category.
 #
 KNOWN_CATEGORIES = {
-    
-    'work_status':[
+
+    'binary_yn': ['Yes',
+                  'No'],
+
+    'work_status': [
         'Working full-time <for pay>',
         'Working part-time <for pay>',
         'Not working, but looking for a job',
         'Other (e.g. home duties, retired)'],
-    
-    'binary_yn':['Yes', 'No']
-    
+
+    'about_year': ['No',
+                   'Yes, for more than one year',
+                   'Yes, for one year or less'],
+
+    'likelihood': ['Likely',
+                   'Slightly likely',
+                   'Very   Likely',
+                   'Not at all likely']
+
     }
+
+
+
 
 ### Preferred Category Values
 #
@@ -21,34 +34,22 @@ KNOWN_CATEGORIES = {
 # known category associated with key.
 #
 PREFERRED_NAMING = {
-    
+
+    'binary_yn':[True, False],
+
     'work_status':[
         'Full-time',
         'Part-time',
         'Not working',
         'Other'],
-    
-    'binary_yn':[True, False]
-    
+
+    'about_year': ['No',
+                   'Yes, more than',
+                   'Yes, less than'],
+
+    'likelihood': ['Likely',
+               'Slightly likely',
+               'Very Likely',
+               'Not likely']
+
     }
-
-
-
-"""
-### NEXT ADDITIONS:
-
-	ST05Q01
-189327	Yes, for more than one year
-
-	ST29Q06
-189327	Agree
-
-	ST28Q01
-189327	0-10 books 
-
-	ST37Q02
-189327	Confident
-
-	ST44Q07
-189327	Likely
-"""
