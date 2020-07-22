@@ -90,7 +90,6 @@ def wrangle(pisa_df, inputs):
         group_category_matches = {}
         for group_key in pisa_set_of_groups:
             pisa_group = pisa_set_of_groups[group_key]
-
             # attempt to convert group to numeric
             try:
                 pisa_df[pisa_group] = pisa_df[pisa_group].astype(int)
@@ -114,8 +113,13 @@ def wrangle(pisa_df, inputs):
     ### Reason:     each variable has its own set of nulls
     ### Solution:   reduce variable sets after finding interactions
     select_columns_and_drop_nulls()
+
+    # group_category_matches = process_pisa_set_of_groups(
+    #     {**independent_groups, **dependent_groups})
+    
     # independent_groups_keys = process_pisa_set_of_groups(independent_groups)
-    group_category_matches = process_pisa_set_of_groups(
-        {**independent_groups, **dependent_groups})
+    group_category_matches = {
+        'indep_categories': process_pisa_set_of_groups(independent_groups),
+        'depen_categories': process_pisa_set_of_groups(dependent_groups)}
 
     return pisa_df, inputs, group_category_matches
