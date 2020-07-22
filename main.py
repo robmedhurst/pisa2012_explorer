@@ -8,6 +8,7 @@ import seaborn as sns
 from wrangle import wrangle as wrangle_and_get_categories
 import category_functions
 import category_definitions
+import test_groupings
 
 
 # Dataset can take a few minutes to load on older sytems.
@@ -19,29 +20,6 @@ if 'PISA2012' not in locals():
         zipfile.ZipFile('pisa2012.csv.zip', 'r').open('pisa2012.csv'),
         sep=',', encoding='latin-1', error_bad_lines=False,
         dtype='unicode', index_col=False)
-
-
-### Groups of Indepenent Variables
-#
-# Dictionary containing lists. Each list is a group of variable names.
-# The variables in a group must be of same type (float, y/, category X).
-#
-INDEPENDENT_GROUPS = {
-    'family_home': ['ST11Q01', 'ST11Q02', 'ST11Q03', 'ST11Q04', 'ST11Q05'],
-    'parent_work': ['ST15Q01', 'ST19Q01'],
-    'parent_isei': ['BFMJ2', 'BMMJ1', 'HISEI'],
-    'HOMEPOS'    : ['HOMEPOS'],
-    'person_item': ['ST26Q02', 'ST26Q03', 'ST26Q08',
-                    'ST26Q09', 'ST26Q10', 'ST26Q11']}
-
-### Groups of Depenent Variables
-#
-# Dictionary containing list. Lists are groups of variable names.
-# The variables must be numeric.
-#
-DEPENDENT_GROUPS = {
-    'math_result': ['PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH', 'PV5MATH'],
-    'read_result': ['PV1READ', 'PV2READ', 'PV3READ', 'PV4READ', 'PV5READ']}
 
 
 def initialize(pisa_df, inputs):
@@ -81,15 +59,13 @@ def group_post_wrangle(pisa_df, inputs, group_category_matches):
                 group_name, pisa_df, inputs)
         else:
             raise ValueError(
-                "No post wrangle funcion found for group: '" + 
+                "No post wrangle funcion found for group: '" +
                 group_category_matches[group_name])
     return pisa_df, inputs, group_category_matches
 
-temp_df = initialize(
+returned_from_initialize = initialize(
     PISA2012.sample(500),
-    [category_definitions.KNOWN_CATEGORIES, 
+    [category_definitions.KNOWN_CATEGORIES,
      category_definitions.PREFERRED_NAMING,
-     INDEPENDENT_GROUPS, 
-     DEPENDENT_GROUPS])
-
-
+     test_groupings.INDEP_test_grouping01,
+     test_groupings.DEPEN_test_grouping01])
