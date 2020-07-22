@@ -34,24 +34,27 @@ def wrangle(pisa_df, inputs):
         Otherwise returns "text_response", indicating group is 
         treated as plain text responses rather than categoricals.
         """
-        # check each variable in group: all must be same category
+        # default to text_response type
+        category_key = 'text_response'
         for index, variable_name in enumerate(pisa_group):
+            
             # gather unique values for this variable
             unique_values = set({})
             for unique_val in set(pisa_df[variable_name].unique()):
                 # trailing white spaces do occur in the dataset
                 unique_values.add(unique_val.strip())
 
-            # first variable for potential group category will suffice
+            # check first variable for potential group category will suffice
             if index == 0:
                 for known_cat in known_categories:
                     if unique_values.issubset(known_categories[known_cat]):
                         category_key = known_cat
-
-            # if variable isnt in suspected category, group fails check
-            if not unique_values.issubset(known_categories[category_key]):
-                category_key = "text_response"
-                break
+            # if any variable isnt in suspected category, group fails check
+            if category_key != 'text_response':
+                if not unique_values.issubset(known_categories[category_key]):
+                    # how to handle a mismatched group:
+                    #     treat as text_response type
+                    break
         return category_key
 
     def apply_preferred_values(pisa_group, category_key):

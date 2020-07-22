@@ -1,5 +1,12 @@
 # handle independent and dependent variables seperately
 
+### text_response
+def text_response_group_post_wrangle(group_name, pisa_df, inputs):
+    """
+    apply text only group operations:
+    """
+    pass
+
 ### integer
 def integer_group_post_wrangle(group_name, pisa_df, inputs):
     """
