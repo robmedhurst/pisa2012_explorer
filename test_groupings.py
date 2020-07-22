@@ -26,13 +26,13 @@ DEPEN_test_grouping01 = {
 
 ### test_grouping02
 # intended to cover a few unresolved response types
-INDEP_test_grouping99 = {
+INDEP_test_grouping02 = {
     'grpname1': ['ST05Q01'],
     'grpname2': ['ST05Q01'],
     'grpname3': ['ST28Q01'],
     'grpname4': ['ST37Q02'],
     'grpname5': ['ST44Q07']}
-DEPEN_test_grouping99 = {
+DEPEN_test_grouping02 = {
     'grpname1': [],
     'grpname2': []}
 

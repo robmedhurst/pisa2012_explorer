@@ -59,13 +59,13 @@ def group_post_wrangle(pisa_df, inputs, group_category_matches):
                 group_name, pisa_df, inputs)
         else:
             raise ValueError(
-                "No post wrangle funcion found for group: '" +
-                group_category_matches[group_name])
+                "No post wrangle funcion found for group: '" + \
+                    group_category_matches[group_name])
     return pisa_df, inputs, group_category_matches
 
 returned_from_initialize = initialize(
     PISA2012.sample(500),
     [category_definitions.KNOWN_CATEGORIES,
      category_definitions.PREFERRED_NAMING,
-     test_groupings.INDEP_test_grouping01,
-     test_groupings.DEPEN_test_grouping01])
+     test_groupings.INDEP_test_grouping02,
+     test_groupings.DEPEN_test_grouping02])
