@@ -107,22 +107,30 @@ def get_all_unique_short_categories(max_length=5,
     Pull sets of unique values from PISA2012 dataset for building 
     collection of known categories.
     """
-    uniques = []
-    # iterate vars within range
+    found_unique_sets = []
     for var in PISA2012.columns[column_start:column_end]:
-        print(var)
-        
-        # get unique_values
+
+        # get unique_values, without nulls
         unique_values = set({})
         for unique_val in set(PISA2012[var].unique()):
             if not pd.isnull(unique_val):
                 unique_values.add(unique_val.strip())
 
-        # check if already found and if not add it
-        # only take sets of expected length
-        if (unique_values not in uniques) and (1 < len(unique_values) < max_length):
-            uniques.append(unique_values)
-    return uniques
+        # check if already found, check length
+        if (unique_values not in found_unique_sets) and (1 < len(unique_values) < max_length):
+            # check for subsets
+            for past_match in found_unique_sets:
+                # skip if subset of existing set
+                if set(unique_values).issubset(past_match):
+                    unique_values = False
+                    break
+                # remove existing set if superset of existing set
+                elif set(past_match).issubset(unique_values):
+                    found_unique_sets.remove(past_match)
+            if unique_values:
+                found_unique_sets.append(unique_values)
 
-all_short_uniques = get_all_unique_short_categories(12)
+    return found_unique_sets
+
+all_short_uniques = get_all_unique_short_categories(20)
 
