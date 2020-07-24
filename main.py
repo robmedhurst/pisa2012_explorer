@@ -1,4 +1,5 @@
 import zipfile
+import warnings
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -45,25 +46,27 @@ def get_longnames(names):
 def group_post_wrangle(pisa_df, inputs, group_category_matches):
     """
     apply category specific actions for each group
-    raise ValueError if no corresponding function found
+    raise warning if no corresponding function found
     """
     # group_category_matches holds indep and dependent groups seperately
     for subset in group_category_matches:
+        
         # iterate group category matches
         for group_name in group_category_matches[subset]:
             category = group_category_matches[subset][group_name]
+            
             # check if associated post wrangling group actions are available
             if (category + "_group_post_wrangle") in dir(category_functions):
-    
                 # function call using getattr
                 getattr(
                     category_functions, (category + "_group_post_wrangle"))(
                         group_name, pisa_df, inputs)
+            # print warning if no category found 
+            # TODO: remove print behavior
             else:
-                raise ValueError(
-                    "No post wrangle funcion found for group: '" + \
-                        group_category_matches[subset][group_name])
-
+                warnings.warn(
+                    "No post wrangle funcion found for group: '" + 
+                    group_name + "    of category: " + category + "\n")
     return pisa_df, inputs, group_category_matches
 
 returned_from_initialize = initialize(
