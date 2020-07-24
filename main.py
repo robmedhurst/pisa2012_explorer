@@ -77,7 +77,7 @@ returned_from_initialize = initialize(
 
 
 # a temporary helper function to check each column against known categories
-def completeness_check(column_start, column_end, interest_type=None):
+def completeness_check(column_start, column_end, interest_in=None):
     
     check = {}
     for var in PISA2012.columns[column_start:column_end]:
@@ -90,14 +90,39 @@ def completeness_check(column_start, column_end, interest_type=None):
           check,
           test_groupings.DEPEN_test_grouping01])[2]['indep_categories']
 
-    if interest_type:
+    if interest_in:
         for key in completeness:
-            if completeness!= interest_type:
+            if completeness!= interest_in:
                 print(key)
 
     return completeness
 
 # check 100 at a time
-completeness_check(0, 100)
+completeness_check(0, 20, None)
 
+
+def get_all_unique_short_categories(max_length=5,
+                                    column_start=None, column_end=None):
+    """
+    Pull sets of unique values from PISA2012 dataset for building 
+    collection of known categories.
+    """
+    uniques = []
+    # iterate vars within range
+    for var in PISA2012.columns[column_start:column_end]:
+        print(var)
+        
+        # get unique_values
+        unique_values = set({})
+        for unique_val in set(PISA2012[var].unique()):
+            if not pd.isnull(unique_val):
+                unique_values.add(unique_val.strip())
+
+        # check if already found and if not add it
+        # only take sets of expected length
+        if (unique_values not in uniques) and (1 < len(unique_values) < max_length):
+            uniques.append(unique_values)
+    return uniques
+
+all_short_uniques = get_all_unique_short_categories(12)
 
