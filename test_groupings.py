@@ -92,16 +92,18 @@ def completeness_check(pisadf, column_start, column_end, interest_in=None):
     """
     A helper function to check each column against known categories
     """
+    import main
+    import category_definitions
     check = {}
     for var in pisadf.columns[column_start:column_end]:
         check[str(var)] = [str(var)]
 
-    completeness = initialize(
+    completeness = main.initialize(
         pisadf.sample(500),
         [category_definitions.KNOWN_CATEGORIES,
           category_definitions.PREFERRED_NAMING,
           check,
-          test_groupings.DEPEN_test_grouping01]
+          {}]
         )[2]['indep_categories']
 
     if interest_in:
