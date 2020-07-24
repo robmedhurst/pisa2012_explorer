@@ -88,16 +88,16 @@ def get_all_unique_short_categories(pisadf, max_length=5,
 
 
 # A helper function to check each column against known categories
-def completeness_check(column_start, column_end, interest_in=None):
+def completeness_check(pisadf, column_start, column_end, interest_in=None):
     """
     A helper function to check each column against known categories
     """
     check = {}
-    for var in PISA2012.columns[column_start:column_end]:
+    for var in pisadf.columns[column_start:column_end]:
         check[str(var)] = [str(var)]
 
     completeness = initialize(
-        PISA2012.sample(500),
+        pisadf.sample(500),
         [category_definitions.KNOWN_CATEGORIES,
           category_definitions.PREFERRED_NAMING,
           check,
