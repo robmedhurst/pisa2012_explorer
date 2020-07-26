@@ -4,7 +4,6 @@ exploration of the PISA 2012 dataset. Specifically, groups of similar
 variables are explored concurrently.
 """
 
-
 import zipfile
 import warnings
 
@@ -137,6 +136,73 @@ RETURNED_FROM_INITIALIZE = initialize(
      test_groupings.DEPEN_test_grouping02])
 
 
+
+
+
+
+
+
+# A helper function to check each column against known categories
+def completeness_check(pisadf, column_start, column_end, interest_in=None):
+    """
+    A helper function to check each column against known categories
+    """
+    check = {}
+    for var in pisadf.columns[column_start:column_end]:
+        check[str(var)] = [str(var)]
+    indep_categories = initialize(
+        pisadf.sample(500),
+        [category_definitions.KNOWN_CATEGORIES,
+          category_definitions.PREFERRED_NAMING,
+          check,
+          {}])[2]['indep_categories']
+    if interest_in:
+        for var_name in indep_categories:
+            if indep_categories[var_name] == interest_in:
+                print(var_name)
+    
+    return pd.DataFrame(
+        list(indep_categories.values()), 
+        index = list(indep_categories.keys()))
+
 # temporary testing vars, will delete before merging:
-# COMPLETENESS_CHECK = test_groupings.completeness_check(PISA2012, 0, 20, None)
-# ALL_SHORT_UNIQUES = test_groupings.get_all_unique_short_categories(PISA2012, 20)
+COMPLETENESS_CHECK = completeness_check(PISA2012, 0, 20, None)
+
+
+
+# A helper function to view a list of categories extracted from PISA2012
+# Can be used to create new category_definitons.
+def get_all_unique_short_categories(pisadf, max_length=5,
+                                    column_start=None, column_end=None):
+    """
+    Pull sets of unique values from PISA2012 dataset for building 
+    collection of known categories.
+    """
+    found_unique_sets = []
+    for var in pisadf.columns[column_start:column_end]:
+
+        # get unique_values, without nulls
+        unique_values = set({})
+        for unique_val in set(pisadf[var].unique()):
+            if not pd.isnull(unique_val):
+                unique_values.add(unique_val.strip())
+
+        # check if already found, check length
+        if (unique_values not in found_unique_sets) and (1 < len(unique_values) < max_length):
+            # check for subsets
+            for past_match in found_unique_sets:
+                # skip if subset of existing set
+                if set(unique_values).issubset(past_match):
+                    unique_values = False
+                    break
+                # remove existing set if superset of existing set
+                elif set(past_match).issubset(unique_values):
+                    found_unique_sets.remove(past_match)
+            if unique_values:
+                found_unique_sets.append(unique_values)
+    return found_unique_sets
+
+SHORT_UNIQUES = get_all_unique_short_categories(PISA2012, 20, 0, 20)
+
+
+
