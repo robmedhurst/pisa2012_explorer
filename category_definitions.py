@@ -4,9 +4,18 @@
 # PISA variables. The key is a short string description of the category.
 #
 KNOWN_CATEGORIES = {
+
     'binary_yn': [
         'Yes',
         'No'],
+
+    'sex': [
+        'Female',
+        'Male'],
+
+    'oecd': [
+        'Non-OECD',
+        'OECD'],
 
     'one_two_three': [
         'None',
@@ -49,6 +58,17 @@ KNOWN_CATEGORIES = {
         'Often',
         'Always or almost always'],
 
+    'frequency2': [
+        'No, never',
+        'Yes, once',
+        'Yes, twice or more'],
+
+    'frequency3': [
+        'None',
+        'One or two times',
+        'Three or four times',
+        'Five or more times'],
+
     'schooltype1': [
         'Pre-Vocational',
         'Vocational',
@@ -73,9 +93,23 @@ KNOWN_CATEGORIES = {
 #
 PREFERRED_NAMING = {
 
-    'binary_yn':[
-        True,
-        False],
+    'binary_yn': [
+        'Yes',
+        'No'],
+
+    'sex': [
+        'Female',
+        'Male'],
+
+    'oecd': [
+        'Non-OECD',
+        'OECD'],
+
+    'one_two_three': [
+        'None',
+        'One',
+        'Two',
+        'Three or more'],
 
     'one_two_three': [
         'None',
@@ -117,6 +151,17 @@ PREFERRED_NAMING = {
         'Sometimes',
         'Often',
         'Always or almost always'],
+
+    'frequency2': [
+        'No, never',
+        'Yes, once',
+        'Yes, twice or more'],
+
+    'frequency3': [
+        'None',
+        'One or two times',
+        'Three or four times',
+        'Five or more times'],
 
     'schooltype1': [
         'Pre-Vocational',
