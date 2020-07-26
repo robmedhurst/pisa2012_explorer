@@ -4,9 +4,21 @@
 # PISA variables. The key is a short string description of the category.
 #
 KNOWN_CATEGORIES = {
+    'binary_yn': [
+        'Yes',
+        'No'],
 
-    'binary_yn': ['Yes',
-                  'No'],
+    'one_two_three': [
+        'None',
+        'One',
+        'Two',
+        'Three or more'],
+
+    'confidence':[
+        'Not at all confident',
+        'Not very confident',
+        'Confident',
+        'Very confident'],
 
     'work_status': [
         'Working full-time <for pay>',
@@ -14,16 +26,42 @@ KNOWN_CATEGORIES = {
         'Not working, but looking for a job',
         'Other (e.g. home duties, retired)'],
 
-    'about_year': ['No',
-                   'Yes, for more than one year',
-                   'Yes, for one year or less'],
+    'about_year': [
+        'No',
+        'Yes, for one year or less',
+        'Yes, for more than one year'],
 
-    'likelihood': ['Likely',
-                   'Slightly likely',
-                   'Very   Likely',
-                   'Not at all likely']
+    'likelihood': [
+        'Not at all likely',
+        'Slightly likely',
+        'Likely',
+        'Very   Likely'],
+
+    'agreement': [
+        'Strongly agree',
+        'Agree',
+        'Disagree',
+        'Strongly disagree'],
+
+    'frequency1': [
+        'Never or rarely',
+        'Sometimes',
+        'Often',
+        'Always or almost always'],
+
+    'schooltype1': [
+        'Pre-Vocational',
+        'Vocational',
+        'Modular',
+        'General']
 
     }
+
+
+
+
+
+
 
 
 
@@ -35,7 +73,21 @@ KNOWN_CATEGORIES = {
 #
 PREFERRED_NAMING = {
 
-    'binary_yn':[True, False],
+    'binary_yn':[
+        True,
+        False],
+
+    'one_two_three': [
+        'None',
+        'One',
+        'Two',
+        'Three or more'],
+
+    'confidence':[
+        'Not at all confident',
+        'Not very confident',
+        'Confident',
+        'Very confident'],
 
     'work_status':[
         'Full-time',
@@ -43,13 +95,35 @@ PREFERRED_NAMING = {
         'Not working',
         'Other'],
 
-    'about_year': ['No',
-                   'Yes, more than',
-                   'Yes, less than'],
+    'about_year': [
+        'No',
+        'Yes, less than',
+        'Yes, more than'],
 
-    'likelihood': ['Likely',
-               'Slightly likely',
-               'Very Likely',
-               'Not likely']
+    'likelihood': [
+        'Not at all likely',
+        'Slightly likely',
+        'Likely',
+        'Very Likely'],
+
+    'agreement': [
+        'Strongly agree',
+        'Agree',
+        'Disagree',
+        'Strongly disagree'],
+
+    'frequency1': [
+        'Never or rarely',
+        'Sometimes',
+        'Often',
+        'Always or almost always'],
+
+    'schooltype1': [
+        'Pre-Vocational',
+        'Vocational',
+        'Modular',
+        'General']
+
+
 
     }
