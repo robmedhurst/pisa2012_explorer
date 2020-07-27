@@ -94,8 +94,8 @@ KNOWN_CATEGORIES = {
 PREFERRED_NAMING = {
 
     'binary_yn': [
-        'Yes',
-        'No'],
+        True,
+        False],
 
     'sex': [
         'Female',
@@ -104,12 +104,6 @@ PREFERRED_NAMING = {
     'oecd': [
         'Non-OECD',
         'OECD'],
-
-    'one_two_three': [
-        'None',
-        'One',
-        'Two',
-        'Three or more'],
 
     'one_two_three': [
         'None',
