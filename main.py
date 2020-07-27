@@ -8,9 +8,9 @@ import zipfile
 import warnings
 
 import pandas as pd
+
 # import matplotlib.pyplot as plt
 # import seaborn as sns
-
 
 from wrangle import wrangle as wrangle_and_get_categories
 import category_functions
@@ -80,12 +80,6 @@ def load_original(reload=False, integrity_check=False):
             except FileNotFoundError:    # loading failed
                 raise FileNotFoundError("PISA2012 not in local directory.")
 
-def initialize(pisa_df, inputs):
-    """
-    general wrapper
-    """
-    return group_post_wrangle(*wrangle_and_get_categories(pisa_df, inputs))
-
 def get_longnames(names):
     """
     Return list of PISA variable descriptions corresponding to variable
@@ -125,23 +119,41 @@ def group_post_wrangle(pisa_df, inputs, group_category_matches):
                 warnings.warn(message)
     return pisa_df, inputs, group_category_matches
 
+def initialize(given_sample=None, given_inputs=None):
+    """
+    general wrapper
+    """
+    # generate new sample if none given
+    if given_sample is None:
+        pisa_df = PISA2012.sample(500)
+    else:
+        pisa_df = given_sample
+    # use test inputs if none given
+    if given_inputs is None:
+        inputs = [
+            category_definitions.KNOWN_CATEGORIES,
+            category_definitions.PREFERRED_NAMING,
+            test_groupings.INDEP_test_grouping01,
+            test_groupings.DEPEN_test_grouping01]
+    else:
+        inputs = given_inputs
+    # returns pisa_df, inputs, categories_found
+    return group_post_wrangle(*wrangle_and_get_categories(pisa_df, inputs))
+
+
+
 
 PISA2012 = load_original(reload=False, integrity_check=False)
 
-RETURNED_FROM_INITIALIZE = initialize(
-    PISA2012.sample(500),
-    [category_definitions.KNOWN_CATEGORIES,
-     category_definitions.PREFERRED_NAMING,
-     test_groupings.INDEP_test_grouping02,
-     test_groupings.DEPEN_test_grouping02])
+
+
+PISA_SAMPLE = PISA2012.sample(500)
+TEMP_OUTPUT = initialize(PISA_SAMPLE)
 
 
 
 
-
-
-
-
+### TEMPORARY
 # A helper function to check each column against known categories
 def completeness_check(pisadf, column_start, column_end, interest_in=None):
     """
@@ -150,12 +162,7 @@ def completeness_check(pisadf, column_start, column_end, interest_in=None):
     check = {}
     for var in pisadf.columns[column_start:column_end]:
         check[str(var)] = [str(var)]
-    indep_categories = initialize(
-        pisadf.sample(500),
-        [category_definitions.KNOWN_CATEGORIES,
-         category_definitions.PREFERRED_NAMING,
-         check,
-         {}])[2]['indep_categories']
+    indep_categories = initialize()[2]['indep_categories']
     if interest_in:
         for var_name in indep_categories:
             if indep_categories[var_name] == interest_in:
