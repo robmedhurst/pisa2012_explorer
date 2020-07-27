@@ -5,7 +5,7 @@ variables are explored concurrently.
 """
 
 import zipfile
-import warnings
+# import warnings
 
 import pandas as pd
 
@@ -114,20 +114,17 @@ def group_post_wrangle(pisa_df, inputs, group_category_matches):
                         group_name, pisa_df, inputs)
             # print warning if no category found
             else:
-                message = "No post wrangle funcion found for group: '" + \
-                    group_name + "', category: '" + category + "'"
-                warnings.warn(message)
+                # message = "No post wrangle funcion found for group: '" + \
+                #     group_name + "', category: '" + category + "'"
+                # warnings.warn(message)
+                # print(message)
+                pass
     return pisa_df, inputs, group_category_matches
 
-def initialize(given_sample=None, given_inputs=None):
+def initialize(pisa_df, given_inputs=None):
     """
     general wrapper
     """
-    # generate new sample if none given
-    if given_sample is None:
-        pisa_df = PISA2012.sample(500)
-    else:
-        pisa_df = given_sample
     # use test inputs if none given
     if given_inputs is None:
         inputs = [
@@ -141,42 +138,14 @@ def initialize(given_sample=None, given_inputs=None):
     return group_post_wrangle(*wrangle_and_get_categories(pisa_df, inputs))
 
 
-
-
 PISA2012 = load_original(reload=False, integrity_check=False)
-
-
-
 PISA_SAMPLE = PISA2012.sample(500)
 TEMP_OUTPUT = initialize(PISA_SAMPLE)
 
 
 
 
-### TEMPORARY
-# A helper function to check each column against known categories
-def completeness_check(pisadf, column_start, column_end, interest_in=None):
-    """
-    A helper function to check each column against known categories
-    """
-    check = {}
-    for var in pisadf.columns[column_start:column_end]:
-        check[str(var)] = [str(var)]
-    indep_categories = initialize()[2]['indep_categories']
-    if interest_in:
-        for var_name in indep_categories:
-            if indep_categories[var_name] == interest_in:
-                print(var_name)
-
-    return pd.DataFrame(
-        list(indep_categories.values()),
-        index=list(indep_categories.keys()))
-
-# temporary testing vars, will delete before merging:
-COMPLETENESS_CHECK = completeness_check(PISA2012, 0, 20, None)
-
-
-
+# TEMPORARY (build know_categories)
 # A helper function to view a list of categories extracted from PISA2012
 # Can be used to create new category_definitons.
 def get_all_unique_short_categories(pisadf, max_length=5,
@@ -210,4 +179,51 @@ def get_all_unique_short_categories(pisadf, max_length=5,
                 found_unique_sets.append(unique_values)
     return found_unique_sets
 
-SHORT_UNIQUES = get_all_unique_short_categories(PISA2012, 20, 0, 20)
+# A helper function to check each column against known categories
+def completeness_check(pisadf):
+    """
+    A helper function to check each column against known categories
+    """
+    def chunck_check(column_start=None, column_end=None):
+        check = {}
+        for var in pisadf.columns[column_start:column_end]:
+            check[str(var)] = [str(var)]
+        indep_categories = initialize(
+            pisadf.copy(),
+            [category_definitions.KNOWN_CATEGORIES,
+             category_definitions.PREFERRED_NAMING,
+             check,
+             {}])[2]['indep_categories']
+        return pd.DataFrame(
+            data={'category_name': list(indep_categories.values()),
+                  'example1': PISA2012.iloc[250000][column_start:column_end],
+                  'example2': PISA2012.iloc[120000][column_start:column_end],
+                  'example3': PISA2012.iloc[80000][column_start:column_end],
+                  'example4': PISA2012.iloc[40][column_start:column_end],
+                  'example5': PISA2012.iloc[400][column_start:column_end],
+                  'example6': PISA2012.iloc[4000][column_start:column_end],
+                  'example7': PISA2012.iloc[40000][column_start:column_end],
+                  'example8': PISA2012.iloc[430000][column_start:column_end]},
+            index=list(indep_categories.keys()))
+    dataframe_returned = pd.DataFrame()
+    for i in range(8):
+        dataframe_returned = dataframe_returned.append(
+            chunck_check(i*100, (i+1)*100))
+    return dataframe_returned
+
+
+# sets of unique vals pulled from original df
+SHORT_UNIQUES = get_all_unique_short_categories(PISA2012, 20)
+
+# returned category for each var in original df
+COMPLETENESS_CHECK = completeness_check(PISA2012)
+
+# categories that were not matched
+# TODO: identify new categories that can be defined
+# when complete, only variables associated with text_response should
+#     be those with too many unique values to justify a category
+TEXT_RESPONSES = COMPLETENESS_CHECK.query('category_name == "text_response"')
+
+
+# COMPLETENESS_CHECK.query('category_name == "text_response"')
+# PISA2012.VER_STU.unique()
