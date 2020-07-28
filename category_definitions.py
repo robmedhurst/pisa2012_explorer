@@ -73,17 +73,55 @@ KNOWN_CATEGORIES = {
         'Pre-Vocational',
         'Vocational',
         'Modular',
-        'General']
+        'General'],
 
-    }
+    'isced_completed_m': [
+        'He did not complete <ISCED level 1>',
+        '<ISCED level 1>',
+        '<ISCED level 2>',
+        '<ISCED level 3B, 3C>',
+        '<ISCED level 3A>'],
 
+    'isced_completed_f': [
+        'She did not complete <ISCED level 1>',
+        '<ISCED level 1>',
+        '<ISCED level 2>',
+        '<ISCED level 3B, 3C>',
+        '<ISCED level 3A>'],
 
+    'num_books': [
+        '0-10 books',
+        '11-25 books',
+        '26-100 books',
+        '101-200 books',
+        '201-500 books',
+        'More than 500 books'],
 
+    'about_lessons': [
+        'Never or Hardly Ever',
+        'Some Lessons',
+        'Most Lessons',
+        'Every Lesson'],
 
+    'similarity': [
+        'Not at all like me',
+        'Not much like me',
+        'Somewhat like me',
+        'Mostly like me',
+        'Very much like me'],
 
+    'action': [
+        'definitely not do this',
+        'probably not do this',
+        'probably do this',
+        'definitely do this'],
 
+    'usage': [
+        'No',
+        'Yes, but I don\x92t use it',
+        'Yes, and I use it']
 
-
+}
 
 
 ### Preferred Category Values
@@ -161,8 +199,52 @@ PREFERRED_NAMING = {
         'Pre-Vocational',
         'Vocational',
         'Modular',
-        'General']
+        'General'],
 
+    'isced_completed_m': [
+        'Not ISCED level 1>',
+        'ISCED level 1',
+        'ISCED level 2',
+        'ISCED level 3B, 3C',
+        'ISCED level 3A'],
 
+    'isced_completed_f': [
+        'Not ISCED level 1>',
+        'ISCED level 1',
+        'ISCED level 2',
+        'ISCED level 3B, 3C',
+        'ISCED level 3A'],
 
-    }
+    'num_books': [
+        '0-10 books',
+        '11-25 books',
+        '26-100 books',
+        '101-200 books',
+        '201-500 books',
+        'Over 500 books'],
+
+    'about_lessons': [
+        'Never or Hardly',
+        'Some Lessons',
+        'Most Lessons',
+        'Every Lesson'],
+    
+    'similarity': [
+        'Not at all like me',
+        'Not much like me',
+        'Somewhat like me',
+        'Mostly like me',
+        'Very much like me'],
+    
+    'action': [
+        'definitely not do this',
+        'probably not do this',
+        'probably do this',
+        'definitely do this'],
+    
+    'usage': [
+        'No',
+        'Yes, but I dont use it',
+        'Yes, and I do use it']
+
+}
