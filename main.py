@@ -214,16 +214,46 @@ def completeness_check(pisadf):
 
 # sets of unique vals pulled from original df
 SHORT_UNIQUES = get_all_unique_short_categories(PISA2012, 20)
+SHORT_UNIQUES_DF = pd.DataFrame(SHORT_UNIQUES)
 
 # returned category for each var in original df
 COMPLETENESS_CHECK = completeness_check(PISA2012)
 
 # categories that were not matched
-# TODO: identify new categories that can be defined
 # when complete, only variables associated with text_response should
 #     be those with too many unique values to justify a category
 TEXT_RESPONSES = COMPLETENESS_CHECK.query('category_name == "text_response"')
 
+# non exhaustive list of examples copied from text responses where the
+# category was not obviously too large (ignored country for example)
+UNCATEGORIZED_EXAMPLE_RESPONSES = [
+    "<ISCED level 3B, 3C>",
+    "11-25 books",
+    "Most Lessons",
+    "Never or Hardly Ever",
+    "Mostly like me",
+    "definitely not do this",
+    "Yes, and I use it"
+    ]
 
-# COMPLETENESS_CHECK.query('category_name == "text_response"')
-# PISA2012.VER_STU.unique()
+
+# this can be used to get the sets from SHORT UNIQUES
+# corresponding to the examples of string reponses given
+def unique_sets_finder(uncategorized_responses: list):
+    """
+    Print the sets from SHORT UNIQUES corresponding to the list of example
+    string reponses given.
+    """
+    print("\n\n")
+    def match_uniques_sets(string_to_find):
+        print("Search term:  '" + string_to_find + "':")
+        for index in list(
+                SHORT_UNIQUES_DF[SHORT_UNIQUES_DF == string_to_find].dropna(
+                    thresh=1).index):
+            print(SHORT_UNIQUES[index])
+        print("\n")
+    for uncategorized_response in uncategorized_responses:
+        match_uniques_sets(uncategorized_response)
+
+# output will be used to populate category definitions
+unique_sets_finder(UNCATEGORIZED_EXAMPLE_RESPONSES)
