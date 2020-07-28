@@ -1,3 +1,11 @@
+"""
+Category Definitions
+
+known_categories are the expected values for PISA 2012 categorical variables.
+preferred_vales are the vales to replace expected_vales with.
+"""
+
+
 ### Known Categories
 #
 # Dictionary containing lists. Each list contains the values of known
@@ -46,6 +54,13 @@ KNOWN_CATEGORIES = {
         '10-12 years old',
         '7-9 years old',
         '6 years old or younger'],
+
+    'how_long': [
+        '0 to 3 years',
+        '4 to 6 years',
+        '7 to 9 years',
+        '10 to 12 years',
+        '13 years or older'],
 
     'likelihood': [
         'Not at all likely',
@@ -138,13 +153,27 @@ KNOWN_CATEGORIES = {
     'exposure': [
         'No',
         'Yes, but only the teacher demonstrated this',
-        'Yes, students did this']
+        'Yes, students did this'],
+
+    'location1': [
+        'Country of test',
+        'Other country'],
+
+    'language1': [
+        'Language of the test',
+        'Other language'],
+
+    'language2': [
+        'other than <test language> or <other official national langu',
+        '<test language> or <other official national language(s) or d'],
+
+    'language3': [
+        'Mostly <heritage language>',
+        'About equally <heritage language> and <test language>',
+        'Mostly <test language>',
+        'Not applicable']
 
 }
-
-
-
-
 
 
 ### Preferred Category Values
@@ -195,6 +224,13 @@ PREFERRED_NAMING = {
         '10-12 years old',
         '7-9 years old',
         '6 years old or younger'],
+
+    'how_long': [
+        '0 to 3 years',
+        '4 to 6 years',
+        '7 to 9 years',
+        '10 to 12 years',
+        '13 years or older'],
 
     'likelihood': [
         'Not at all likely',
@@ -265,20 +301,20 @@ PREFERRED_NAMING = {
         'Some Lessons',
         'Most Lessons',
         'Every Lesson'],
-    
+
     'similarity': [
         'Not at all like me',
         'Not much like me',
         'Somewhat like me',
         'Mostly like me',
         'Very much like me'],
-    
+
     'action': [
         'definitely not do this',
         'probably not do this',
         'probably do this',
         'definitely do this'],
-    
+
     'usage': [
         'No',
         'Yes, but I dont use it',
@@ -287,6 +323,24 @@ PREFERRED_NAMING = {
     'exposure': [
         'No',
         'Yes, but only teacher demonstrated',
-        'Yes, students did this']
+        'Yes, students did this'],
+
+    'location1': [
+        'Country of test',
+        'Other country'],
+
+    'language1': [
+        'Language of the test',
+        'Other language'],
+
+    'language2': [
+        'other than test language',
+        'test language'],
+
+    'language3': [
+        'Mostly <heritage language>',
+        'About equally <heritage language> and <test language>',
+        'Mostly <test language>',
+        'Not applicable']
 
 }
