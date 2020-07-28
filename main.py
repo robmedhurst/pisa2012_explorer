@@ -130,8 +130,8 @@ def initialize(pisa_df, given_inputs=None):
         inputs = [
             category_definitions.KNOWN_CATEGORIES,
             category_definitions.PREFERRED_NAMING,
-            test_groupings.INDEP_test_grouping01,
-            test_groupings.DEPEN_test_grouping01]
+            test_groupings.INDEP_TEST_GROUPING01,
+            test_groupings.DEPEN_TEST_GROUPING01]
     else:
         inputs = given_inputs
     # returns pisa_df, inputs, categories_found
@@ -224,14 +224,11 @@ COMPLETENESS_CHECK = completeness_check(PISA2012)
 #     be those with too many unique values to justify a category
 TEXT_RESPONSES = COMPLETENESS_CHECK.query('category_name == "text_response"')
 
+
+
 # non exhaustive list of examples copied from text responses where the
 # category was not obviously too large (ignored country for example)
-UNCATEGORIZED_EXAMPLE_RESPONSES = [
-    "No, never",
-    "7-9 years old",
-    "Almost every day",
-    "Once or twice a week",
-    "Yes, students did this"]
+UNCATEGORIZED_EXAMPLE_RESPONSES = []
 
 
 # this can be used to get the sets from SHORT UNIQUES

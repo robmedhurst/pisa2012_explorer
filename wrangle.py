@@ -1,5 +1,7 @@
-# This tool aims to aid in the exploration of the PISA 2012 dataset,
-# allowing users to concurrently examine a group of similar variables.
+"""
+This tool aims to aid in the exploration of the PISA 2012 dataset,
+allowing users to concurrently examine a group of similar variables.
+"""
 
 
 #%% Wrangling Functions
@@ -22,7 +24,7 @@ def wrangle(pisa_df, inputs):
              for var_name in sublist] +
             [var_name for sublist in list(dependent_groups.values())
              for var_name in sublist]),
-            axis='columns', inplace = True)
+                     axis='columns', inplace=True)
         # drop nulls
         pisa_df.dropna(inplace=True)
 
@@ -31,13 +33,13 @@ def wrangle(pisa_df, inputs):
         Determine if variables in pisa_group match a known categoy.
         Determine if variables in pisa_group each have same category.
         If consistent category found, return associated category_key.
-        Otherwise returns "text_response", indicating group is 
+        Otherwise returns "text_response", indicating group is
         treated as plain text responses rather than categoricals.
         """
         # default to text_response type
         category_key = 'text_response'
         for index, variable_name in enumerate(pisa_group):
-            
+
             # gather unique values for this variable
             unique_values = set({})
             for unique_val in set(pisa_df[variable_name].unique()):
@@ -94,19 +96,19 @@ def wrangle(pisa_df, inputs):
             try:
                 pisa_df[pisa_group] = pisa_df[pisa_group].astype(int)
                 category = "integer"
-            except:
+            except ValueError:
                 try:
                     pisa_df[pisa_group] = pisa_df[pisa_group].astype(float)
                     category = "float"
-                except:
+                except ValueError:
                     category = None
             if not category:
                 pisa_df[pisa_group] = pisa_df[pisa_group].astype(str)
-                
+
                 # attempt to match and update values to known PISA category
                 category = get_category(pisa_group)
                 apply_preferred_values(pisa_group, category)
-            group_category_matches[group_key]=category
+            group_category_matches[group_key] = category
         return group_category_matches
 
     ### CAUTION:    large sets of variables will reduce the sample size
@@ -116,7 +118,7 @@ def wrangle(pisa_df, inputs):
 
     # group_category_matches = process_pisa_set_of_groups(
     #     {**independent_groups, **dependent_groups})
-    
+
     # independent_groups_keys = process_pisa_set_of_groups(independent_groups)
     group_category_matches = {
         'indep_categories': process_pisa_set_of_groups(independent_groups),
