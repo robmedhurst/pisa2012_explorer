@@ -227,14 +227,11 @@ TEXT_RESPONSES = COMPLETENESS_CHECK.query('category_name == "text_response"')
 # non exhaustive list of examples copied from text responses where the
 # category was not obviously too large (ignored country for example)
 UNCATEGORIZED_EXAMPLE_RESPONSES = [
-    "<ISCED level 3B, 3C>",
-    "11-25 books",
-    "Most Lessons",
-    "Never or Hardly Ever",
-    "Mostly like me",
-    "definitely not do this",
-    "Yes, and I use it"
-    ]
+    "No, never",
+    "7-9 years old",
+    "Almost every day",
+    "Once or twice a week",
+    "Yes, students did this"]
 
 
 # this can be used to get the sets from SHORT UNIQUES

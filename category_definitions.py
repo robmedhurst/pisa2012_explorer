@@ -40,6 +40,13 @@ KNOWN_CATEGORIES = {
         'Yes, for one year or less',
         'Yes, for more than one year'],
 
+    'age_when': [
+        'Never',
+        '13 years old  or older',
+        '10-12 years old',
+        '7-9 years old',
+        '6 years old or younger'],
+
     'likelihood': [
         'Not at all likely',
         'Slightly likely',
@@ -68,6 +75,13 @@ KNOWN_CATEGORIES = {
         'One or two times',
         'Three or four times',
         'Five or more times'],
+
+    'frequency4': [
+        'Never or hardly ever',
+        'Once or twice a week',
+        'Once or twice a month',
+        'Almost every day',
+        'Every day'],
 
     'schooltype1': [
         'Pre-Vocational',
@@ -119,9 +133,18 @@ KNOWN_CATEGORIES = {
     'usage': [
         'No',
         'Yes, but I don\x92t use it',
-        'Yes, and I use it']
+        'Yes, and I use it'],
+
+    'exposure': [
+        'No',
+        'Yes, but only the teacher demonstrated this',
+        'Yes, students did this']
 
 }
+
+
+
+
 
 
 ### Preferred Category Values
@@ -166,6 +189,13 @@ PREFERRED_NAMING = {
         'Yes, less than',
         'Yes, more than'],
 
+    'age_when': [
+        'Never',
+        '13 years old or older',
+        '10-12 years old',
+        '7-9 years old',
+        '6 years old or younger'],
+
     'likelihood': [
         'Not at all likely',
         'Slightly likely',
@@ -194,6 +224,13 @@ PREFERRED_NAMING = {
         'One or two times',
         'Three or four times',
         'Five or more times'],
+
+    'frequency4': [
+        'Never or hardly ever',
+        'Once or twice a week',
+        'Once or twice a month',
+        'Almost every day',
+        'Every day'],
 
     'schooltype1': [
         'Pre-Vocational',
@@ -245,6 +282,11 @@ PREFERRED_NAMING = {
     'usage': [
         'No',
         'Yes, but I dont use it',
-        'Yes, and I do use it']
+        'Yes, and I do use it'],
+
+    'exposure': [
+        'No',
+        'Yes, but only teacher demonstrated',
+        'Yes, students did this']
 
 }
