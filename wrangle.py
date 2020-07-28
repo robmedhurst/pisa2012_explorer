@@ -3,6 +3,7 @@ This tool aims to aid in the exploration of the PISA 2012 dataset,
 allowing users to concurrently examine a group of similar variables.
 """
 
+import numpy as np
 
 #%% Wrangling Functions
 
@@ -56,6 +57,7 @@ def wrangle(pisa_df, inputs):
                 if not unique_values.issubset(known_categories[category_key]):
                     # how to handle a mismatched group:
                     #     treat as text_response type
+                    category_key = 'text_response'
                     break
         return category_key
 
@@ -89,27 +91,31 @@ def wrangle(pisa_df, inputs):
         set corresponding values for each group,
         return dictionary containting found group/category key pairs.
         """
-        group_category_matches = {}
-        for group_key in pisa_set_of_groups:
-            pisa_group = pisa_set_of_groups[group_key]
+        matches = {}
+        for group_name in pisa_set_of_groups:
+
+            pisa_group = pisa_set_of_groups[group_name]
             # attempt to convert group to numeric
+
             try:
                 pisa_df[pisa_group] = pisa_df[pisa_group].astype(int)
                 category = "integer"
+
             except ValueError:
                 try:
                     pisa_df[pisa_group] = pisa_df[pisa_group].astype(float)
                     category = "float"
                 except ValueError:
                     category = None
+
             if not category:
                 pisa_df[pisa_group] = pisa_df[pisa_group].astype(str)
-
                 # attempt to match and update values to known PISA category
                 category = get_category(pisa_group)
                 apply_preferred_values(pisa_group, category)
-            group_category_matches[group_key] = category
-        return group_category_matches
+
+            matches[group_name] = category
+        return matches
 
     ### CAUTION:    large sets of variables will reduce the sample size
     ### Reason:     each variable has its own set of nulls

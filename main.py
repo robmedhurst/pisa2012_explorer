@@ -140,11 +140,11 @@ def initialize(pisa_df, given_inputs=None):
 
 PISA2012 = load_original(reload=False, integrity_check=False)
 PISA_SAMPLE = PISA2012.sample(500)
-TEMP_OUTPUT = initialize(PISA_SAMPLE)
+TEMP_OUTPUT = initialize(PISA_SAMPLE.copy())
 
 
 
-
+# --------------------------------------------------------------------------
 # TEMPORARY (build know_categories)
 # A helper function to view a list of categories extracted from PISA2012
 # Can be used to create new category_definitons.
@@ -179,57 +179,59 @@ def get_all_unique_short_categories(pisadf, max_length=5,
                 found_unique_sets.append(unique_values)
     return found_unique_sets
 
-# A helper function to check each column against known categories
-def completeness_check(pisadf):
-    """
-    A helper function to check each column against known categories
-    """
-    def chunck_check(column_start=None, column_end=None):
-        check = {}
-        for var in pisadf.columns[column_start:column_end]:
-            check[str(var)] = [str(var)]
-        indep_categories = initialize(
-            pisadf.copy(),
-            [category_definitions.KNOWN_CATEGORIES,
-             category_definitions.PREFERRED_NAMING,
-             check,
-             {}])[2]['indep_categories']
-        return pd.DataFrame(
-            data={'category_name': list(indep_categories.values()),
-                  'example1': PISA2012.iloc[250000][column_start:column_end],
-                  'example2': PISA2012.iloc[120000][column_start:column_end],
-                  'example3': PISA2012.iloc[80000][column_start:column_end],
-                  'example4': PISA2012.iloc[40][column_start:column_end],
-                  'example5': PISA2012.iloc[400][column_start:column_end],
-                  'example6': PISA2012.iloc[4000][column_start:column_end],
-                  'example7': PISA2012.iloc[40000][column_start:column_end],
-                  'example8': PISA2012.iloc[430000][column_start:column_end]},
-            index=list(indep_categories.keys()))
-    dataframe_returned = pd.DataFrame()
-    for i in range(8):
-        dataframe_returned = dataframe_returned.append(
-            chunck_check(i*100, (i+1)*100))
-    return dataframe_returned
+# # A helper function to check each column against known categories
+# def completeness_check(pisadf):
+#     """
+#     A helper function to check each column against known categories
+#     """
+#     dataframe_returned = pd.DataFrame()
+#     for var in pisadf.columns:
+#         indep_categories = initialize(
+#             pisadf.copy(),
+#             [category_definitions.KNOWN_CATEGORIES,
+#              category_definitions.PREFERRED_NAMING,
+#              {var: [var]},
+#              {}])[2]['indep_categories']
+#         column_start, column_end = None, None
+#         tempdf = pd.DataFrame(
+#             data={'category_name': list(indep_categories.values()),
+#                   'example1': PISA2012.iloc[250000][column_start:column_end],
+#                   'example2': PISA2012.iloc[120000][column_start:column_end],
+#                   'example3': PISA2012.iloc[80000][column_start:column_end],
+#                   'example4': PISA2012.iloc[40][column_start:column_end],
+#                   'example5': PISA2012.iloc[400][column_start:column_end],
+#                   'example6': PISA2012.iloc[4000][column_start:column_end],
+#                   'example7': PISA2012.iloc[40000][column_start:column_end],
+#                   'example8': PISA2012.iloc[430000][column_start:column_end]},
+#             index=list(indep_categories.keys()))
+#         dataframe_returned = dataframe_returned.append(tempdf)
+#     return dataframe_returned
 
 
-# sets of unique vals pulled from original df
-SHORT_UNIQUES = get_all_unique_short_categories(PISA2012, 20)
+
+# # sets of unique vals pulled from original df
+SHORT_UNIQUES = get_all_unique_short_categories(PISA2012, 80)
 SHORT_UNIQUES_DF = pd.DataFrame(SHORT_UNIQUES)
 
-# returned category for each var in original df
-COMPLETENESS_CHECK = completeness_check(PISA2012)
 
-# categories that were not matched
-# when complete, only variables associated with text_response should
-#     be those with too many unique values to justify a category
-TEXT_RESPONSES = COMPLETENESS_CHECK.query('category_name == "text_response"')
+### Dont rerun this, it takes forever
+# # returned category for each var in original df
+# COMPLETENESS_CHECK = completeness_check(PISA2012)
+#
+# # categories that were not matched
+# # when complete, only variables associated with text_response should
+# #     be those with too many unique values to justify a category
+# TEXT_RESPONSES = COMPLETENESS_CHECK.query('category_name == "text_response"')
+# # Saving to csv
+# TEXT_RESPONSES.to_csv('text_responses2.csv')
+# COMPLETENESS_CHECK.to_csv('completeness_check2.csv')
+
+COMPLETENESS_CHECK = pd.read_csv("completeness_check.csv", header=0, index_col=0)
+TEXT_RESPONSES = pd.read_csv("text_responses.csv", header=0, index_col=0)
 
 
 
-# non exhaustive list of examples copied from text responses where the
-# category was not obviously too large (ignored country for example)
 UNCATEGORIZED_EXAMPLE_RESPONSES = []
-
 
 # this can be used to get the sets from SHORT UNIQUES
 # corresponding to the examples of string reponses given

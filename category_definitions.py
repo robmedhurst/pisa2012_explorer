@@ -13,9 +13,13 @@ preferred_vales are the vales to replace expected_vales with.
 #
 KNOWN_CATEGORIES = {
 
-    'binary_yn': [
+    'binary_yn1': [
         'Yes',
         'No'],
+
+    'binary_yn2': [
+        'Yes',
+        'No, never'],
 
     'sex': [
         'Female',
@@ -98,6 +102,13 @@ KNOWN_CATEGORIES = {
         'Almost every day',
         'Every day'],
 
+    'frequency5': [
+        'None',
+        'Less than 2',
+        '2 or more but less than 4',
+        '4 or more but less than 6',
+        '6 or more'],
+
     'schooltype1': [
         'Pre-Vocational',
         'Vocational',
@@ -176,6 +187,22 @@ KNOWN_CATEGORIES = {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### Preferred Category Values
 #
 # Dictionary containing lists. Each list contains preferred values for
@@ -183,9 +210,13 @@ KNOWN_CATEGORIES = {
 #
 PREFERRED_NAMING = {
 
-    'binary_yn': [
+    'binary_yn1': [
         True,
         False],
+
+    'binary_yn2': [
+        'Yes',
+        'No, never'],
 
     'sex': [
         'Female',
@@ -267,6 +298,13 @@ PREFERRED_NAMING = {
         'Once or twice a month',
         'Almost every day',
         'Every day'],
+
+    'frequency5': [
+        'None',
+        'Less than 2',
+        '2 or more but less than 4',
+        '4 or more but less than 6',
+        '6 or more'],
 
     'schooltype1': [
         'Pre-Vocational',

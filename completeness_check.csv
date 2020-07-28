@@ -1,0 +1,637 @@
+,category_name,example1,example2,example3,example4,example5,example6,example7,example8
+Unnamed: 0,integer,250001,120001,80001,41,401,4001,40001,430001
+CNT,text_response,Italy,Colombia,Canada,Albania,Albania,Albania,Austria,Serbia
+SUBNATIO,integer,3800000,1700000,1240000,0080000,0080000,0080000,0400000,6880000
+STRATUM,text_response,ITA1801,COL0303,CAN0762,ALB0005,ALB0005,ALB0005,AUT9797,SRB0011
+OECD,oecd,OECD,Non-OECD,OECD,Non-OECD,Non-OECD,Non-OECD,OECD,Non-OECD
+NC,text_response,Italy,Colombia ,Canada ,Albania,Albania,Albania,Austria,Serbia 
+SCHOOLID,integer,0000366,0000233,0000218,0000002,0000018,0000173,0000133,0000054
+STIDSTD,integer,09411,05902,05531,00041,00401,04001,03369,01679
+ST01Q01,integer,10,7,10,10,10,9,9,9
+ST02Q01,integer,1,1,2,1,1,1,11,2
+ST03Q01,integer,12,11,09,05,08,07,12,05
+ST03Q02,integer,1996,1996,1996,1996,1996,1996,1996,1996
+ST04Q01,sex,Male,Female,Male,Male,Female,Female,Female,Male
+ST05Q01,about_year,"Yes, for more than one year","Yes, for one year or less ","Yes, for one year or less ",No  ,"Yes, for more than one year","Yes, for more than one year","Yes, for more than one year","Yes, for one year or less "
+ST06Q01,integer,6,,6,7,7,6,6,7
+ST07Q01,frequency2,"No, never","Yes, once","No, never","No, never","No, never","No, never","No, never","No, never"
+ST07Q02,frequency2,"No, never",,"No, never","No, never",,"No, never","No, never","No, never"
+ST07Q03,frequency2,"No, never",,"No, never",,,"No, never","No, never","No, never"
+ST08Q01,frequency3,None  ,None  ,None  ,None  ,None  ,One or two times  ,None  ,None  
+ST09Q01,frequency3,None  ,None  ,None  ,None  ,None  ,None  ,None  ,None  
+ST115Q01,integer,1,1,1,1,1,1,1,1
+ST11Q01,binary_yn1,Yes,Yes,Yes,Yes,Yes,No,Yes,Yes
+ST11Q02,binary_yn1,No,Yes,No,Yes,Yes,No,Yes,Yes
+ST11Q03,binary_yn1,Yes,Yes,No,No,Yes,No,Yes,No
+ST11Q04,binary_yn1,No,No,No,Yes,Yes,,Yes,No
+ST11Q05,binary_yn1,No,No,No,No,No,No,No,Yes
+ST11Q06,binary_yn1,No,No,No,No,No,No,No,No
+ST13Q01,isced_completed_f,"<ISCED level 3B, 3C> ",<ISCED level 1> ,<ISCED level 3A> ,<ISCED level 3A> ,<ISCED level 2> ,<ISCED level 3A> ,"<ISCED level 3B, 3C> ",<ISCED level 3A> 
+ST14Q01,binary_yn1,No,No,No,No,Yes,No,No,No
+ST14Q02,binary_yn1,No,No,Yes,Yes,No,Yes,No,No
+ST14Q03,binary_yn1,No,No,No,No,No,No,No,Yes
+ST14Q04,binary_yn1,No,,No,No,No,,No,
+ST15Q01,work_status,Working part-time <for pay>,Working part-time <for pay>,Working full-time <for pay> ,Working full-time <for pay> ,"Not working, but looking for a job ",Working full-time <for pay> ,Working part-time <for pay>,Working full-time <for pay> 
+ST17Q01,isced_completed_m,<ISCED level 3A> ,<ISCED level 3A> ,<ISCED level 3A> ,<ISCED level 3A> ,<ISCED level 2> ,<ISCED level 3A> ,"<ISCED level 3B, 3C> ","<ISCED level 3B, 3C> "
+ST18Q01,binary_yn1,No,No,No,No,Yes,No,No,No
+ST18Q02,binary_yn1,No,Yes,Yes,Yes,No,Yes,No,Yes
+ST18Q03,binary_yn1,No,No,No,No,No,No,Yes,No
+ST18Q04,binary_yn1,No,,No,No,No,No,No,
+ST19Q01,work_status,Working full-time <for pay> ,Working full-time <for pay> ,Working full-time <for pay> ,Working full-time <for pay> ,,Working full-time <for pay> ,Working part-time <for pay>,Working full-time <for pay> 
+ST20Q01,location1,Country of test,Country of test,Country of test,Country of test,Country of test,,Country of test,Country of test
+ST20Q02,location1,Country of test,Country of test,Country of test,Country of test,Country of test,,Country of test,Country of test
+ST20Q03,location1,Country of test,Country of test,Country of test,Country of test,Country of test,,Country of test,Country of test
+ST21Q01,integer,,,,,,,,
+ST25Q01,language1,Language of the test,Language of the test,Language of the test,Language of the test,Language of the test,Language of the test,Language of the test,Language of the test
+ST26Q01,binary_yn1,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+ST26Q02,binary_yn1,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+ST26Q03,binary_yn1,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes
+ST26Q04,binary_yn1,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes
+ST26Q05,binary_yn1,No,No,No,No,No,No,Yes,Yes
+ST26Q06,binary_yn1,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes
+ST26Q07,binary_yn1,No,Yes,Yes,Yes,No,No,No,Yes
+ST26Q08,binary_yn1,Yes,Yes,No,Yes,Yes,No,Yes,Yes
+ST26Q09,binary_yn1,Yes,No,Yes,Yes,Yes,No,Yes,Yes
+ST26Q10,binary_yn1,Yes,Yes,Yes,Yes,Yes,No,Yes,Yes
+ST26Q11,binary_yn1,Yes,No,Yes,Yes,No,Yes,Yes,Yes
+ST26Q12,binary_yn1,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes
+ST26Q13,binary_yn1,No,Yes,No,No,No,Yes,Yes,Yes
+ST26Q14,binary_yn1,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+ST26Q15,integer,0380002,0170002,0124001,0008001,0008002,0008001,0040001,0688001
+ST26Q16,integer,0380002,0170001,0124002,0008001,0008002,0008002,0040001,0688001
+ST26Q17,integer,0380002,0170001,0124002,0008001,0008002,0008002,0040001,0688001
+ST27Q01,one_two_three,Three or more,Three or more,Three or more,Three or more,Three or more,Three or more,Three or more,Three or more
+ST27Q02,one_two_three,Two,Three or more,Three or more,One,Two,Two,Two,Three or more
+ST27Q03,one_two_three,Two,One,Two,One,None,One,One,Two
+ST27Q04,one_two_three,One,None,Two,None,None,One,Three or more,Two
+ST27Q05,one_two_three,One,One,One,Three or more,One,One,Two,Two
+ST28Q01,num_books,11-25 books ,26-100 books ,11-25 books ,201-500 books ,11-25 books ,11-25 books ,26-100 books ,26-100 books 
+ST29Q01,agreement,,Agree,Strongly agree,,Agree,,,Disagree
+ST29Q02,agreement,,Strongly agree,Strongly agree,,Strongly agree,,,Agree
+ST29Q03,agreement,,Agree,Strongly agree,,Agree,,,Disagree
+ST29Q04,agreement,,Strongly agree,Strongly agree,,Agree,,,Agree
+ST29Q05,agreement,,Strongly agree,Strongly agree,,Strongly agree,,,Agree
+ST29Q06,agreement,,Strongly agree,Strongly agree,,Strongly agree,,,Agree
+ST29Q07,agreement,,Strongly agree,Strongly agree,,Strongly agree,,,Agree
+ST29Q08,agreement,,Strongly agree,Strongly agree,,Strongly agree,,,Agree
+ST35Q01,agreement,,Disagree,Agree,,Agree,,,Agree
+ST35Q02,agreement,,Disagree,Strongly agree,,Agree,,,Disagree
+ST35Q03,agreement,,Strongly disagree,Disagree,,Agree,,,Disagree
+ST35Q04,agreement,,Agree,Strongly agree,,Agree,,,Agree
+ST35Q05,agreement,,Strongly agree,Strongly agree,,Strongly agree,,,Agree
+ST35Q06,agreement,,Strongly agree,Strongly agree,,Agree,,,Disagree
+ST37Q01,confidence,,Confident,Confident,,Not very confident,,,
+ST37Q02,confidence,,Confident,Very confident,,Very confident,,,Confident
+ST37Q03,confidence,,Very confident,Very confident,,Confident,,,Confident
+ST37Q04,confidence,,Not very confident,Very confident,,Confident,,,Confident
+ST37Q05,confidence,,Confident,Very confident,,Confident,,,Confident
+ST37Q06,confidence,,Confident,Confident,,Confident,,,Confident
+ST37Q07,confidence,,Very confident,Confident,,Confident,,,Confident
+ST37Q08,confidence,,Very confident,Very confident,,Confident,,,Confident
+ST42Q01,agreement,Agree,Disagree,,Disagree,Disagree,Strongly disagree,Agree,
+ST42Q02,agreement,Disagree,Strongly disagree,,Disagree,Disagree,Strongly disagree,Disagree,
+ST42Q03,agreement,Agree,Strongly disagree,,Disagree,Disagree,Disagree,Disagree,
+ST42Q04,agreement,Agree,Agree,,Agree,Agree,Strongly agree,Agree,
+ST42Q05,agreement,Disagree,Strongly disagree,,Disagree,Agree,Disagree,Agree,
+ST42Q06,agreement,Disagree,Strongly agree,,Agree,Disagree,Agree,Disagree,
+ST42Q07,agreement,Disagree,Strongly agree,,Strongly agree,Agree,Agree,Strongly disagree,
+ST42Q08,agreement,Agree,Disagree,,Strongly disagree,Disagree,Strongly disagree,Disagree,
+ST42Q09,agreement,Disagree,Agree,,Agree,Agree,Agree,Disagree,
+ST42Q10,agreement,Agree,Agree,,Disagree,Disagree,Strongly disagree,Strongly agree,
+ST43Q01,agreement,,Agree,Agree,,Agree,,,Agree
+ST43Q02,agreement,,Strongly agree,Agree,,Agree,,,Agree
+ST43Q03,agreement,,Disagree,Agree,,Disagree,,,Disagree
+ST43Q04,agreement,,Disagree,Strongly disagree,,Disagree,,,Disagree
+ST43Q05,agreement,,Disagree,Strongly agree,,Agree,,,Agree
+ST43Q06,agreement,,Strongly disagree,Strongly disagree,,Disagree,,,Disagree
+ST44Q01,likelihood,,Not at all likely,Not at all likely,,Slightly likely,,,Likely
+ST44Q03,likelihood,,Not at all likely,Not at all likely,,Not at all likely,,,Not at all likely
+ST44Q04,likelihood,,Slightly likely,Not at all likely,,Not at all likely,,,Not at all likely
+ST44Q05,likelihood,,Not at all likely,Not at all likely,,Slightly likely,,,Likely
+ST44Q07,likelihood,,Not at all likely,Not at all likely,,Not at all likely,,,Slightly likely
+ST44Q08,likelihood,,Likely,Not at all likely,,Likely,,,Likely
+ST46Q01,agreement,,Strongly agree,Agree,,Agree,,,Agree
+ST46Q02,agreement,,Strongly agree,Disagree,,Agree,,,Agree
+ST46Q03,agreement,,Strongly agree,Agree,,Agree,,,Disagree
+ST46Q04,agreement,,Strongly agree,Strongly disagree,,Agree,,,Agree
+ST46Q05,agreement,,Strongly agree,Strongly disagree,,Agree,,,Agree
+ST46Q06,agreement,,Strongly agree,Strongly agree,,Agree,,,Agree
+ST46Q07,agreement,,Strongly agree,Strongly agree,,Agree,,,Agree
+ST46Q08,agreement,,Strongly agree,Strongly agree,,Agree,,,Agree
+ST46Q09,agreement,,Strongly agree,Strongly agree,,Agree,,,Agree
+ST48Q01,text_response,,Courses after school Math,Courses after school Math,,Courses after school Math,,,Courses after school Math
+ST48Q02,text_response,,Major in college Science,Major in college Math,,Major in college Math,,,Major in college Science
+ST48Q03,text_response,,Study harder Math,Study harder Math,,Study harder Math,,,Study harder Math
+ST48Q04,text_response,,Maximum classes Math,Maximum classes Math,,Maximum classes Math,,,Maximum classes Science
+ST48Q05,text_response,,Pursuing a career Math,Pursuing a career Math,,Pursuing a career Math,,,Pursuing a career Science
+ST49Q01,frequency1,,Sometimes,Sometimes,,Often,,,Never or rarely
+ST49Q02,frequency1,,Sometimes,Often,,Often,,,Never or rarely
+ST49Q03,frequency1,,Often,Often,,Never or rarely,,,Never or rarely
+ST49Q04,frequency1,,Often,Sometimes,,Often,,,Never or rarely
+ST49Q05,frequency1,,Always or almost always,Sometimes,,Often,,,Sometimes
+ST49Q06,frequency1,,Never or rarely,Sometimes,,Never or rarely,,,Never or rarely
+ST49Q07,frequency1,,Always or almost always,Never or rarely,,Never or rarely,,,Never or rarely
+ST49Q09,frequency1,,Never or rarely,Never or rarely,,Often,,,Never or rarely
+ST53Q01,text_response,Most important,,by heart,Most important,,Most important,relating to known,relating to known
+ST53Q02,text_response,Improve understanding,,Improve understanding,Improve understanding,,Improve understanding,Improve understanding,Improve understanding
+ST53Q03,text_response,learning goals,,Relating to other subjects,in my sleep,,learning goals,learning goals,learning goals
+ST53Q04,text_response,more information,,Repeat examples,everyday life,,more information,more information,Repeat examples
+ST55Q01,text_response,I do not attend <out-of-school time lessons> in this subject,,I do not attend <out-of-school time lessons> in this subject,2 or more but less than 4 hours a week,,I do not attend <out-of-school time lessons> in this subject,I do not attend <out-of-school time lessons> in this subject,I do not attend <out-of-school time lessons> in this subject
+ST55Q02,text_response,I do not attend <out-of-school time lessons> in this subject,,I do not attend <out-of-school time lessons> in this subject,Less than 2 hours a week,,I do not attend <out-of-school time lessons> in this subject,I do not attend <out-of-school time lessons> in this subject,I do not attend <out-of-school time lessons> in this subject
+ST55Q03,text_response,I do not attend <out-of-school time lessons> in this subject,,I do not attend <out-of-school time lessons> in this subject,I do not attend <out-of-school time lessons> in this subject,,I do not attend <out-of-school time lessons> in this subject,I do not attend <out-of-school time lessons> in this subject,Less than 2 hours a week
+ST55Q04,text_response,I do not attend <out-of-school time lessons> in this subject,,I do not attend <out-of-school time lessons> in this subject,I do not attend <out-of-school time lessons> in this subject,,2 or more but less than 4 hours a week,I do not attend <out-of-school time lessons> in this subject,4 or more but less than 6 hours a week
+ST57Q01,integer,12,,0,5,,6,4,3
+ST57Q02,integer,0,,0,0,,2,0,
+ST57Q03,integer,0,,0,0,,0,0,
+ST57Q04,integer,0,,0,0,,2,0,
+ST57Q05,integer,0,,0,0,,2,0,5
+ST57Q06,integer,0,,0,0,,7,1,3
+ST61Q01,text_response,Sometimes,,Sometimes,Rarely ,,Never ,Sometimes,Sometimes
+ST61Q02,text_response,Rarely ,,Sometimes,Never ,,Rarely ,Sometimes,Sometimes
+ST61Q03,text_response,Rarely ,,Sometimes,Sometimes,,Rarely ,Rarely ,Frequently
+ST61Q04,text_response,Sometimes,,Sometimes,Sometimes,,Rarely ,Rarely ,Sometimes
+ST61Q05,text_response,Sometimes,,Sometimes,Frequently,,Frequently,Frequently,
+ST61Q06,text_response,Rarely ,,Sometimes,Rarely ,,Never ,Rarely ,
+ST61Q07,text_response,Sometimes,,Sometimes,Frequently,,Frequently,Frequently,Frequently
+ST61Q08,text_response,Never ,,Sometimes,Rarely ,,Rarely ,Sometimes,Sometimes
+ST61Q09,text_response,Sometimes,,Sometimes,Frequently,,Frequently,Frequently,Frequently
+ST62Q01,text_response,Heard of it often,,Heard of it often,,,"Know it well,  understand the concept",Never heard of it,Heard of it once or twice
+ST62Q02,text_response,"Know it well,  understand the concept",,Heard of it often,"Know it well,  understand the concept",,"Know it well,  understand the concept",Heard of it often,"Know it well,  understand the concept"
+ST62Q03,text_response,"Know it well,  understand the concept",,Heard of it a few times,Heard of it often,,Never heard of it,Heard of it a few times,Never heard of it
+ST62Q04,text_response,Heard of it often,,Heard of it a few times,"Know it well,  understand the concept",,"Know it well,  understand the concept",Heard of it a few times,Never heard of it
+ST62Q06,text_response,Heard of it a few times,,"Know it well,  understand the concept","Know it well,  understand the concept",,"Know it well,  understand the concept","Know it well,  understand the concept",Heard of it often
+ST62Q07,text_response,"Know it well,  understand the concept",,Heard of it once or twice,"Know it well,  understand the concept",,"Know it well,  understand the concept",Heard of it often,Heard of it often
+ST62Q08,text_response,Heard of it once or twice,,Heard of it once or twice,Heard of it once or twice,,Heard of it once or twice,Never heard of it,Never heard of it
+ST62Q09,text_response,"Know it well,  understand the concept",,"Know it well,  understand the concept","Know it well,  understand the concept",,"Know it well,  understand the concept","Know it well,  understand the concept",Heard of it often
+ST62Q10,text_response,"Know it well,  understand the concept",,"Know it well,  understand the concept","Know it well,  understand the concept",,"Know it well,  understand the concept","Know it well,  understand the concept",Heard of it often
+ST62Q11,text_response,Heard of it a few times,,Heard of it a few times,Heard of it a few times,,Never heard of it,Never heard of it,Never heard of it
+ST62Q12,text_response,"Know it well,  understand the concept",,"Know it well,  understand the concept","Know it well,  understand the concept",,"Know it well,  understand the concept",Heard of it once or twice,"Know it well,  understand the concept"
+ST62Q13,text_response,Heard of it once or twice,,Heard of it once or twice,Heard of it once or twice,,"Know it well,  understand the concept",Heard of it once or twice,
+ST62Q15,text_response,Never heard of it,,Heard of it once or twice,"Know it well,  understand the concept",,"Know it well,  understand the concept",Heard of it often,Heard of it a few times
+ST62Q16,text_response,Never heard of it,,"Know it well,  understand the concept","Know it well,  understand the concept",,"Know it well,  understand the concept","Know it well,  understand the concept",Heard of it a few times
+ST62Q17,text_response,Heard of it often,,"Know it well,  understand the concept",Heard of it often,,"Know it well,  understand the concept",Heard of it often,"Know it well,  understand the concept"
+ST62Q19,text_response,"Know it well,  understand the concept",,"Know it well,  understand the concept","Know it well,  understand the concept",,"Know it well,  understand the concept",Heard of it often,Heard of it often
+ST69Q01,integer,60,,110,,,45,50,45
+ST69Q02,integer,60,,110,,,45,50,45
+ST69Q03,integer,60,,35,,,45,50,45
+ST70Q01,integer,4,,2,2,,3,3,4
+ST70Q02,integer,3,,5,5,,5,3,4
+ST70Q03,integer,2,,5,2,,2,4,2
+ST71Q01,integer,34,,25,30,,30,35,
+ST72Q01,integer,20,,28,29,,40,,
+ST73Q01,text_response,Frequently,,Sometimes,Sometimes,,Sometimes,Frequently,Frequently
+ST73Q02,text_response,Sometimes,,Sometimes,Rarely ,,Sometimes,Sometimes,Sometimes
+ST74Q01,text_response,Frequently,,Sometimes,Frequently,,Frequently,Frequently,Frequently
+ST74Q02,text_response,Frequently,,Sometimes,Sometimes,,Frequently,Frequently,Frequently
+ST75Q01,text_response,Frequently,,Sometimes,Sometimes,,Frequently,Frequently,Frequently
+ST75Q02,text_response,Sometimes,,Sometimes,Rarely ,,Sometimes,Sometimes,Frequently
+ST76Q01,text_response,Sometimes,,Rarely ,Rarely ,,Sometimes,Frequently,Sometimes
+ST76Q02,text_response,Sometimes,,Rarely ,Never ,,Rarely ,Rarely ,Sometimes
+ST77Q01,about_lessons,Some Lessons,Every Lesson,,Some Lessons,Never or Hardly Ever,Every Lesson,Most Lessons,
+ST77Q02,about_lessons,Never or Hardly Ever,Most Lessons,,Never or Hardly Ever,Every Lesson,Every Lesson,Every Lesson,
+ST77Q04,about_lessons,Most Lessons,Every Lesson,,Some Lessons,Most Lessons,Every Lesson,Some Lessons,
+ST77Q05,about_lessons,Most Lessons,Every Lesson,,Some Lessons,Every Lesson,Most Lessons,Every Lesson,
+ST77Q06,about_lessons,Every Lesson,Some Lessons,,Most Lessons,Every Lesson,Every Lesson,Most Lessons,
+ST79Q01,about_lessons,Most Lessons,Some Lessons,,Some Lessons,Some Lessons,Most Lessons,Most Lessons,
+ST79Q02,about_lessons,Some Lessons,Most Lessons,,Most Lessons,Most Lessons,Every Lesson,Most Lessons,
+ST79Q03,about_lessons,Never or Hardly Ever,Every Lesson,,Some Lessons,Most Lessons,Some Lessons,Some Lessons,
+ST79Q04,about_lessons,Some Lessons,Most Lessons,,Never or Hardly Ever,Some Lessons,Some Lessons,Never or Hardly Ever,
+ST79Q05,about_lessons,Some Lessons,Every Lesson,,Some Lessons,Some Lessons,Most Lessons,Most Lessons,
+ST79Q06,about_lessons,Most Lessons,Every Lesson,,Every Lesson,Every Lesson,Every Lesson,Most Lessons,
+ST79Q07,about_lessons,Never or Hardly Ever,Most Lessons,,Never or Hardly Ever,Every Lesson,Some Lessons,Some Lessons,
+ST79Q08,about_lessons,Most Lessons,Some Lessons,,Every Lesson,Every Lesson,Some Lessons,Most Lessons,
+ST79Q10,about_lessons,Most Lessons,Some Lessons,,Some Lessons,Most Lessons,Most Lessons,Never or Hardly Ever,
+ST79Q11,about_lessons,Some Lessons,Most Lessons,,Some Lessons,Most Lessons,Some Lessons,Most Lessons,
+ST79Q12,about_lessons,Some Lessons,Every Lesson,,Most Lessons,Some Lessons,Most Lessons,Most Lessons,
+ST79Q15,about_lessons,Most Lessons,Every Lesson,,Every Lesson,Every Lesson,Every Lesson,Every Lesson,
+ST79Q17,about_lessons,Some Lessons,Most Lessons,,Every Lesson,Every Lesson,Some Lessons,Most Lessons,
+ST80Q01,frequency1,Often,Often,,Always or almost always,Often,Often,Often,
+ST80Q04,frequency1,Sometimes,Always or almost always,,Sometimes,Sometimes,Sometimes,Sometimes,
+ST80Q05,frequency1,Sometimes,Never or rarely,,Sometimes,Never or rarely,Sometimes,Often,
+ST80Q06,frequency1,Sometimes,Often,,Often,Never or rarely,Sometimes,Often,
+ST80Q07,frequency1,Often,Always or almost always,,Often,Often,Always or almost always,Always or almost always,
+ST80Q08,frequency1,Often,Often,,Always or almost always,Always or almost always,Often,Always or almost always,
+ST80Q09,frequency1,Sometimes,Always or almost always,,Always or almost always,Always or almost always,Always or almost always,Often,
+ST80Q10,frequency1,Sometimes,Often,,Often,Often,Often,Often,
+ST80Q11,frequency1,Sometimes,Always or almost always,,Sometimes,Often,Often,Often,
+ST81Q01,about_lessons,Some Lessons,Never or Hardly Ever,,Some Lessons,Never or Hardly Ever,Never or Hardly Ever,Some Lessons,
+ST81Q02,about_lessons,Some Lessons,Never or Hardly Ever,,Some Lessons,Never or Hardly Ever,Never or Hardly Ever,Never or Hardly Ever,
+ST81Q03,about_lessons,Never or Hardly Ever,Never or Hardly Ever,,Never or Hardly Ever,Never or Hardly Ever,Never or Hardly Ever,Most Lessons,
+ST81Q04,about_lessons,Some Lessons,Some Lessons,,Never or Hardly Ever,Never or Hardly Ever,Never or Hardly Ever,Most Lessons,
+ST81Q05,about_lessons,Never or Hardly Ever,Most Lessons,,Never or Hardly Ever,Never or Hardly Ever,Never or Hardly Ever,Some Lessons,
+ST82Q01,agreement,Agree,Agree,,Disagree,Strongly agree,Strongly disagree,Agree,
+ST82Q02,agreement,Agree,Disagree,,Agree,Strongly disagree,Strongly disagree,Strongly agree,
+ST82Q03,agreement,Strongly disagree,Disagree,,Agree,Agree,Strongly agree,Strongly agree,
+ST83Q01,agreement,Agree,Agree,,Agree,Strongly agree,Strongly agree,Strongly agree,
+ST83Q02,agreement,Agree,Strongly agree,,Strongly agree,Strongly agree,Strongly agree,Strongly agree,
+ST83Q03,agreement,Agree,Agree,,Agree,Strongly agree,Strongly agree,Agree,
+ST83Q04,agreement,Strongly agree,Strongly agree,,Strongly agree,Agree,Strongly agree,Agree,
+ST84Q01,agreement,Disagree,Agree,,Disagree,Disagree,Disagree,Disagree,
+ST84Q02,agreement,Agree,Strongly agree,,Strongly agree,Strongly agree,Strongly agree,Strongly agree,
+ST84Q03,agreement,Strongly disagree,Disagree,,Agree,Strongly disagree,Strongly disagree,Strongly disagree,
+ST85Q01,agreement,Agree,Agree,,Strongly agree,Agree,Strongly agree,Agree,
+ST85Q02,agreement,Agree,Strongly agree,,Strongly agree,Agree,Strongly agree,Agree,
+ST85Q03,agreement,Agree,Agree,,Strongly agree,Agree,Strongly agree,Strongly agree,
+ST85Q04,agreement,Disagree,Strongly disagree,,Agree,Disagree,Strongly disagree,Agree,
+ST86Q01,agreement,Agree,Agree,,Agree,Agree,Strongly agree,Strongly agree,
+ST86Q02,agreement,Agree,Strongly agree,,Strongly disagree,Disagree,Strongly agree,Agree,
+ST86Q03,agreement,Agree,Strongly agree,,Disagree,Agree,Strongly agree,Agree,
+ST86Q04,agreement,Agree,Strongly agree,,Disagree,Strongly agree,Strongly agree,Strongly agree,
+ST86Q05,agreement,Agree,Agree,,Agree,Disagree,Strongly agree,Disagree,
+ST87Q01,agreement,Disagree,Strongly disagree,,Strongly disagree,Strongly disagree,Strongly disagree,Strongly disagree,
+ST87Q02,agreement,Agree,Agree,,Agree,Agree,Agree,Strongly agree,
+ST87Q03,agreement,Agree,Strongly agree,,Agree,Agree,Agree,Agree,
+ST87Q04,agreement,Disagree,Disagree,,Disagree,Disagree,Strongly disagree,Strongly disagree,
+ST87Q05,agreement,Agree,Agree,,Agree,Agree,Agree,Agree,
+ST87Q06,agreement,Disagree,Disagree,,Disagree,Disagree,Strongly disagree,Strongly disagree,
+ST87Q07,agreement,Agree,Strongly agree,,Agree,Strongly agree,Agree,Agree,
+ST87Q08,agreement,Agree,Agree,,Agree,Strongly agree,Agree,Agree,
+ST87Q09,agreement,Agree,Strongly agree,,Agree,Strongly agree,Agree,Strongly agree,
+ST88Q01,agreement,Disagree,Strongly disagree,,Disagree,Disagree,Strongly agree,Disagree,
+ST88Q02,agreement,Disagree,Strongly disagree,,Disagree,Strongly disagree,Strongly disagree,Strongly disagree,
+ST88Q03,agreement,Agree,Agree,,Strongly disagree,Agree,Strongly agree,Agree,
+ST88Q04,agreement,Agree,Strongly agree,,Agree,Strongly agree,Strongly agree,Agree,
+ST89Q02,agreement,Agree,Agree,,Agree,Agree,Strongly agree,Agree,
+ST89Q03,agreement,Agree,Strongly agree,,Agree,Strongly agree,Strongly agree,Agree,
+ST89Q04,agreement,Agree,Strongly agree,,Agree,Strongly agree,Strongly agree,Strongly agree,
+ST89Q05,agreement,Agree,Strongly agree,,Agree,Strongly agree,Strongly agree,Agree,
+ST91Q01,agreement,Agree,Agree,,Strongly agree,Agree,Strongly agree,Strongly agree,
+ST91Q02,agreement,Agree,Strongly agree,,Agree,Agree,Agree,Agree,
+ST91Q03,agreement,Disagree,Disagree,,Disagree,Strongly disagree,Strongly disagree,Strongly disagree,
+ST91Q04,agreement,Agree,Disagree,,Agree,Disagree,Strongly disagree,Disagree,
+ST91Q05,agreement,Agree,Disagree,,Strongly agree,Agree,Strongly agree,Agree,
+ST91Q06,agreement,Disagree,Disagree,,Strongly disagree,Disagree,Strongly disagree,Disagree,
+ST93Q01,similarity,,Not at all like me,Not at all like me,,Not much like me,,,Somewhat like me
+ST93Q03,similarity,,Not at all like me,Not at all like me,,Not at all like me,,,Mostly like me
+ST93Q04,similarity,,Mostly like me,Very much like me,,Mostly like me,,,Mostly like me
+ST93Q06,similarity,,Mostly like me,Somewhat like me,,Mostly like me,,,Mostly like me
+ST93Q07,similarity,,Mostly like me,Somewhat like me,,Mostly like me,,,Not much like me
+ST94Q05,similarity,,Mostly like me,Mostly like me,,Not much like me,,,Not much like me
+ST94Q06,similarity,,Mostly like me,Very much like me,,Not much like me,,,Somewhat like me
+ST94Q09,similarity,,Mostly like me,Very much like me,,Somewhat like me,,,Somewhat like me
+ST94Q10,similarity,,Somewhat like me,Very much like me,,Somewhat like me,,,Somewhat like me
+ST94Q14,similarity,,Very much like me,Very much like me,,Somewhat like me,,,Somewhat like me
+ST96Q01,action,,probably do this,definitely not do this,,definitely not do this,,,probably do this
+ST96Q02,action,,probably do this,probably do this,,probably not do this,,,probably do this
+ST96Q03,action,,definitely not do this,probably not do this,,probably do this,,,probably do this
+ST96Q05,action,,probably do this,probably do this,,definitely do this,,,probably do this
+ST101Q01,integer,,2,3,,2,,,1
+ST101Q02,integer,,2,2,,2,,,1
+ST101Q03,integer,,4,4,,2,,,4
+ST101Q05,integer,,4,2,,4,,,4
+ST104Q01,integer,,2,4,,3,,,1
+ST104Q04,integer,,4,4,,4,,,3
+ST104Q05,integer,,2,4,,2,,,1
+ST104Q06,integer,,2,4,,2,,,1
+IC01Q01,usage,"Yes, and I use it",,,,,,"Yes, and I use it","Yes, and I use it"
+IC01Q02,usage,"Yes, and I use it",,,,,,"Yes, and I use it",No
+IC01Q03,usage,No,,,,,,No,No
+IC01Q04,usage,"Yes, and I use it",,,,,,"Yes, and I use it","Yes, and I use it"
+IC01Q05,usage,"Yes, and I use it",,,,,,"Yes, and I use it",No
+IC01Q06,usage,"Yes, and I use it",,,,,,No,No
+IC01Q07,usage,No,,,,,,"Yes, and I use it","Yes, and I use it"
+IC01Q08,usage,"Yes, but I dont use it",,,,,,"Yes, and I use it",No
+IC01Q09,usage,No,,,,,,"Yes, and I use it","Yes, and I use it"
+IC01Q10,usage,"Yes, and I use it",,,,,,"Yes, and I use it","Yes, and I use it"
+IC01Q11,usage,No,,,,,,No,No
+IC02Q01,usage,"Yes, and I use it",,,,,,"Yes, and I use it","Yes, and I use it"
+IC02Q02,usage,No,,,,,,"Yes, but I dont use it",No
+IC02Q03,usage,No,,,,,,No,No
+IC02Q04,usage,"Yes, and I use it",,,,,,"Yes, and I use it","Yes, and I use it"
+IC02Q05,usage,"Yes, and I use it",,,,,,"Yes, and I use it",No
+IC02Q06,usage,No,,,,,,"Yes, but I dont use it","Yes, and I use it"
+IC02Q07,usage,No,,,,,,No,No
+IC03Q01,age_when,7-9 years old,,,,,,7-9 years old,7-9 years old
+IC04Q01,age_when,10-12 years old,,,,,,10-12 years old,13 years old  or older
+IC05Q01,integer,03,97,97,99,99,99,01,03
+IC06Q01,integer,04,97,97,99,99,99,05,04
+IC07Q01,integer,04,97,97,99,99,99,05,03
+IC08Q01,frequency4,Almost every day,,,,,,Almost every day,Once or twice a week
+IC08Q02,frequency4,Almost every day,,,,,,Never or hardly ever,Never or hardly ever
+IC08Q03,frequency4,Once or twice a week,,,,,,Almost every day,Once or twice a week
+IC08Q04,frequency4,Once or twice a week,,,,,,Every day,Never or hardly ever
+IC08Q05,frequency4,Once or twice a week,,,,,,Every day,Never or hardly ever
+IC08Q06,frequency4,Almost every day,,,,,,Every day,Once or twice a week
+IC08Q07,frequency4,Once or twice a week,,,,,,Almost every day,Never or hardly ever
+IC08Q08,frequency4,Once or twice a month,,,,,,Almost every day,Once or twice a week
+IC08Q09,frequency4,Almost every day,,,,,,Once or twice a week,Once or twice a week
+IC08Q11,frequency4,Never or hardly ever,,,,,,Once or twice a month,Never or hardly ever
+IC09Q01,frequency4,Once or twice a week,,,,,,Once or twice a week,Once or twice a month
+IC09Q02,frequency4,Once or twice a week,,,,,,Almost every day,Never or hardly ever
+IC09Q03,frequency4,Never or hardly ever,,,,,,Never or hardly ever,Never or hardly ever
+IC09Q04,frequency4,Once or twice a month,,,,,,Once or twice a month,Once or twice a month
+IC09Q05,frequency4,Never or hardly ever,,,,,,Almost every day,Once or twice a month
+IC09Q06,frequency4,Never or hardly ever,,,,,,Once or twice a week,Never or hardly ever
+IC09Q07,frequency4,Once or twice a week,,,,,,Once or twice a month,Never or hardly ever
+IC10Q01,frequency4,Never or hardly ever,,,,,,Never or hardly ever,Never or hardly ever
+IC10Q02,frequency4,Once or twice a week,,,,,,Never or hardly ever,Never or hardly ever
+IC10Q03,frequency4,Once or twice a week,,,,,,Once or twice a week,Never or hardly ever
+IC10Q04,frequency4,Once or twice a week,,,,,,Never or hardly ever,Never or hardly ever
+IC10Q05,frequency4,Never or hardly ever,,,,,,Never or hardly ever,Never or hardly ever
+IC10Q06,frequency4,Once or twice a month,,,,,,Never or hardly ever,Never or hardly ever
+IC10Q07,frequency4,Once or twice a month,,,,,,Once or twice a month,Never or hardly ever
+IC10Q08,frequency4,Never or hardly ever,,,,,,Never or hardly ever,Never or hardly ever
+IC10Q09,frequency4,Once or twice a month,,,,,,Never or hardly ever,Never or hardly ever
+IC11Q01,exposure,"Yes, students did this",,,,,,No,No
+IC11Q02,exposure,"Yes, students did this",,,,,,No,No
+IC11Q03,exposure,No,,,,,,No,No
+IC11Q04,exposure,"Yes, students did this",,,,,,No,No
+IC11Q05,exposure,"Yes, students did this",,,,,,No,No
+IC11Q06,exposure,No,,,,,,No,No
+IC11Q07,exposure,No,,,,,,No,No
+IC22Q01,agreement,Strongly agree,,,,,,Strongly agree,Agree
+IC22Q02,agreement,Agree,,,,,,Agree,Agree
+IC22Q04,agreement,Strongly agree,,,,,,Strongly agree,Strongly agree
+IC22Q06,agreement,Disagree,,,,,,Disagree,Agree
+IC22Q07,agreement,Disagree,,,,,,Disagree,Agree
+IC22Q08,agreement,Disagree,,,,,,Disagree,Agree
+EC01Q01,frequency2,"No, never  ",,"No, never  ",,,,,"No, never  "
+EC02Q01,frequency2,"No, never  ",,"No, never  ",,,,,"No, never  "
+EC03Q01,binary_yn2,"No, never",,"No, never",,,,Yes,"No, never"
+EC03Q02,binary_yn2,"No, never",,Yes,,,,Yes,"No, never"
+EC03Q03,binary_yn2,Yes,,Yes,,,,"No, never","No, never"
+EC03Q04,binary_yn2,"No, never",,Yes,,,,"No, never","No, never"
+EC03Q05,binary_yn2,"No, never",,"No, never",,,,"No, never","No, never"
+EC03Q06,binary_yn2,Yes,,Yes,,,,Yes,"No, never"
+EC03Q07,binary_yn2,Yes,,Yes,,,,"No, never","No, never"
+EC03Q08,binary_yn2,Yes,,"No, never",,,,"No, never","No, never"
+EC03Q09,binary_yn2,Yes,,"No, never",,,,"No, never",Yes
+EC03Q10,binary_yn2,"No, never",,Yes,,,,,Yes
+EC04Q01A,integer,2,,1,,,,2,2
+EC04Q01B,integer,1,,2,,,,1,1
+EC04Q01C,integer,2,,2,,,,2,2
+EC04Q02A,integer,2,,1,,,,2,2
+EC04Q02B,integer,1,,2,,,,1,1
+EC04Q02C,integer,2,,2,,,,2,2
+EC04Q03A,integer,1,,1,,,,2,2
+EC04Q03B,integer,2,,2,,,,1,2
+EC04Q03C,integer,2,,2,,,,2,1
+EC04Q04A,integer,2,,1,,,,2,2
+EC04Q04B,integer,2,,2,,,,2,2
+EC04Q04C,integer,1,,2,,,,1,1
+EC04Q05A,integer,1,,2,,,,1,2
+EC04Q05B,integer,2,,2,,,,2,2
+EC04Q05C,integer,2,,1,,,,2,1
+EC04Q06A,integer,2,,1,,,,2,2
+EC04Q06B,integer,2,,2,,,,2,2
+EC04Q06C,integer,1,,2,,,,1,1
+EC05Q01,language2,,,<test language> or <other official national language(s) or d,,,,<test language> or <other official national language(s) or d,<test language> or <other official national language(s) or d
+EC06Q01,how_long,,,,,,,,
+EC07Q01,language3,,,,,,,,
+EC07Q02,language3,,,,,,,,
+EC07Q03,language3,,,,,,,,
+EC07Q04,language3,,,,,,,,
+EC07Q05,language3,,,,,,,,
+EC08Q01,language3,,,,,,,,
+EC08Q02,language3,,,,,,,,
+EC08Q03,language3,,,,,,,,
+EC08Q04,language3,,,,,,,,
+EC09Q03,binary_yn2,"No, never",,"No, never",,,,"No, never","No, never"
+EC10Q01,frequency5,,,,,,,,
+EC11Q02,binary_yn2,"No, never",,"No, never",,,,"No, never","No, never"
+EC11Q03,binary_yn2,"No, never",,"No, never",,,,"No, never","No, never"
+EC12Q01,frequency5,,,,,,,,
+ST22Q01,binary_yn1,,,,,,,,Yes
+ST23Q01,agreement,,,,,,,,
+ST23Q02,agreement,,,,,,,,
+ST23Q03,agreement,,,,,,,,
+ST23Q04,agreement,,,,,,,,
+ST23Q05,agreement,,,,,,,,
+ST23Q06,agreement,,,,,,,,
+ST23Q07,agreement,,,,,,,,
+ST23Q08,agreement,,,,,,,,
+ST24Q01,agreement,,,,,,,,
+ST24Q02,agreement,,,,,,,,
+ST24Q03,agreement,,,,,,,,
+CLCUSE1,text_response,A Simple calculator,A Simple calculator,A Graphics calculator,,A Simple calculator,,A Scientific calculator,A Scientific calculator
+CLCUSE301,integer,7 ,10,8 ,99,99,99,7 ,8 
+CLCUSE302,integer,8 ,10,10,99,99,99,7 ,10
+DEFFORT,integer,1 ,0 ,2 ,99,99,99,0 ,2 
+QUESTID,text_response,StQ Form C,StQ Form B,StQ Form A,StQ Form C,StQ Form B,StQ Form C,StQ Form C,StQ Form A
+BOOKID,text_response,booklet 1,booklet 8,booklet 10,booklet 8,booklet 10,booklet 5,booklet 10,booklet 23
+EASY,text_response,Standard set of booklets,Easier set of booklets,Standard set of booklets,Standard set of booklets,Standard set of booklets,Standard set of booklets,Standard set of booklets,Easier set of booklets
+AGE,float,15.25,15.5,15.67,15.92,15.67,15.75,15.33,16
+GRADE,integer,0,-3,0,0,0,-1,-1,0
+PROGN,text_response,"Italy: Scientific, Classical, Social Science, Scientific-tec",Colombia: Secondary education  (lower),"Canada: Grades 10  - 12 (Quebec: Secondary 4 and 5, Newfound",Albania: Upper secondary education,Albania: Upper secondary education,Albania: Lower secondary education,Austria: Higher technical and vocational college,Serbia: Gymnasium
+ANXMAT,float,0.56,-0.73,,-0.73,-0.2,-1.3,0.56,
+ATSCHL,float,-0.24,1.38,,-0.95,0.77,0.24,0.24,
+ATTLNACT,float,-0.9394,0.5206,,-0.9394,0.5206,1.2115,-0.3397,
+BELONG,float,-0.37,0.56,,-0.15,0.56,0.32,0.82,
+BFMJ2,float,57.03,33.76,48.66,30.34,,,,80.78
+BMMJ1,float,21.64,16.5,75.5,23.47,,82.41,23.47,80.92
+CLSMAN,float,-0.0784,0.764,,0.764,-0.0784,2.1989,-0.0784,
+COBN_F,text_response,Italy,Colombia ,Canada ,Albania,Albania,Missing,Austria,Serbia 
+COBN_M,text_response,Italy,Colombia ,Canada ,Albania,Albania,Missing,Austria,Serbia 
+COBN_S,text_response,Italy,Colombia ,Canada ,Albania,Albania,Missing,Austria,Serbia 
+COGACT,float,-0.4593,0.6994,,0.3891,-0.0385,0.2435,0.5403,
+CULTDIST,float,,,,,,,,
+CULTPOS,float,0.25,0.25,0.25,1.27,0.25,-1.51,0.25,1.27
+DISCLIMA,float,0.49,0.49,,0.81,1.85,1.85,-0.33,
+ENTUSE,float,0.0883,,,,,,0.6456,-0.9437
+ESCS,float,-0.23,-0.41,0.89,,,,-0.19,1.51
+EXAPPLM,float,-0.4371,,0.5359,-0.4371,,-1.0408,-0.0681,0.8145
+EXPUREM,float,-0.6635,,-0.6635,0.7955,,0.7955,0.7955,0.6442
+FAILMAT,float,,-1.6239,-3.7666,,-1.2999,,,-0.53
+FAMCON,float,0.4063,,0.5567,1.2481,,1.1685,0.2052,0.082
+FAMCONC,float,-0.51,,-0.15,-0.04,,-0.34,0.1,1.38
+FAMSTRUC,integer,1,2,1,2,2,,2,2
+FISCED,text_response,"ISCED 3A, ISCED 4","ISCED 5A, 6","ISCED 5A, 6","ISCED 5A, 6","ISCED 5A, 6","ISCED 5A, 6",ISCED 5B,"ISCED 5A, 6"
+HEDRES,float,0.04,-0.69,0.04,0.04,-2.31,-0.69,1.12,1.12
+HERITCUL,float,,,,,,,,
+HISCED,text_response,"ISCED 3A, ISCED 4","ISCED 5A, 6","ISCED 5A, 6","ISCED 5A, 6","ISCED 5A, 6","ISCED 5A, 6",ISCED 5B,"ISCED 5A, 6"
+HISEI,float,57.03,33.76,75.5,,,,23.47,80.92
+HOMEPOS,float,-0.87,-0.71,-0.39,-0.05,-2.21,-1.2,0.55,1.27
+HOMSCH,float,0.0526,,,,,,0.6173,-0.6852
+HOSTCUL,float,,,,,,,,
+ICTATTNEG,float,-0.1489,,,,,,-0.1489,1.0091
+ICTATTPOS,float,0.5519,,,,,,0.5519,0.0279
+ICTHOME,float,-0.5015,,,,,,0.1502,-1.0457
+ICTRES,float,-0.4,-1.13,-0.4,-1.13,-3.16,-1.13,-0.4,0.24
+ICTSCH,float,-0.0836,,,,,,0.5423,-0.0836
+IMMIG,text_response,Native,Native,Native,Native,Native,,Native,Native
+INFOCAR,float,0.2737,,0.6025,,,,-0.2566,-0.8214
+INFOJOB1,float,1.3829,,,,,,1.0601,-0.774
+INFOJOB2,float,0.7564,,,,,,1.2181,0.0849
+INSTMOT,float,,1.59,1.59,,1.59,,,0.05
+INTMAT,float,,1.51,2.29,,1.23,,,0.3
+ISCEDD,text_response,A,A,M,A,A,A,A,A
+ISCEDL,text_response,ISCED level 3,ISCED level 2,ISCED level 3,ISCED level 3,ISCED level 3,ISCED level 2,ISCED level 3,ISCED level 3
+ISCEDO,schooltype1,General,General,Modular,General,General,General,Vocational,General
+LANGCOMM,integer,,,,,,,,
+LANGN,text_response,Italian,Spanish,English,Albanian ,Albanian ,Albanian ,German ,Serbian
+LANGRPPD,integer,,,,,,,,
+LMINS,integer,240,,220,,,135,150,180
+MATBEH,float,,1.4702,0.9618,,1.2288,,,-1.0226
+MATHEFF,float,,0.15,0.78,,-0.18,,,-0.16
+MATINTFC,float,,0.6584,1.4565,,1.4565,,,-0.2514
+MATWKETH,float,,2.7167,0.1099,,0.2882,,,0.1099
+MISCED,text_response,"ISCED 3B, C",ISCED 1,"ISCED 5A, 6","ISCED 5A, 6","ISCED 5A, 6","ISCED 5A, 6","ISCED 3B, C",ISCED 5B
+MMINS,integer,180,,550,,,225,150,180
+MTSUP,float,0.2486,0.6709,,0.6709,1.1169,1.8433,0.6709,
+OCOD1,text_response,Home-based personal care workers,Kitchen helpers,Financial and investment advisers,"Tailors, dressmakers, furriers and hatters",Missing,Secondary education teachers,Missing,Economists
+OCOD2,text_response,Commercial sales representatives,House builders,Pharmaceutical technicians and assistants,"Car, taxi and van drivers",Missing,Missing,Missing,Electrical engineers
+OPENPS,float,,0.4639,1.6493,,-0.9492,,,-0.7446
+OUTHOURS,integer,12,,0,5,,19,5,11
+PARED,float,13,15.5,17,16,16,16,15,17
+PERSEV,float,,1.3116,0.9918,,0.9918,,,-0.3407
+REPEAT,text_response,Did not repeat a <grade>,Repeated a <grade>,Did not repeat a <grade>,Did not repeat a <grade>,Did not repeat a <grade>,Did not repeat a <grade>,Did not repeat a <grade>,Did not repeat a <grade>
+SCMAT,float,-0.06,1.38,,0.88,0.41,1.12,-0.29,
+SMINS,integer,120,,175,,,90,200,90
+STUDREL,float,-0.02,1.13,,-1.26,-0.48,2.16,0.45,
+SUBNORM,float,,-0.0455,1.7943,,1.0265,,,-0.3852
+TCHBEHFA,float,-0.2859,1.3625,,0.5054,0.5054,0.2509,0.7644,
+TCHBEHSO,float,0.2217,1.3823,,-0.1057,1.3823,0.7183,-0.1057,
+TCHBEHTD,float,-0.0798,0.1672,,0.7228,0.7228,0.7228,0.4297,
+TEACHSUP,float,-0.47,0.34,,-1.06,0.11,0.97,0.11,
+TESTLANG,text_response,Italian,Spanish,English,Albanian ,Albanian ,Albanian ,German ,Serbian
+TIMEINT,integer,32,,,,,,51,26
+USEMATH,float,1.137,,,,,,-0.7749,-0.7749
+USESCH,float,0.6698,,,,,,-0.1388,-1.6104
+WEALTH,float,-1.1,-0.95,-0.37,-0.73,-2.05,-0.95,0.39,0.91
+ANCATSCHL,float,0.9305,0.441,,-2.7779,0.441,0.1565,0.2818,
+ANCATTLNACT,float,0.4908,0.0309,,-2.609,0.1807,0.4908,-0.0831,
+ANCBELONG,float,0.8675,0.0964,,-2.6339,0.3895,0.3202,0.4662,
+ANCCLSMAN,float,0.9208,0.2299,,-0.9781,0.2299,0.9208,0.2299,
+ANCCOGACT,float,0.4142,0.3769,,-1.5051,0.3408,0.494,0.5827,
+ANCINSTMOT,float,,0.9986,,,0.9986,,,
+ANCINTMAT,float,,0.9257,,,1.0573,,,
+ANCMATWKETH,float,,1.1311,,,0.4493,,,
+ANCMTSUP,float,1.1554,0.1541,,-1.5787,0.5831,0.827,0.4052,
+ANCSCMAT,float,0.557,0.7562,,-1.452,0.557,0.8722,0.2649,
+ANCSTUDREL,float,1.0099,0.3536,,-2.6658,0.1593,1.0099,0.3536,
+ANCSUBNORM,float,,-0.01,,,0.7347,,,
+PV1MATH,float,417.752,432.6297,455.842,339.1572,307.065,482.0143,582.8088,513.9508
+PV2MATH,float,434.8886,396.0196,522.0517,300.2103,272.0128,468.7724,561.7775,501.4878
+PV3MATH,float,434.8886,381.9988,496.3468,315.7891,318.749,457.0883,554.7671,524.077
+PV4MATH,float,457.4778,353.1781,568.009,237.1164,302.3913,509.2771,543.862,505.3825
+PV5MATH,float,470.7197,357.0728,460.5157,175.5803,278.2443,530.3085,533.7358,517.8455
+PV1MACC,float,440.3412,347.7255,553.9882,272.9475,282.139,472.6671,522.0517,536.54
+PV2MACC,float,473.8355,340.7151,531.399,147.5386,188.6665,444.6253,558.6618,489.0248
+PV3MACC,float,468.3829,295.5367,496.3468,210.6325,222.9397,385.4261,567.2301,486.688
+PV4MACC,float,491.7511,311.1154,505.694,189.6012,285.2547,471.8881,537.6305,517.8455
+PV5MACC,float,452.8042,286.9684,526.7253,271.3896,275.1285,429.0466,492.4521,521.7401
+PV1MACQ,float,457.4778,415.4931,553.9882,316.568,288.3705,470.3303,508.0308,525.6348
+PV2MACQ,float,476.1723,375.7673,536.8515,230.1059,262.6655,465.6566,536.8515,499.9299
+PV3MACQ,float,487.8564,332.9257,515.0413,320.4627,257.213,376.0788,560.2197,478.1196
+PV4MACQ,float,497.2036,357.8517,493.231,228.5481,335.1067,460.983,507.2519,536.54
+PV5MACQ,float,460.5936,344.6098,539.1883,290.0841,303.9492,468.7724,501.0204,507.7193
+PV1MACS,float,427.8782,441.198,488.5574,355.5149,346.0118,494.4773,557.8828,519.4033
+PV2MACS,float,452.0252,431.8508,497.1257,236.3374,257.213,436.057,561.7775,481.2354
+PV3MACS,float,426.3203,395.2407,437.9265,331.3678,268.897,376.0788,606.177,450.8568
+PV4MACS,float,448.9095,430.2929,456.621,263.6002,324.2016,462.5409,553.2092,521.7401
+PV5MACS,float,392.826,385.8934,444.9369,346.9466,336.6646,438.3938,547.7567,487.4669
+PV1MACU,float,385.0366,414.7141,539.9673,286.1894,277.4653,514.7297,488.5574,519.4033
+PV2MACU,float,426.3203,392.1249,502.5783,167.7909,240.8553,549.003,537.6305,463.3198
+PV3MACU,float,423.2045,311.1154,483.8838,244.1268,266.5602,488.2458,556.325,410.3521
+PV4MACU,float,436.4465,371.0936,494.7889,206.7378,317.9701,559.1291,528.2832,465.6566
+PV5MACU,float,403.7311,350.8413,497.1257,279.179,266.5602,517.8455,497.9047,429.8255
+PV1MAPE,float,445.7937,,451.1684,275.2843,301.6124,498.372,526.7253,492.1405
+PV2MAPE,float,462.1514,,465.1893,322.0206,289.9283,515.5086,561.7775,492.1405
+PV3MAPE,float,465.2672,,442.6001,259.7056,288.3705,467.2145,530.62,487.4669
+PV4MAPE,float,434.8886,,439.4843,204.401,307.065,438.3938,490.1153,559.9081
+PV5MAPE,float,444.2359,,531.399,252.6951,247.8657,457.8673,536.0726,471.8881
+PV1MAPF,float,428.6571,,483.8838,311.8944,336.6646,490.5826,564.1143,523.298
+PV2MAPF,float,442.678,,502.5783,364.0832,331.212,549.003,591.3772,492.1405
+PV3MAPF,float,449.6884,,467.5261,321.2416,356.917,492.9195,554.7671,514.7297
+PV4MAPF,float,416.973,,474.5365,251.1372,347.5697,467.9935,520.4938,558.3502
+PV5MAPF,float,423.9835,,558.6618,311.1154,265.7813,511.614,587.4825,466.4356
+PV1MAPI,float,430.9939,,497.9047,336.0414,248.6446,464.8777,525.1675,429.0466
+PV2MAPI,float,494.0879,,493.231,353.1781,263.4445,510.0561,576.5773,449.299
+PV3MAPI,float,457.4778,,476.8733,301.7682,268.897,442.2885,499.4625,391.6576
+PV4MAPI,float,452.8042,,457.3999,239.4532,227.6133,423.594,498.6836,489.0248
+PV5MAPI,float,429.436,,538.4094,335.2625,188.6665,407.2363,553.9882,429.0466
+PV1READ,float,446.6651,426.3896,445.0613,378.2592,397.3179,323.447,564.123,439.2873
+PV2READ,float,534.8791,428.7725,473.1293,334.9542,303.5893,640.3768,533.9392,434.4756
+PV3READ,float,436.2399,411.2977,435.4379,251.5519,356.808,526.7904,505.344,436.8814
+PV4READ,float,472.3274,427.1839,500.3955,316.5095,392.552,595.8954,535.5278,469.7612
+PV5READ,float,481.9507,412.092,424.2107,238.7208,209.0664,520.4359,531.5563,401.5958
+PV1SCIE,float,469.0787,372.3797,486.3297,338.4372,265.3301,507.404,554.4013,493.0436
+PV2SCIE,float,477.4711,416.2066,517.1018,326.3148,197.2585,540.041,519.8993,507.031
+PV3SCIE,float,480.2686,361.1899,453.6927,321.6524,191.6636,554.9608,517.1018,517.2883
+PV4SCIE,float,494.2559,345.3376,518.0343,297.4077,197.2585,576.4081,523.6292,527.5457
+PV5SCIE,float,510.1082,318.2954,488.1947,247.0533,264.3976,559.6233,496.5871,479.0563
+W_FSTUWT,float,2.6702,1.4286,7.2029,7.4167,6.5229,7.3771,9.1457,12.8628
+W_FSTR1,float,4.1346,0.7143,3.7351,3.5254,9.7843,3.6886,4.4167,8.1963
+W_FSTR2,float,4.1087,0.7143,11.023,3.5254,9.7843,3.6886,14.2363,17.7811
+W_FSTR3,float,1.2927,2.1429,4.0042,11.8663,3.2614,3.6886,4.5011,8.1963
+W_FSTR4,float,1.293,0.7143,3.754,11.8663,9.7843,3.6886,14.2363,8.1963
+W_FSTR5,float,4.1178,2.1429,3.6452,3.5254,3.2614,3.6886,4.4192,8.1963
+W_FSTR6,float,1.2927,0.7143,3.8207,11.8663,9.7843,3.6886,4.7678,8.1963
+W_FSTR7,float,1.2941,0.7143,10.341,11.8663,9.7843,3.6886,4.4167,17.7811
+W_FSTR8,float,4.1284,0.7143,9.7793,3.5254,9.7843,3.6886,4.495,17.7811
+W_FSTR9,float,4.1087,0.7143,3.5531,3.5254,9.7843,3.6886,13.2344,8.1963
+W_FSTR10,float,1.2918,2.1429,11.3603,11.8663,3.2614,3.6886,13.2412,17.7811
+W_FSTR11,float,1.2924,2.1429,11.5021,11.8663,3.2614,3.6886,4.6244,17.7811
+W_FSTR12,float,1.2934,0.7143,3.7935,11.8663,9.7843,3.6886,13.8252,8.1963
+W_FSTR13,float,1.293,2.1429,3.754,11.8663,3.2614,3.6886,13.4629,8.1963
+W_FSTR14,float,4.1337,2.1429,9.9854,3.5254,3.2614,3.6886,4.7784,17.7811
+W_FSTR15,float,1.2924,0.7143,10.4514,11.8663,9.7843,3.6886,4.6194,17.7811
+W_FSTR16,float,4.1337,0.7143,10.7725,3.5254,9.7843,3.6886,13.4467,17.7811
+W_FSTR17,float,1.2934,2.1429,10.1173,11.8663,3.2614,3.6886,13.4629,17.7811
+W_FSTR18,float,4.1455,2.1429,3.7137,3.5254,3.2614,3.6886,13.8394,8.1963
+W_FSTR19,float,4.1346,2.1429,9.4221,3.5254,3.2614,3.6886,13.8394,17.7811
+W_FSTR20,float,4.1186,2.1429,3.6083,3.5254,3.2614,3.6886,4.7784,8.1963
+W_FSTR21,float,1.3888,2.1429,3.8185,11.8663,3.2614,3.6886,14.265,8.1963
+W_FSTR22,float,1.3761,2.1429,11.2585,11.8663,3.2614,3.6886,4.4192,17.7811
+W_FSTR23,float,3.8823,0.7143,3.9154,3.5254,9.7843,3.6886,13.8252,8.1963
+W_FSTR24,float,3.8711,2.1429,3.6755,3.5254,3.2614,3.6886,4.4192,8.1963
+W_FSTR25,float,1.3729,0.7143,3.7215,11.8663,9.7843,3.6886,14.2363,8.1963
+W_FSTR26,float,3.8823,2.1429,3.9069,3.5254,3.2614,3.6886,13.2412,8.1963
+W_FSTR27,float,3.8782,2.1429,10.1392,3.5254,3.2614,3.6886,14.265,17.7811
+W_FSTR28,float,1.3696,2.1429,9.6045,11.8663,3.2614,3.6886,13.8394,17.7811
+W_FSTR29,float,1.3761,2.1429,3.4848,11.8663,3.2614,3.6886,4.7784,8.1963
+W_FSTR30,float,3.8742,0.7143,11.1175,3.5254,9.7843,3.6886,4.7678,17.7811
+W_FSTR31,float,3.8726,0.7143,11.757,3.5254,9.7843,3.6886,13.4467,17.7811
+W_FSTR32,float,3.8803,2.1429,3.7137,3.5254,3.2614,3.6886,4.5011,8.1963
+W_FSTR33,float,3.8711,0.7143,3.836,3.5254,9.7843,3.6886,4.6194,8.1963
+W_FSTR34,float,1.3892,0.7143,9.7994,11.8663,9.7843,3.6886,13.2344,17.7811
+W_FSTR35,float,3.8725,2.1429,10.6562,3.5254,3.2614,3.6886,13.4629,17.7811
+W_FSTR36,float,1.3892,2.1429,10.9989,11.8663,3.2614,3.6886,4.6244,17.7811
+W_FSTR37,float,3.8801,0.7143,10.3118,3.5254,9.7843,3.6886,4.6194,17.7811
+W_FSTR38,float,1.3847,0.7143,3.7935,11.8663,9.7843,3.6886,4.495,8.1963
+W_FSTR39,float,1.3888,0.7143,9.2543,11.8663,9.7843,3.6886,4.495,17.7811
+W_FSTR40,float,1.3726,0.7143,3.5362,11.8663,9.7843,3.6886,13.2344,8.1963
+W_FSTR41,float,4.0967,2.1429,10.6053,3.5254,9.7843,11.0657,14.265,8.1963
+W_FSTR42,float,4.1502,2.1429,3.5318,3.5254,9.7843,11.0657,4.4192,17.7811
+W_FSTR43,float,1.2916,0.7143,10.1913,11.8663,3.2614,11.0657,13.8252,8.1963
+W_FSTR44,float,1.2944,2.1429,10.3846,11.8663,9.7843,11.0657,4.4192,8.1963
+W_FSTR45,float,4.1623,0.7143,10.1173,3.5254,3.2614,11.0657,14.2363,8.1963
+W_FSTR46,float,1.2916,2.1429,9.8601,11.8663,9.7843,11.0657,13.2412,8.1963
+W_FSTR47,float,1.2916,2.1429,3.7646,11.8663,9.7843,11.0657,14.265,17.7811
+W_FSTR48,float,4.1493,2.1429,4.2367,3.5254,9.7843,11.0657,13.8394,17.7811
+W_FSTR49,float,4.1502,2.1429,10.7835,3.5254,9.7843,11.0657,4.7784,8.1963
+W_FSTR50,float,1.2944,0.7143,3.6331,11.8663,3.2614,11.0657,4.7678,17.7811
+W_FSTR51,float,1.2952,0.7143,3.3087,11.8663,3.2614,11.0657,13.4467,17.7811
+W_FSTR52,float,1.2922,2.1429,10.6984,11.8663,9.7843,11.0657,4.5011,8.1963
+W_FSTR53,float,1.2944,0.7143,10.3846,11.8663,3.2614,11.0657,4.6194,8.1963
+W_FSTR54,float,4.1147,0.7143,4.0179,3.5254,3.2614,11.0657,13.2344,17.7811
+W_FSTR55,float,1.2937,2.1429,3.6709,11.8663,9.7843,11.0657,13.4629,17.7811
+W_FSTR56,float,4.1147,2.1429,3.5225,3.5254,9.7843,11.0657,4.6244,17.7811
+W_FSTR57,float,1.291,0.7143,3.6452,11.8663,3.2614,11.0657,4.6194,17.7811
+W_FSTR58,float,4.1051,0.7143,10.4855,3.5254,3.2614,11.0657,4.495,8.1963
+W_FSTR59,float,4.0967,0.7143,4.197,3.5254,3.2614,11.0657,4.495,17.7811
+W_FSTR60,float,4.1381,0.7143,10.9623,3.5254,3.2614,11.0657,13.2344,8.1963
+W_FSTR61,float,1.3811,0.7143,10.8217,11.8663,3.2614,11.0657,4.4167,8.1963
+W_FSTR62,float,1.3831,0.7143,3.6038,11.8663,3.2614,11.0657,14.2363,17.7811
+W_FSTR63,float,3.8747,2.1429,9.9979,3.5254,9.7843,11.0657,4.5011,8.1963
+W_FSTR64,float,3.8776,0.7143,10.1849,3.5254,3.2614,11.0657,14.2363,8.1963
+W_FSTR65,float,1.3794,2.1429,10.3118,11.8663,9.7843,11.0657,4.4192,8.1963
+W_FSTR66,float,3.8747,0.7143,10.0445,3.5254,3.2614,11.0657,4.7678,8.1963
+W_FSTR67,float,3.8748,0.7143,3.6871,3.5254,3.2614,11.0657,4.4167,17.7811
+W_FSTR68,float,1.3834,0.7143,4.1355,11.8663,3.2614,11.0657,4.495,17.7811
+W_FSTR69,float,1.3831,0.7143,10.567,11.8663,3.2614,11.0657,13.2344,8.1963
+W_FSTR70,float,3.8774,2.1429,3.5589,3.5254,9.7843,11.0657,13.2412,17.7811
+W_FSTR71,float,3.8757,2.1429,3.374,3.5254,9.7843,11.0657,4.6244,17.7811
+W_FSTR72,float,3.8731,0.7143,10.4855,3.5254,3.2614,11.0657,13.8252,8.1963
+W_FSTR73,float,3.8776,2.1429,10.5922,3.5254,9.7843,11.0657,13.4629,8.1963
+W_FSTR74,float,1.3739,2.1429,3.9307,11.8663,9.7843,11.0657,4.7784,17.7811
+W_FSTR75,float,3.8795,0.7143,3.7493,3.5254,3.2614,11.0657,4.6194,17.7811
+W_FSTR76,float,1.3739,0.7143,3.5956,11.8663,3.2614,11.0657,13.4467,17.7811
+W_FSTR77,float,3.8765,2.1429,3.7215,3.5254,9.7843,11.0657,13.4629,17.7811
+W_FSTR78,float,1.3776,2.1429,10.6984,11.8663,9.7843,11.0657,13.8394,8.1963
+W_FSTR79,float,1.3811,2.1429,4.1009,11.8663,9.7843,11.0657,13.8394,17.7811
+W_FSTR80,float,1.3874,2.1429,10.733,11.8663,9.7843,11.0657,4.7784,8.1963
+WVARSTRR,integer,54,1,31,74,20,64,7,21
+VAR_UNIT,integer,1,2,2,2,1,2,2,3
+SENWGT_STU,float,0.0051,0.0026,0.0207,0.1746,0.1536,0.1737,0.1112,0.1893
+VER_STU,text_response,22NOV13,22NOV13,22NOV13,22NOV13,22NOV13,22NOV13,22NOV13,22NOV13
