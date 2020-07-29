@@ -143,7 +143,7 @@ PISA_SAMPLE = PISA2012.sample(500)
 TEMP_OUTPUT = initialize(PISA_SAMPLE.copy())
 
 
-
+# %% TEST BLOCK
 # --------------------------------------------------------------------------
 # TEMPORARY (build know_categories)
 # A helper function to view a list of categories extracted from PISA2012
@@ -179,77 +179,138 @@ def get_all_unique_short_categories(pisadf, max_length=5,
                 found_unique_sets.append(unique_values)
     return found_unique_sets
 
-# # A helper function to check each column against known categories
-# def completeness_check(pisadf):
-#     """
-#     A helper function to check each column against known categories
-#     """
-#     dataframe_returned = pd.DataFrame()
-#     for var in pisadf.columns:
-#         indep_categories = initialize(
-#             pisadf.copy(),
-#             [category_definitions.KNOWN_CATEGORIES,
-#              category_definitions.PREFERRED_NAMING,
-#              {var: [var]},
-#              {}])[2]['indep_categories']
-#         column_start, column_end = None, None
-#         tempdf = pd.DataFrame(
-#             data={'category_name': list(indep_categories.values()),
-#                   'example1': PISA2012.iloc[250000][column_start:column_end],
-#                   'example2': PISA2012.iloc[120000][column_start:column_end],
-#                   'example3': PISA2012.iloc[80000][column_start:column_end],
-#                   'example4': PISA2012.iloc[40][column_start:column_end],
-#                   'example5': PISA2012.iloc[400][column_start:column_end],
-#                   'example6': PISA2012.iloc[4000][column_start:column_end],
-#                   'example7': PISA2012.iloc[40000][column_start:column_end],
-#                   'example8': PISA2012.iloc[430000][column_start:column_end]},
-#             index=list(indep_categories.keys()))
-#         dataframe_returned = dataframe_returned.append(tempdf)
-#     return dataframe_returned
+# A helper function to check each column against known categories
+def completeness_check(df, specific_vars: list):
+    """
+    A helper function to check each column against known categories
+    """
+    pisadf = df.copy()
+    dataframe_returned = pd.DataFrame()
+
+    for i, var in enumerate(specific_vars):
+        del pisadf
+        pisadf = df.copy()
+
+        print("var numer: ", str(i))
+        print(pisadf.shape)
+
+        indep_categories = initialize(
+            pisadf,
+            [category_definitions.KNOWN_CATEGORIES,
+             category_definitions.PREFERRED_NAMING,
+             {var: [var]},
+             {}])[2]['indep_categories']
+
+        print(PISA2012.shape)
+        print(pisadf.shape, "\n")
+
+        tempdf = pd.DataFrame(
+            data={'category_name': list(indep_categories.values()),
+                  'example1': PISA2012.iloc[250000],
+                  'example2': PISA2012.iloc[120000],
+                  'example3': PISA2012.iloc[80000],
+                  'example4': PISA2012.iloc[40],
+                  'example5': PISA2012.iloc[400],
+                  'example6': PISA2012.iloc[4000],
+                  'example7': PISA2012.iloc[40000],
+                  'example8': PISA2012.iloc[400000]},
+            index=list(indep_categories.keys()))
+        dataframe_returned = dataframe_returned.append(tempdf)
+
+    for col in dataframe_returned.columns[1:]:
+        for row, value in enumerate(dataframe_returned[col]):
+            if type(value) != float:
+                dataframe_returned[col][dataframe_returned.index[row]] = value.strip()
+
+    return dataframe_returned
 
 
 
 # # sets of unique vals pulled from original df
-SHORT_UNIQUES = get_all_unique_short_categories(PISA2012, 80)
-SHORT_UNIQUES_DF = pd.DataFrame(SHORT_UNIQUES)
+if 'SHORT_UNIQUES' not in globals():
+    SHORT_UNIQUES = get_all_unique_short_categories(PISA2012, 80)
+    SHORT_UNIQUES_DF = pd.DataFrame(SHORT_UNIQUES)
 
 
-### Dont rerun this, it takes forever
+# ## Dont rerun this, it takes forever
 # # returned category for each var in original df
-# COMPLETENESS_CHECK = completeness_check(PISA2012)
-#
-# # categories that were not matched
-# # when complete, only variables associated with text_response should
-# #     be those with too many unique values to justify a category
-# TEXT_RESPONSES = COMPLETENESS_CHECK.query('category_name == "text_response"')
+# COMPLETENESS_CHECK = completeness_check(PISA2012, PISA2012.columns)
+
 # # Saving to csv
-# TEXT_RESPONSES.to_csv('text_responses2.csv')
-# COMPLETENESS_CHECK.to_csv('completeness_check2.csv')
+# COMPLETENESS_CHECK.to_csv('completeness_check.csv')
 
-COMPLETENESS_CHECK = pd.read_csv("completeness_check.csv", header=0, index_col=0)
-TEXT_RESPONSES = pd.read_csv("text_responses.csv", header=0, index_col=0)
+# ## Loading from csv
+COMPLETENESS_CHECK = pd.read_csv(
+    "completeness_check.csv",header=0, index_col=0)
 
+# when complete, only variables associated with text_response should
+#     be those with too many unique values to justify a category
+TEXT_RESPONSES = COMPLETENESS_CHECK.query('category_name == "text_response"')
 
-
-UNCATEGORIZED_EXAMPLE_RESPONSES = []
+# %%% LIST EXAMPLES
 
 # this can be used to get the sets from SHORT UNIQUES
 # corresponding to the examples of string reponses given
-def unique_sets_finder(uncategorized_responses: list):
+def unique_sets_finder(df):
     """
     Print the sets from SHORT UNIQUES corresponding to the list of example
     string reponses given.
     """
-    print("\n\n")
-    def match_uniques_sets(string_to_find):
-        print("Search term:  '" + string_to_find + "':")
-        for index in list(
+    repeat_tracker = {}
+    unmatched = {}
+    def match_uniques_sets(string_to_find, repeat_tracker):
+
+        string_name = (string_to_find[:15]) if len(string_to_find) > 15 else string_to_find
+        string_name = string_name.strip(" ")
+        string_name = string_name.replace(" ", "_")
+
+        if len(list(
+                SHORT_UNIQUES_DF[SHORT_UNIQUES_DF == string_to_find].dropna(
+                    thresh=1).index)) == 0:
+            unmatched[var] = string_to_find
+
+        for i in list(
                 SHORT_UNIQUES_DF[SHORT_UNIQUES_DF == string_to_find].dropna(
                     thresh=1).index):
-            print(SHORT_UNIQUES[index])
-        print("\n")
-    for uncategorized_response in uncategorized_responses:
-        match_uniques_sets(uncategorized_response)
+            new_set = set(SHORT_UNIQUES[i])
+            if new_set not in repeat_tracker.values():
+                repeat_tracker[var] = new_set
 
-# output will be used to populate category definitions
-unique_sets_finder(UNCATEGORIZED_EXAMPLE_RESPONSES)
+    for var in df.index:
+        examples = df.loc[var]
+        examples.dropna(inplace=True)
+        string_to_find = examples[1]
+        match_uniques_sets(string_to_find, repeat_tracker)
+
+    print("\n\nmatched text_responses:")
+    for a in repeat_tracker:
+        if len(list(repeat_tracker[a])) < 50:
+            print("\n")
+            line1 = ("'" + a + "':").strip(" ")
+            line1 = line1 + " ["
+            print(line1)
+            sorte = list(repeat_tracker[a])
+            sorte.sort()
+            for index, item in enumerate(sorte):
+                if index < len(list(repeat_tracker[a]))-1:
+                    line2 = ("    '" + item + "',")
+                    print(line2)
+                else:
+                    line2 = ("    '" + item + "'],")
+                    print(line2)
+        else:
+            print("Unique Longer than 20")
+    print(
+        pd.DataFrame(data={'ex': list(repeat_tracker.values())},
+                     index=(repeat_tracker.keys())))
+
+    print("\n\nunmatched text_responses:")
+    print(
+        pd.DataFrame(
+            data={'ex': list(unmatched.values()),
+                  'num_unique': PISA2012[list(unmatched.keys())].nunique()},
+            index=(unmatched.keys())))
+
+
+# # output will be used to populate category definitions
+unique_sets_finder(TEXT_RESPONSES)

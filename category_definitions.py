@@ -29,6 +29,24 @@ KNOWN_CATEGORIES = {
         'Non-OECD',
         'OECD'],
 
+
+    'major_in': [
+        'Major in college Science',
+        'Major in college Math'],
+
+    'study_harder': [
+        'Study harder Math',
+        'Study harder Test Language'],
+
+    'maximum_classes': [
+        'Maximum classes Math',
+        'Maximum classes Science'],
+
+    'pursuing_career': [
+        'Pursuing a career Math',
+        'Pursuing a career Science'],
+
+
     'one_two_three': [
         'None',
         'One',
@@ -78,6 +96,14 @@ KNOWN_CATEGORIES = {
         'Disagree',
         'Strongly disagree'],
 
+    'heard_of_it': [
+        'Never heard of it',
+        'Heard of it a few times',
+        'Heard of it often',
+        'Heard of it once or twice',
+        'Know it well,  understand the concept'],
+
+
     'frequency1': [
         'Never or rarely',
         'Sometimes',
@@ -109,6 +135,13 @@ KNOWN_CATEGORIES = {
         '4 or more but less than 6',
         '6 or more'],
 
+    'frequency6': [
+        'Never',
+        'Rarely',
+        'Sometimes',
+        'Frequently'],
+
+
     'schooltype1': [
         'Pre-Vocational',
         'Vocational',
@@ -128,6 +161,41 @@ KNOWN_CATEGORIES = {
         '<ISCED level 2>',
         '<ISCED level 3B, 3C>',
         '<ISCED level 3A>'],
+
+    'isced': [
+        'None',
+        'ISCED 1',
+        'ISCED 2',
+        'ISCED 3B, C',
+        'ISCED 3A, ISCED 4',
+        'ISCED 5B',
+        'ISCED 5A, 6'],
+
+    'isced_level': [
+        'ISCED level 1',
+        'ISCED level 2',
+        'ISCED level 3'],
+
+    'StQ_form': [
+        'StQ Form B',
+        'StQ Form UH',
+        'StQ Form C',
+        'StQ Form A'],
+
+    'M': [
+        'C',
+        'B',
+        'M',
+        'A'],
+
+
+    'attendance': [
+        'I do not attend <out-of-school time lessons> in this subject',
+        'Less than 2 hours a week',
+        '6 or more hours a week',
+        '4 or more but less than 6 hours a week',
+        '2 or more but less than 4 hours a week'],
+
 
     'num_books': [
         '0-10 books',
@@ -161,10 +229,49 @@ KNOWN_CATEGORIES = {
         'Yes, but I don\x92t use it',
         'Yes, and I use it'],
 
+    'memory': [
+        'Most important',
+        'by heart',
+        'relating to known'],
+
+    'understanding': [
+        'Improve understanding',
+        'new ways',
+        'check memory'],
+
+    'relating': [
+        'Relating to other subjects',
+        'learning goals',
+        'in my sleep'],
+
+    'learning1': [
+        'everyday life',
+        'Repeat examples',
+        'more information'],
+
     'exposure': [
         'No',
         'Yes, but only the teacher demonstrated this',
         'Yes, students did this'],
+
+    'calulator': [
+        'No calculator',
+        'A CAS calculator',
+        'A Simple calculator',
+        'A Graphics calculator',
+        'A Scientific calculator'],
+
+    'booklet_set': [
+        'Easier set of booklets',
+        'Standard set of booklets'],
+
+    'after_school': [
+        'Courses after school Math',
+        'Courses after school Test Language'],
+
+    'repeated': [
+        'Did not repeat a <grade>',
+        'Repeated a <grade>'],
 
     'location1': [
         'Country of test',
@@ -182,22 +289,88 @@ KNOWN_CATEGORIES = {
         'Mostly <heritage language>',
         'About equally <heritage language> and <test language>',
         'Mostly <test language>',
-        'Not applicable']
+        'Not applicable'],
+
+    'native': [
+        'Second-Generation',
+        'Native',
+        'First-Generation'],
+
+    'booklet': [
+        'UH booklet',
+        'booklet 1',
+        'booklet 3',
+        'booklet 2',
+        'booklet 4',
+        'booklet 5',
+        'booklet 6',
+        'booklet 7',
+        'booklet 8',
+        'booklet 9',
+        'booklet 10',
+        'booklet 11',
+        'booklet 12',
+        'booklet 13',
+        'booklet 21',
+        'booklet 22',
+        'booklet 23',
+        'booklet 24',
+        'booklet 25',
+        'booklet 26',
+        'booklet 27'],
+
+    'test_language': [
+        'Albanian',
+        'Arabic',
+        'Basque',
+        'Bulgarian',
+        'Cantonese',
+        'Catalan',
+        'Chinese',
+        'Croatian',
+        'Czech',
+        'Danish',
+        'Dutch',
+        'English',
+        'Estonian',
+        'Finnish',
+        'French',
+        'German',
+        'Greek',
+        'Hebrew',
+        'Hungarian',
+        'Hybrid - English + Arabic (QAT)',
+        'Icelandic',
+        'Indonesian',
+        'Irish',
+        'Italian',
+        'Japanese',
+        'Kazakh',
+        'Korean',
+        'Latvian',
+        'Lithuanian',
+        'Malay',
+        'Mandarin',
+        'Norwegian',
+        'Polish',
+        'Portuguese',
+        'Romanian',
+        'Russian',
+        'Serbian',
+        'Serbian of a yekavian variant or Montenegrin',
+        'Shanghai dialect',
+        'Slovak',
+        'Slovenian',
+        'Spanish',
+        'Swedish',
+        'Thai',
+        'Turkish',
+        'Valencian',
+        'Vietnamese',
+        'Welsh']
+
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -225,6 +398,24 @@ PREFERRED_NAMING = {
     'oecd': [
         'Non-OECD',
         'OECD'],
+
+
+    'major_in': [
+        'Major in college Science',
+        'Major in college Math'],
+
+    'study_harder': [
+        'Study harder Math',
+        'Study harder Test Language'],
+
+    'maximum_classes': [
+        'Maximum classes Math',
+        'Maximum classes Science'],
+
+    'pursuing_career': [
+        'Pursuing a career Math',
+        'Pursuing a career Science'],
+
 
     'one_two_three': [
         'None',
@@ -275,6 +466,14 @@ PREFERRED_NAMING = {
         'Disagree',
         'Strongly disagree'],
 
+    'heard_of_it': [
+        'Never heard of it',
+        'Heard of it a few times',
+        'Heard of it often',
+        'Heard of it once or twice',
+        'Know it well,  understand the concept'],
+
+
     'frequency1': [
         'Never or rarely',
         'Sometimes',
@@ -306,6 +505,13 @@ PREFERRED_NAMING = {
         '4 or more but less than 6',
         '6 or more'],
 
+    'frequency6': [
+        'Never',
+        'Rarely',
+        'Sometimes',
+        'Frequently'],
+
+
     'schooltype1': [
         'Pre-Vocational',
         'Vocational',
@@ -325,6 +531,40 @@ PREFERRED_NAMING = {
         'ISCED level 2',
         'ISCED level 3B, 3C',
         'ISCED level 3A'],
+
+    'isced': [
+        'None',
+        'ISCED 1',
+        'ISCED 2',
+        'ISCED 3B, C',
+        'ISCED 3A, 4',
+        'ISCED 5B',
+        'ISCED 5A, 6'],
+
+    'isced_level': [
+        'ISCED level 1',
+        'ISCED level 2',
+        'ISCED level 3'],
+
+    'StQ_form': [
+        'StQ Form B',
+        'StQ Form UH',
+        'StQ Form C',
+        'StQ Form A'],
+
+    'M': [
+        'C',
+        'B',
+        'M',
+        'A'],
+
+    'attendance': [
+        'I do not attend extra lessons in this subject',
+        'Less than 2 hours a week',
+        '6 or more hours a week',
+        '4 or more but less than 6 hours a week',
+        '2 or more but less than 4 hours a week'],
+
 
     'num_books': [
         '0-10 books',
@@ -358,10 +598,49 @@ PREFERRED_NAMING = {
         'Yes, but I dont use it',
         'Yes, and I do use it'],
 
+    'memory': [
+        'Most important',
+        'by heart',
+        'relating to known'],
+
+    'understanding': [
+        'Improve understanding',
+        'new ways',
+        'check memory'],
+
+    'relating': [
+        'Relating to other subjects',
+        'learning goals',
+        'in my sleep'],
+
+    'learning1': [
+        'everyday life',
+        'Repeat examples',
+        'more information'],
+
     'exposure': [
         'No',
         'Yes, but only teacher demonstrated',
         'Yes, students did this'],
+
+    'calulator': [
+        'No calculator',
+        'A CAS calculator',
+        'A Simple calculator',
+        'A Graphics calculator',
+        'A Scientific calculator'],
+
+    'booklet_set': [
+        'Easier set of booklets',
+        'Standard set of booklets'],
+
+    'after_school': [
+        'Courses after school Math',
+        'Courses after school Test Language'],
+
+    'repeated': [
+        'Did not repeat a <grade>',
+        'Repeated a <grade>'],
 
     'location1': [
         'Country of test',
@@ -379,6 +658,85 @@ PREFERRED_NAMING = {
         'Mostly <heritage language>',
         'About equally <heritage language> and <test language>',
         'Mostly <test language>',
-        'Not applicable']
+        'Not applicable'],
+
+    'native': [
+        'Second-Generation',
+        'Native',
+        'First-Generation'],
+
+
+    'booklet': [
+        'UH booklet',
+        'booklet 01',
+        'booklet 03',
+        'booklet 02',
+        'booklet 04',
+        'booklet 05',
+        'booklet 06',
+        'booklet 07',
+        'booklet 08',
+        'booklet 09',
+        'booklet 10',
+        'booklet 11',
+        'booklet 12',
+        'booklet 13',
+        'booklet 21',
+        'booklet 22',
+        'booklet 23',
+        'booklet 24',
+        'booklet 25',
+        'booklet 26',
+        'booklet 27'],
+
+    'test_language': [
+        'Albanian',
+        'Arabic',
+        'Basque',
+        'Bulgarian',
+        'Cantonese',
+        'Catalan',
+        'Chinese',
+        'Croatian',
+        'Czech',
+        'Danish',
+        'Dutch',
+        'English',
+        'Estonian',
+        'Finnish',
+        'French',
+        'German',
+        'Greek',
+        'Hebrew',
+        'Hungarian',
+        'Hybrid - English + Arabic (QAT)',
+        'Icelandic',
+        'Indonesian',
+        'Irish',
+        'Italian',
+        'Japanese',
+        'Kazakh',
+        'Korean',
+        'Latvian',
+        'Lithuanian',
+        'Malay',
+        'Mandarin',
+        'Norwegian',
+        'Polish',
+        'Portuguese',
+        'Romanian',
+        'Russian',
+        'Serbian',
+        'Serbian of a yekavian variant or Montenegrin',
+        'Shanghai dialect',
+        'Slovak',
+        'Slovenian',
+        'Spanish',
+        'Swedish',
+        'Thai',
+        'Turkish',
+        'Valencian',
+        'Vietnamese',
+        'Welsh']
 
 }
