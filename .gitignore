@@ -10,3 +10,5 @@ pisadict2012.csv
 .spyproject/
 # Local cache not tracked
 __pycache__/
+# Pylint files are not tracked
+.pylint.d/

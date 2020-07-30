@@ -1,82 +1,97 @@
+"""
+PISA2012_EXPLORER.
+
+This project aims to develop tools to assist with the wrangling and
+exploration of the PISA 2012 dataset. Specifically, groups of similar
+variables are explored concurrently.
+"""
+
 import zipfile
+# import warnings
 
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 
-from wrangle import wrangle as wrangle_and_get_categories
-import category_specific
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+
+from wrangle import wrangle as wrangler
+import post_wrangling
+import category_definitions
+import test_groupings
+import exploratory_graphics
 
 
-# Dataset can take a few minutes to load on older sytems.
+# Dataset can take a few minutes to load on some systems.
 # Load once and only work on copy.
-if 'PISA2012' not in locals():
-    
-    ### raw csv data
-    PISA2012 = pd.read_csv(
-        zipfile.ZipFile('pisa2012.csv.zip', 'r').open('pisa2012.csv'),
-        sep=',', encoding='latin-1', error_bad_lines=False,
-        dtype='unicode', index_col=False)
-
-
-### Known Categories
-#
-# Dictionary containing lists. Each list contains the values of known
-# PISA variables. The key is a short string description of the category.
-#
-KNOWN_CATEGORIES = {
-    'work_status':[
-        'Working full-time <for pay>',
-        'Working part-time <for pay>',
-        'Not working, but looking for a job',
-        'Other (e.g. home duties, retired)'],
-    'binary_yn':['Yes', 'No']}
-
-### Preferred Category Values
-#
-# Dictionary containing lists. Each list contains preferred values for
-# known category associated with key.
-#
-PREFERRED_NAMING = {
-    'work_status':[
-        'Full-time',
-        'Part-time',
-        'Not working',
-        'Other'],
-    'binary_yn':[True, False]}
-
-### Groups of Indepenent Variables
-#
-# Dictionary containing lists. Each list is a group of variable names.
-# The variables in a group must be of same type (float, y/, category X).
-#
-INDEPENDENT_GROUPS = {
-    'family_home': ['ST11Q01', 'ST11Q02', 'ST11Q03', 'ST11Q04', 'ST11Q05'],
-    'parent_work': ['ST15Q01', 'ST19Q01'],
-    'parent_isei': ['BFMJ2', 'BMMJ1', 'HISEI'],
-    'HOMEPOS'    : ['HOMEPOS'],
-    'person_item': ['ST26Q02', 'ST26Q03', 'ST26Q08',
-                    'ST26Q09', 'ST26Q10', 'ST26Q11']}
-
-### Groups of Depenent Variables
-#
-# Dictionary containing list. Lists are groups of variable names.
-# The variables must be numeric.
-#
-DEPENDENT_GROUPS = {
-    'math_result': ['PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH', 'PV5MATH'],
-    'read_result': ['PV1READ', 'PV2READ', 'PV3READ', 'PV4READ', 'PV5READ']}
-
-
-def initialize(pisa_df, inputs):
+# Try to laod from csv then from zip.
+def load_original(reload=False, integrity_check=False):
     """
-    general wrapper
+    Load original PISA2012 dataset from file and return it as an DataFrame.
+
+    Does not load if already in memory.
+    Forces reload on parameter 'reload=True'.
+    Checks datastructure if parameter 'integrety_check=True'.
     """
-    return group_post_wrangle(*wrangle_and_get_categories(pisa_df, inputs))
+    def confirm_pisa_df():
+        """
+        Placehold function.
+
+        Will implement hash check on the csv and/or zip files.
+        """
+        if integrity_check:
+            print("Checking file integrity(this may take a few minutes)...\n")
+            # TODO: implement integrity check
+            #
+            # do the check here
+            #
+            #
+            #
+            #
+            #
+            passed = True    # result of check
+            # return if test passed, raise error if failed
+            if passed:
+                print("Dataframe passed integrity check.\n")
+                return pisa_df
+            raise FileExistsError("Datafrane failed integrity check!")
+        return pisa_df
+    if 'PISA2012' not in globals():
+        print("PISA2012 original not in locals, attempting to load",
+              "(this may take a few minutes)...\n")
+    elif reload:
+        print("PISA2012 original exists, attempting to reload",
+              "(this may take a few minutes)...\n")
+    else:
+        print("Variable with name PISA2012 already in memory.\n")
+        pisa_df = PISA2012
+        return confirm_pisa_df()
+    # load, check, raise error if needed
+    if ('PISA2012' not in globals()) or (reload):
+        # global PISA2012
+        try:    # loading directly from csv
+            pisa_df = pd.read_csv(
+                'pisa2012.csv', sep=',', encoding='latin-1',
+                error_bad_lines=False, dtype='unicode', index_col=False)
+            print("Loaded from csv.\n")
+            return confirm_pisa_df()
+        except FileNotFoundError:
+            try:    # loading directly from zip
+                pisa_df = pd.read_csv(
+                    zipfile.ZipFile(
+                        'pisa2012.csv.zip', 'r').open('pisa2012.csv'),
+                    sep=',', encoding='latin-1', error_bad_lines=False,
+                    dtype='unicode', index_col=False)
+                print("Loaded from zip.\n")
+                return confirm_pisa_df()
+            except FileNotFoundError:    # loading failed
+                raise FileNotFoundError("PISA2012 not in local directory.")
+
 
 def get_longnames(names):
     """
-    Return list of PISA variable descriptions corresponding to variable 
+    Return PISA2012 long names given short names.
+
+    Return list of PISA variable descriptions corresponding to variable
     shortnames given by list name.
     Resource is read from local copy of pisadict2012.csv
     """
@@ -84,32 +99,89 @@ def get_longnames(names):
         'pisadict2012.csv',
         sep=',', encoding='latin-1', error_bad_lines=False,
         dtype='unicode', index_col=False).rename(
-            columns={'Unnamed: 0':'varname', 'x': 'description'})
+            columns={'Unnamed: 0': 'varname', 'x': 'description'})
     names = list(names)
     return list(pisadict2012.query("varname in @names")['description'])
 
-def group_post_wrangle(pisa_df, inputs, group_category_matches):
-    """
-    apply category specific actions for each group
-    raise ValueError if no corresponding function found
-    """
-    # iterate group category matches
-    for group_name in group_category_matches:
-        category = group_category_matches[group_name]
 
-        # check if associated post wrangling group actions are available
-        if (category + "_group_post_wrangle") in dir(category_specific):
+def post_wrangle(pisa_df, inputs, group_category_matches):
+    """Apply category specific post wrangle functions."""
+    # group_category_matches holds indep and dependent groups seperately
+    for subset in group_category_matches:
+        # iterate group category matches
+        for group_name in group_category_matches[subset]:
+            category = group_category_matches[subset][group_name]
 
-            # function call using getattr
-            getattr(category_specific, (category + "_group_post_wrangle"))(
-                group_name, pisa_df, inputs)
-        else:
-            raise ValueError(
-                "No post wrangle funcion found for group: '" + 
-                group_category_matches[group_name])
+            # check if associated post wrangling group actions are available
+            if category + "_group_post_wrangle" in dir(post_wrangling):
+                # function call using getattr
+                getattr(
+                    post_wrangling,
+                    (category + "_group_post_wrangle"))(
+                        group_name, pisa_df, inputs)
     return pisa_df, inputs, group_category_matches
 
-temp_df = initialize(
-    PISA2012.sample(500),
-    [KNOWN_CATEGORIES, PREFERRED_NAMING,
-     INDEPENDENT_GROUPS, DEPENDENT_GROUPS])
+
+def univariate_graphics(undesired_graphics,
+                        pisa_df, inputs, group_category_matches):
+    """
+    Call category specific graphics functions.
+
+    undesired_graphics, is a list of strings to ignore when searching for
+    graphics functions.
+    """
+    graphic_objects = []
+
+    # iterate group category matches
+    for subset in group_category_matches:
+        for group_name in group_category_matches[subset]:
+            category = group_category_matches[subset][group_name]
+            for function_name in dir(exploratory_graphics)[8:]:
+                if category in function_name:
+                    # undesired_graphics specifies graphics to ignore
+                    if category in undesired_graphics:
+                        break
+                    if function_name in undesired_graphics:
+                        break
+                    if function_name.replace(
+                            category, "")[1:] in undesired_graphics:
+                        break
+                    # call function if not blacklisted
+                    test = getattr(
+                        exploratory_graphics,
+                        (function_name))(
+                            group_name, pisa_df, inputs)
+                    graphic_objects.append(test)
+
+    return pisa_df, inputs, group_category_matches, graphic_objects
+
+
+def initialize(pisa_df, inputs=None, undesired_graphics=["all"]):
+    """Wrap function calls."""
+    # use test inputs if none given
+    if inputs is None:
+        inputs = [
+            category_definitions.KNOWN_CATEGORIES,
+            category_definitions.PREFERRED_NAMING,
+            test_groupings.INDEP_TEST_GROUPING01,
+            test_groupings.DEPEN_TEST_GROUPING01]
+    # returns pisa_df, inputs, categories_found, and graphics_objects
+    return (
+        univariate_graphics(
+            undesired_graphics,
+            *post_wrangle(
+                *wrangler(
+                    pisa_df, inputs))))
+
+
+PISA2012 = load_original(reload=False, integrity_check=False)
+PISA_SAMPLE = PISA2012.sample(500)
+OUTPUT = initialize(PISA_SAMPLE.copy(),
+                    [category_definitions.KNOWN_CATEGORIES,
+                     category_definitions.PREFERRED_NAMING,
+                     test_groupings.INDEP_TEST_GROUPING01,
+                     test_groupings.DEPEN_TEST_GROUPING01],
+                    ['']
+                    )
+
+OUTPUT[0][test_groupings.DEPEN_TEST_GROUPING01['math_result']]

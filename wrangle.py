@@ -1,18 +1,24 @@
-# This tool aims to aid in the exploration of the PISA 2012 dataset,
-# allowing users to concurrently examine a group of similar variables.
+"""
+Wrangling functions for pisa2012_explorer project.
+
+This tool aims to aid in the exploration of the PISA 2012 dataset,
+allowing users to concurrently examine a group of similar variables.
+"""
 
 
-#%% Wrangling Functions
+# =============================================================================
+# Wrangling Functions
+# =============================================================================
 
 def wrangle(pisa_df, inputs):
-    """
-    wrangling wrapper
-    """
+    """Wrap functions for wrangling. Return edited inputs."""
     (known_categories, preferred_naming,
      independent_groups, dependent_groups) = inputs
 
     def select_columns_and_drop_nulls():
         """
+        Discard unspecified columns and remove rows with Null values.
+
         Remove columns from that are not in any given groups.
         Remove observations containing nulls.
         """
@@ -22,42 +28,50 @@ def wrangle(pisa_df, inputs):
              for var_name in sublist] +
             [var_name for sublist in list(dependent_groups.values())
              for var_name in sublist]),
-            axis='columns', inplace = True)
+                     axis='columns', inplace=True)
         # drop nulls
         pisa_df.dropna(inplace=True)
 
     def get_category(pisa_group):
         """
+        Fetch and return category associated with group.
+
         Determine if variables in pisa_group match a known categoy.
         Determine if variables in pisa_group each have same category.
         If consistent category found, return associated category_key.
-        Otherwise returns "text_response", indicating group is 
+        Otherwise returns "text_response", indicating group is
         treated as plain text responses rather than categoricals.
         """
-        # check each variable in group: all must be same category
+        # default to text_response type
+        category_key = 'text_response'
         for index, variable_name in enumerate(pisa_group):
+
             # gather unique values for this variable
             unique_values = set({})
             for unique_val in set(pisa_df[variable_name].unique()):
                 # trailing white spaces do occur in the dataset
                 unique_values.add(unique_val.strip())
 
-            # first variable for potential group category will suffice
+            # check first variable for potential group category will suffice
             if index == 0:
                 for known_cat in known_categories:
                     if unique_values.issubset(known_categories[known_cat]):
                         category_key = known_cat
-
-            # if variable isnt in suspected category, group fails check
-            if not unique_values.issubset(known_categories[category_key]):
-                category_key = "text_response"
-                break
+            # if any variable isnt in suspected category, group fails check
+            if category_key != 'text_response':
+                if not unique_values.issubset(known_categories[category_key]):
+                    # how to handle a mismatched group:
+                    #     treat as text_response type
+                    category_key = 'text_response'
+                    break
         return category_key
 
     def apply_preferred_values(pisa_group, category_key):
         """
-        update strings to preferred values (ex: "Yes" == True)
-        raise ValueError if incomplete preferred values found
+        Apply preferred values to groups of known category.
+
+        Update strings to preferred values (ex: "Yes" == True) or
+        raise ValueError if incomplete preferred values found.
         """
         # ignore numerical and text_response types
         if category_key in known_categories:
@@ -68,7 +82,7 @@ def wrangle(pisa_df, inputs):
                 pisa_df[var] = pisa_df[var].map(lambda x: x.strip())
 
                 # replace each known value
-                for known, preferred  in zip(
+                for known, preferred in zip(
                         known_categories[category_key],
                         preferred_naming[category_key]):
                     pisa_df.loc[pisa_df[var] == known, var] = preferred
@@ -80,39 +94,49 @@ def wrangle(pisa_df, inputs):
 
     def process_pisa_set_of_groups(pisa_set_of_groups):
         """
-        Get category for each group,
-        set corresponding values for each group,
-        return dictionary containting found group/category key pairs.
-        """
-        group_category_matches = {}
-        for group_key in pisa_set_of_groups:
-            pisa_group = pisa_set_of_groups[group_key]
+        Parse groups and convert to numeric type or determine category.
 
+        Get category for each group.
+        Set corresponding values for each group.
+        Return dictionary containting found group/category key pairs.
+        """
+        matches = {}
+        for group_name in pisa_set_of_groups:
+
+            pisa_group = pisa_set_of_groups[group_name]
             # attempt to convert group to numeric
+
             try:
                 pisa_df[pisa_group] = pisa_df[pisa_group].astype(int)
                 category = "integer"
-            except:
+
+            except ValueError:
                 try:
                     pisa_df[pisa_group] = pisa_df[pisa_group].astype(float)
                     category = "float"
-                except:
+                except ValueError:
                     category = None
+
             if not category:
                 pisa_df[pisa_group] = pisa_df[pisa_group].astype(str)
-                
                 # attempt to match and update values to known PISA category
                 category = get_category(pisa_group)
                 apply_preferred_values(pisa_group, category)
-            group_category_matches[group_key]=category
-        return group_category_matches
 
-    ### CAUTION:    large sets of variables will reduce the sample size
-    ### Reason:     each variable has its own set of nulls
-    ### Solution:   reduce variable sets after finding interactions
+            matches[group_name] = category
+        return matches
+
+    # CAUTION:    large sets of variables will reduce the sample size
+    # Reason:     each variable has its own set of nulls
+    # Solution:   reduce variable sets after finding interactions
     select_columns_and_drop_nulls()
+
+    # group_category_matches = process_pisa_set_of_groups(
+    #     {**independent_groups, **dependent_groups})
+
     # independent_groups_keys = process_pisa_set_of_groups(independent_groups)
-    group_category_matches = process_pisa_set_of_groups(
-        {**independent_groups, **dependent_groups})
+    group_category_matches = {
+        'indep_categories': process_pisa_set_of_groups(independent_groups),
+        'depen_categories': process_pisa_set_of_groups(dependent_groups)}
 
     return pisa_df, inputs, group_category_matches
