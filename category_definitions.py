@@ -1,12 +1,12 @@
 """
-Category Definitions
+Category Definitions.
 
 known_categories are the expected values for PISA 2012 categorical variables.
 preferred_vales are the vales to replace expected_vales with.
 """
 
 
-### Known Categories
+# Known Categories
 #
 # Dictionary containing lists. Each list contains the values of known
 # PISA variables. The key is a short string description of the category.
@@ -53,7 +53,7 @@ KNOWN_CATEGORIES = {
         'Two',
         'Three or more'],
 
-    'confidence':[
+    'confidence': [
         'Not at all confident',
         'Not very confident',
         'Confident',
@@ -317,66 +317,13 @@ KNOWN_CATEGORIES = {
         'booklet 24',
         'booklet 25',
         'booklet 26',
-        'booklet 27'],
-
-    'test_language': [
-        'Albanian',
-        'Arabic',
-        'Basque',
-        'Bulgarian',
-        'Cantonese',
-        'Catalan',
-        'Chinese',
-        'Croatian',
-        'Czech',
-        'Danish',
-        'Dutch',
-        'English',
-        'Estonian',
-        'Finnish',
-        'French',
-        'German',
-        'Greek',
-        'Hebrew',
-        'Hungarian',
-        'Hybrid - English + Arabic (QAT)',
-        'Icelandic',
-        'Indonesian',
-        'Irish',
-        'Italian',
-        'Japanese',
-        'Kazakh',
-        'Korean',
-        'Latvian',
-        'Lithuanian',
-        'Malay',
-        'Mandarin',
-        'Norwegian',
-        'Polish',
-        'Portuguese',
-        'Romanian',
-        'Russian',
-        'Serbian',
-        'Serbian of a yekavian variant or Montenegrin',
-        'Shanghai dialect',
-        'Slovak',
-        'Slovenian',
-        'Spanish',
-        'Swedish',
-        'Thai',
-        'Turkish',
-        'Valencian',
-        'Vietnamese',
-        'Welsh']
+        'booklet 27']
 
 
 }
 
 
-
-
-
-### Preferred Category Values
+# Preferred Category Values
 #
 # Dictionary containing lists. Each list contains preferred values for
 # known category associated with key.
@@ -423,13 +370,13 @@ PREFERRED_NAMING = {
         'Two',
         'Three or more'],
 
-    'confidence':[
+    'confidence': [
         'Not at all confident',
         'Not very confident',
         'Confident',
         'Very confident'],
 
-    'work_status':[
+    'work_status': [
         'Full-time',
         'Part-time',
         'Not working',
@@ -687,56 +634,5 @@ PREFERRED_NAMING = {
         'booklet 24',
         'booklet 25',
         'booklet 26',
-        'booklet 27'],
-
-    'test_language': [
-        'Albanian',
-        'Arabic',
-        'Basque',
-        'Bulgarian',
-        'Cantonese',
-        'Catalan',
-        'Chinese',
-        'Croatian',
-        'Czech',
-        'Danish',
-        'Dutch',
-        'English',
-        'Estonian',
-        'Finnish',
-        'French',
-        'German',
-        'Greek',
-        'Hebrew',
-        'Hungarian',
-        'Hybrid - English + Arabic (QAT)',
-        'Icelandic',
-        'Indonesian',
-        'Irish',
-        'Italian',
-        'Japanese',
-        'Kazakh',
-        'Korean',
-        'Latvian',
-        'Lithuanian',
-        'Malay',
-        'Mandarin',
-        'Norwegian',
-        'Polish',
-        'Portuguese',
-        'Romanian',
-        'Russian',
-        'Serbian',
-        'Serbian of a yekavian variant or Montenegrin',
-        'Shanghai dialect',
-        'Slovak',
-        'Slovenian',
-        'Spanish',
-        'Swedish',
-        'Thai',
-        'Turkish',
-        'Valencian',
-        'Vietnamese',
-        'Welsh']
-
+        'booklet 27']
 }
