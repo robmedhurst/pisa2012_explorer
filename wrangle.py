@@ -1,21 +1,24 @@
 """
+Wrangling functions for pisa2012_explorer project.
+
 This tool aims to aid in the exploration of the PISA 2012 dataset,
 allowing users to concurrently examine a group of similar variables.
 """
 
-import numpy as np
 
-#%% Wrangling Functions
+# =============================================================================
+# Wrangling Functions
+# =============================================================================
 
 def wrangle(pisa_df, inputs):
-    """
-    wrangling wrapper
-    """
+    """Wrap functions for wrangling. Return edited inputs."""
     (known_categories, preferred_naming,
      independent_groups, dependent_groups) = inputs
 
     def select_columns_and_drop_nulls():
         """
+        Discard unspecified columns and remove rows with Null values.
+
         Remove columns from that are not in any given groups.
         Remove observations containing nulls.
         """
@@ -31,6 +34,8 @@ def wrangle(pisa_df, inputs):
 
     def get_category(pisa_group):
         """
+        Fetch and return category associated with group.
+
         Determine if variables in pisa_group match a known categoy.
         Determine if variables in pisa_group each have same category.
         If consistent category found, return associated category_key.
@@ -63,8 +68,10 @@ def wrangle(pisa_df, inputs):
 
     def apply_preferred_values(pisa_group, category_key):
         """
-        update strings to preferred values (ex: "Yes" == True)
-        raise ValueError if incomplete preferred values found
+        Apply preferred values to groups of known category.
+
+        Update strings to preferred values (ex: "Yes" == True) or
+        raise ValueError if incomplete preferred values found.
         """
         # ignore numerical and text_response types
         if category_key in known_categories:
@@ -75,7 +82,7 @@ def wrangle(pisa_df, inputs):
                 pisa_df[var] = pisa_df[var].map(lambda x: x.strip())
 
                 # replace each known value
-                for known, preferred  in zip(
+                for known, preferred in zip(
                         known_categories[category_key],
                         preferred_naming[category_key]):
                     pisa_df.loc[pisa_df[var] == known, var] = preferred
@@ -87,9 +94,11 @@ def wrangle(pisa_df, inputs):
 
     def process_pisa_set_of_groups(pisa_set_of_groups):
         """
-        Get category for each group,
-        set corresponding values for each group,
-        return dictionary containting found group/category key pairs.
+        Parse groups and convert to numeric type or determine category.
+
+        Get category for each group.
+        Set corresponding values for each group.
+        Return dictionary containting found group/category key pairs.
         """
         matches = {}
         for group_name in pisa_set_of_groups:
@@ -117,9 +126,9 @@ def wrangle(pisa_df, inputs):
             matches[group_name] = category
         return matches
 
-    ### CAUTION:    large sets of variables will reduce the sample size
-    ### Reason:     each variable has its own set of nulls
-    ### Solution:   reduce variable sets after finding interactions
+    # CAUTION:    large sets of variables will reduce the sample size
+    # Reason:     each variable has its own set of nulls
+    # Solution:   reduce variable sets after finding interactions
     select_columns_and_drop_nulls()
 
     # group_category_matches = process_pisa_set_of_groups(

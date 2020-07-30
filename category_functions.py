@@ -1,29 +1,39 @@
+"""
+Functions specific to group types.
+
+These functions handle independent and dependent variables seperately.
+These functions edit in place or return a graphic.
+"""
+
+
+# =============================================================================
+# GROUP_POST_WRANGLE FUNCTIONS
+# =============================================================================
+
 # handle independent and dependent variables seperately
- 
-### text_response
-def text_response_group_post_wrangle(group_name, pisa_df, inputs):
-    """
-    apply text only group operations:
-    """
-    pass
 
-### integer
-def integer_group_post_wrangle(group_name, pisa_df, inputs):
-    """
-    apply integer group operations:
-        - None
-    """
-    pass
+# text_response
+def text_response_group_post_wrangle():
+    """Apply text only group operations: None."""
 
-### float
+
+# integer
+def integer_group_post_wrangle():
+    """Apply integer group operations: None."""
+
+
+# float
 def float_group_post_wrangle(group_name, pisa_df, inputs):
     """
-    apply float group operations:
+    Apply float group operations.
+
         - create mean value column
     """
     independent_groups, dependent_groups = inputs[2:4]
-    def create_mean(nm, grp):
-        pisa_df[nm + '_mean'] = pisa_df[grp].transpose().mean().astype(float)
+
+    def create_mean(name, grp):
+        pisa_df[name + '_mean'] = pisa_df[grp].transpose(
+            ).mean().astype(float)
 
     # handle dependent and independent variable groups seperately
     if group_name in independent_groups:
@@ -33,15 +43,18 @@ def float_group_post_wrangle(group_name, pisa_df, inputs):
         if len(dependent_groups[group_name]) > 1:
             create_mean(group_name, dependent_groups[group_name])
 
-### binary_yn
+
+# binary_yn
 def binary_yn_group_post_wrangle(group_name, pisa_df, inputs):
     """
-    apply binary_yn group operations:
+    Apply binary_yn group operations.
+
         - create total column for binary group given
     """
     independent_groups, dependent_groups = inputs[2:4]
-    def create_count(nm, grp):
-        pisa_df[nm + '_count'] = pisa_df[grp].transpose().sum().astype(int)
+
+    def create_count(name, grp):
+        pisa_df[name + '_count'] = pisa_df[grp].transpose().sum().astype(int)
 
     # handle dependent and independent variable groups seperately
     if group_name in independent_groups:
