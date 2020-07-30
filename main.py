@@ -14,10 +14,11 @@ import pandas as pd
 # import matplotlib.pyplot as plt
 # import seaborn as sns
 
-from wrangle import wrangle as wrangle_and_get_categories
-import category_functions
+from wrangle import wrangle as wrangler
+import post_wrangling
 import category_definitions
 import test_groupings
+import exploratory_graphics
 
 
 # Dataset can take a few minutes to load on some systems.
@@ -103,32 +104,59 @@ def get_longnames(names):
     return list(pisadict2012.query("varname in @names")['description'])
 
 
-def group_post_wrangle(pisa_df, inputs, group_category_matches):
-    """Apply category specific functions."""
+def post_wrangle(pisa_df, inputs, group_category_matches):
+    """Apply category specific post wrangle functions."""
     # group_category_matches holds indep and dependent groups seperately
     for subset in group_category_matches:
-
         # iterate group category matches
         for group_name in group_category_matches[subset]:
             category = group_category_matches[subset][group_name]
 
             # check if associated post wrangling group actions are available
-            if category + "_group_post_wrangle" in dir(category_functions):
+            if category + "_group_post_wrangle" in dir(post_wrangling):
                 # function call using getattr
                 getattr(
-                    category_functions, (category + "_group_post_wrangle"))(
+                    post_wrangling,
+                    (category + "_group_post_wrangle"))(
                         group_name, pisa_df, inputs)
-            # print warning if no category found
-            else:
-                # message = "No post wrangle funcion found for group: '" + \
-                #     group_name + "', category: '" + category + "'"
-                # warnings.warn(message)
-                # print(message)
-                pass
     return pisa_df, inputs, group_category_matches
 
 
-def initialize(pisa_df, inputs=None, desired_graphics=None):
+def univariate_graphics(undesired_graphics,
+                        pisa_df, inputs, group_category_matches):
+    """
+    Call category specific graphics functions.
+
+    undesired_graphics, is a list of strings to ignore when searching for
+    graphics functions.
+    """
+    graphic_objects = []
+
+    # iterate group category matches
+    for subset in group_category_matches:
+        for group_name in group_category_matches[subset]:
+            category = group_category_matches[subset][group_name]
+            for function_name in dir(exploratory_graphics)[8:]:
+                if category in function_name:
+                    # undesired_graphics specifies graphics to ignore
+                    if category in undesired_graphics:
+                        break
+                    if function_name in undesired_graphics:
+                        break
+                    if function_name.replace(
+                            category, "")[1:] in undesired_graphics:
+                        break
+                    # call function if not blacklisted
+                    test = getattr(
+                        exploratory_graphics,
+                        (function_name))(
+                            group_name, pisa_df, inputs)
+                    graphic_objects.append(test)
+
+    return pisa_df, inputs, group_category_matches, graphic_objects
+
+
+def initialize(pisa_df, inputs=None, undesired_graphics=["all"]):
     """Wrap function calls."""
     # use test inputs if none given
     if inputs is None:
@@ -137,14 +165,13 @@ def initialize(pisa_df, inputs=None, desired_graphics=None):
             category_definitions.PREFERRED_NAMING,
             test_groupings.INDEP_TEST_GROUPING01,
             test_groupings.DEPEN_TEST_GROUPING01]
-    # try all graphics if none specified
-    if desired_graphics is None:
-        desired_graphics = "all"
-
-    # returns pisa_df, inputs, categories_found
-    output = group_post_wrangle(*wrangle_and_get_categories(pisa_df, inputs))
-
-    return output
+    # returns pisa_df, inputs, categories_found, and graphics_objects
+    return (
+        univariate_graphics(
+            undesired_graphics,
+            *post_wrangle(
+                *wrangler(
+                    pisa_df, inputs))))
 
 
 PISA2012 = load_original(reload=False, integrity_check=False)
@@ -153,7 +180,8 @@ OUTPUT = initialize(PISA_SAMPLE.copy(),
                     [category_definitions.KNOWN_CATEGORIES,
                      category_definitions.PREFERRED_NAMING,
                      test_groupings.INDEP_TEST_GROUPING01,
-                     test_groupings.DEPEN_TEST_GROUPING01]
+                     test_groupings.DEPEN_TEST_GROUPING01],
+                    ['']
                     )
 
 OUTPUT[0][test_groupings.DEPEN_TEST_GROUPING01['math_result']]
