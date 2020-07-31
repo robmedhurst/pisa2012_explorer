@@ -11,9 +11,6 @@ import zipfile
 
 import pandas as pd
 
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-
 from wrangle import wrangle as wrangler
 import post_wrangling
 import category_definitions
@@ -130,14 +127,31 @@ def univariate_graphics(undesired_graphics,
     undesired_graphics, is a list of strings to ignore when searching for
     graphics functions.
     """
+    (independent_groups, dependent_groups) = inputs[2:]
+
+    def get_vars(group_name):
+        """Get list of variable names for group of vars, group_name."""
+        v_list = []
+        if group_name in independent_groups:
+            v_list = independent_groups[group_name]
+        elif group_name in dependent_groups:
+            v_list = dependent_groups[group_name]
+        return v_list
+
     graphic_objects = []
 
     # iterate group category matches
     for subset in group_category_matches:
         for group_name in group_category_matches[subset]:
+
+            # group specific parameters:
             category = group_category_matches[subset][group_name]
+            group_specific_parameters = (group_name, get_vars(group_name))
+
+            # exploratory_graphics contains univariate graphics functions
             for function_name in dir(exploratory_graphics)[8:]:
                 if category in function_name:
+
                     # undesired_graphics specifies graphics to ignore
                     if category in undesired_graphics:
                         break
@@ -146,12 +160,13 @@ def univariate_graphics(undesired_graphics,
                     if function_name.replace(
                             category, "")[1:] in undesired_graphics:
                         break
-                    # call function if not blacklisted
-                    test = getattr(
+                    object_returned = getattr(
                         exploratory_graphics,
                         (function_name))(
-                            group_name, pisa_df, inputs)
-                    graphic_objects.append(test)
+                            group_specific_parameters, pisa_df, inputs)
+
+                    # keep outputs to return
+                    graphic_objects.append(object_returned)
 
     return pisa_df, inputs, group_category_matches, graphic_objects
 
@@ -174,14 +189,14 @@ def initialize(pisa_df, inputs=None, undesired_graphics=["all"]):
                     pisa_df, inputs))))
 
 
-PISA2012 = load_original(reload=False, integrity_check=False)
-PISA_SAMPLE = PISA2012.sample(500)
-OUTPUT = initialize(PISA_SAMPLE.copy(),
-                    [category_definitions.KNOWN_CATEGORIES,
-                     category_definitions.PREFERRED_NAMING,
-                     test_groupings.INDEP_TEST_GROUPING01,
-                     test_groupings.DEPEN_TEST_GROUPING01],
-                    ['']
-                    )
+if __name__ == '__main__':
+    PISA2012 = load_original(reload=False, integrity_check=False)
+    PISA_SAMPLE = PISA2012.sample(500)
+    OUTPUT = initialize(PISA_SAMPLE.copy(),
+                        [category_definitions.KNOWN_CATEGORIES,
+                         category_definitions.PREFERRED_NAMING,
+                         test_groupings.INDEP_TEST_GROUPING01,
+                         test_groupings.DEPEN_TEST_GROUPING01],
+                        ['']
+                        )
 
-OUTPUT[0][test_groupings.DEPEN_TEST_GROUPING01['math_result']]
