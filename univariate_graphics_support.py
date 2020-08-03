@@ -5,7 +5,11 @@ import seaborn as sns
 from main import get_longnames
 
 
-def float_horizontal_frequency(parameters, pisa_df, inputs):
+# def float_horizontal_frequency(parameters, pisa_df, inputs):
+#     return float_horizontal_frequency(parameters, pisa_df, inputs)
+
+
+def float_horizontal_frequency(parameters, pisa_df, inputs, kde):
     """Return a subplot of scatterplots of these float type varibles."""
     (independent_groups, dependent_groups) = inputs[2:]
     (group_name, var_list) = parameters
@@ -30,7 +34,7 @@ def float_horizontal_frequency(parameters, pisa_df, inputs):
             # seaborn distribution plot
             ax = sns.distplot(
                 pisa_df[var_name],
-                kde=True,
+                kde=kde,
                 hist_kws={"rwidth": 0.75, 'edgecolor': 'black', 'alpha': 1.0}
                 )
 
@@ -41,12 +45,15 @@ def float_horizontal_frequency(parameters, pisa_df, inputs):
                 new_ylim = axis.get_ylim()[1]
                 if new_ylim > max_ylim:
                     max_ylim = new_ylim
+                print(axis.get_ylim())
 
             # Apply max y lim to all subplots on second pass
             if not first_pass:
                 # only display y label on first subplot
-                if n == 0:
+                if n == 0 and kde == 1:
                     yname = "Frequency"
+                elif n == 0 and kde == 0:
+                    yname = "Count"
                 else:
                     yname = None
 

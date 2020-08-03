@@ -15,7 +15,7 @@ from wrangle import wrangle as wrangler
 import post_wrangling
 import category_definitions
 import test_groupings
-import exploratory_graphics
+import univariate_graphics_pool
 
 
 # Dataset can take a few minutes to load on some systems.
@@ -148,8 +148,8 @@ def univariate_graphics(undesired_graphics,
             category = group_category_matches[subset][group_name]
             group_specific_parameters = (group_name, get_vars(group_name))
 
-            # exploratory_graphics contains univariate graphics functions
-            for function_name in dir(exploratory_graphics)[8:]:
+            # univariate_graphics_pool contains univariate graphics functions
+            for function_name in dir(univariate_graphics_pool)[8:]:
                 if category in function_name:
 
                     # undesired_graphics specifies graphics to ignore
@@ -160,8 +160,9 @@ def univariate_graphics(undesired_graphics,
                     if function_name.replace(
                             category, "")[1:] in undesired_graphics:
                         break
+                    print(function_name)
                     object_returned = getattr(
-                        exploratory_graphics,
+                        univariate_graphics_pool,
                         (function_name))(
                             group_specific_parameters, pisa_df, inputs)
 
@@ -188,6 +189,8 @@ def initialize(pisa_df, inputs=None, undesired_graphics=["all"]):
                 *wrangler(
                     pisa_df, inputs))))
 
+# %%
+
 
 if __name__ == '__main__':
     PISA2012 = load_original(reload=False, integrity_check=False)
@@ -197,6 +200,7 @@ if __name__ == '__main__':
                          category_definitions.PREFERRED_NAMING,
                          test_groupings.INDEP_TEST_GROUPING01,
                          test_groupings.DEPEN_TEST_GROUPING01],
-                        ['']
+                        ['kde']
                         )
 
+    OUTPUT[3][1]
