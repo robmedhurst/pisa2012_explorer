@@ -11,14 +11,11 @@ import zipfile
 
 import pandas as pd
 
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-
 from wrangle import wrangle as wrangler
 import post_wrangling
 import category_definitions
 import test_groupings
-import exploratory_graphics
+import univariate_graphics_pool
 
 
 # Dataset can take a few minutes to load on some systems.
@@ -122,41 +119,7 @@ def post_wrangle(pisa_df, inputs, group_category_matches):
     return pisa_df, inputs, group_category_matches
 
 
-def univariate_graphics(undesired_graphics,
-                        pisa_df, inputs, group_category_matches):
-    """
-    Call category specific graphics functions.
-
-    undesired_graphics, is a list of strings to ignore when searching for
-    graphics functions.
-    """
-    graphic_objects = []
-
-    # iterate group category matches
-    for subset in group_category_matches:
-        for group_name in group_category_matches[subset]:
-            category = group_category_matches[subset][group_name]
-            for function_name in dir(exploratory_graphics)[8:]:
-                if category in function_name:
-                    # undesired_graphics specifies graphics to ignore
-                    if category in undesired_graphics:
-                        break
-                    if function_name in undesired_graphics:
-                        break
-                    if function_name.replace(
-                            category, "")[1:] in undesired_graphics:
-                        break
-                    # call function if not blacklisted
-                    test = getattr(
-                        exploratory_graphics,
-                        (function_name))(
-                            group_name, pisa_df, inputs)
-                    graphic_objects.append(test)
-
-    return pisa_df, inputs, group_category_matches, graphic_objects
-
-
-def initialize(pisa_df, inputs=None, undesired_graphics=["all"]):
+def initialize(pisa_df, inputs=None):
     """Wrap function calls."""
     # use test inputs if none given
     if inputs is None:
@@ -168,20 +131,97 @@ def initialize(pisa_df, inputs=None, undesired_graphics=["all"]):
     # returns pisa_df, inputs, categories_found, and graphics_objects
     return (
         univariate_graphics(
-            undesired_graphics,
             *post_wrangle(
                 *wrangler(
                     pisa_df, inputs))))
 
 
-PISA2012 = load_original(reload=False, integrity_check=False)
-PISA_SAMPLE = PISA2012.sample(500)
-OUTPUT = initialize(PISA_SAMPLE.copy(),
-                    [category_definitions.KNOWN_CATEGORIES,
-                     category_definitions.PREFERRED_NAMING,
-                     test_groupings.INDEP_TEST_GROUPING01,
-                     test_groupings.DEPEN_TEST_GROUPING01],
-                    ['']
-                    )
+def univariate_graphics(pisa_df, inputs, group_category_matches):
+    """
+    Call category specific graphics functions.
 
-OUTPUT[0][test_groupings.DEPEN_TEST_GROUPING01['math_result']]
+    undesired_graphics, is a list of strings to ignore when searching for
+    graphics functions.
+    """
+    (independent_groups, dependent_groups) = inputs[2:]
+
+    def get_vars(group_name):
+        """Get list of variable names for group of vars, group_name."""
+        v_list = []
+        if group_name in independent_groups:
+            v_list = independent_groups[group_name]
+        elif group_name in dependent_groups:
+            v_list = dependent_groups[group_name]
+        return v_list
+
+    def get_univariate_graphic():
+        print("calling:  ", function_name)
+        return getattr(
+            univariate_graphics_pool,
+            (function_name))(
+                group_specific_parameters, pisa_df, inputs)
+
+    graphic_objects = []
+    # iterate group category matches
+    for subset in group_category_matches:
+        print("\n\n", list(group_category_matches[subset]))
+        for group_name in group_category_matches[subset]:
+
+            # group specific parameters:
+            category = group_category_matches[subset][group_name]
+            group_specific_parameters = (
+                group_name, get_vars(group_name), category)
+            print("\n", group_name, " -  ", category)
+            # univariate_graphics_pool contains univariate graphics functions
+            for function_name in dir(univariate_graphics_pool)[8:]:
+
+                if category in function_name:
+                    graphic_objects.append(get_univariate_graphic())
+
+                if category in inputs[0] and "categorical" in function_name:
+                    graphic_objects.append(get_univariate_graphic())
+
+            if category in inputs[0] and len(inputs[0][category]) == 2:
+                function_name = "binary_counts_singleplot"
+                group_specific_parameters = (
+                    group_name, get_vars(group_name), category)
+                graphic_objects.append(get_univariate_graphic())
+
+            if category == "float" and len(get_vars(group_name)) > 1:
+                function_name = "float_means_singleplot"
+                group_specific_parameters = (
+                    group_name, [group_name + "_mean"], category)
+                graphic_objects.append(get_univariate_graphic())
+
+    return pisa_df, inputs, group_category_matches, graphic_objects
+
+
+# %%
+
+
+if __name__ == '__main__':
+    PISA2012 = load_original(reload=False, integrity_check=False)
+    PISA_SAMPLE = PISA2012.sample(500)
+    OUTPUT = initialize(PISA_SAMPLE.copy(),
+                        [category_definitions.KNOWN_CATEGORIES,
+                         category_definitions.PREFERRED_NAMING,
+                         test_groupings.INDEP_TEST_GROUPING01,
+                         test_groupings.DEPEN_TEST_GROUPING01]
+                        )
+
+
+OUTPUT[3][0]
+OUTPUT[3][1]
+OUTPUT[3][2]
+OUTPUT[3][3]
+OUTPUT[3][4]
+OUTPUT[3][5]
+OUTPUT[3][6]
+OUTPUT[3][7]
+OUTPUT[3][8]
+OUTPUT[3][9]
+OUTPUT[3][10]
+OUTPUT[3][11]
+OUTPUT[3][12]
+OUTPUT[3][13]
+OUTPUT[3][14]

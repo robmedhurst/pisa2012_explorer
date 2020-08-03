@@ -45,7 +45,7 @@ def float_group_post_wrangle(group_name, pisa_df, inputs):
 
 
 # binary_yn
-def binary_yn_group_post_wrangle(group_name, pisa_df, inputs):
+def binary_yn1_group_post_wrangle(group_name, pisa_df, inputs):
     """
     Apply binary_yn group operations.
 
@@ -57,7 +57,8 @@ def binary_yn_group_post_wrangle(group_name, pisa_df, inputs):
         pisa_df[name + '_count'] = pisa_df[grp].transpose().sum().astype(int)
 
     # handle dependent and independent variable groups seperately
-    if group_name in independent_groups:
-        create_count(group_name, independent_groups[group_name])
-    elif group_name in dependent_groups:
-        create_count(group_name, dependent_groups[group_name])
+    if len(independent_groups[group_name]) > 1:
+        if group_name in independent_groups:
+            create_count(group_name, independent_groups[group_name])
+        elif group_name in dependent_groups:
+            create_count(group_name, dependent_groups[group_name])
