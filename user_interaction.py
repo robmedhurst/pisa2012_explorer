@@ -1,0 +1,99 @@
+"""User interactions."""
+
+import pandas as pd
+
+
+def single_response_from_list(list_input, not_selectable_indices=None):
+    """
+    Return a single selection by user from given list of strings.
+
+    Indices represented by 'not_selectable_indices' are excluded
+    from selection options but still printed.
+
+
+    Parameters
+    ----------
+    list_input : list of strings to be selection options.
+
+    not_selectable_indices : list of integers representing indices to bypass.
+
+    Returns
+    -------
+    The selected string from list_input.
+    """
+    if not_selectable_indices is None:
+        not_selectable_indices = []
+    # accepted responses are the indices of list_input as strings
+    accepted_responses = set(list(range(len(list_input))))
+    # remove not_selectable_indices
+    accepted_responses.difference_update(set(not_selectable_indices))
+    accepted_responses = pd.array(list(accepted_responses)).astype(str)
+
+    prompt_string = "\n\nSelect an option by index:\n"
+    for index, phrase in enumerate(list_input):
+        # not selectable items are marked with a dash instead of index number
+        if index in not_selectable_indices:
+            prompt_string += ("[-]   " + phrase + "\n")
+        else:
+            prompt_string += ("[" + str(index) + "]   " + phrase + "\n")
+    prompt_string += "\nYour input: "
+    # user repsonse must be in accepted_responses before returning
+    response = ''
+    while response.lower() not in accepted_responses:
+        response = input(prompt_string)
+    return list_input[int(response)]
+
+
+def multi_responses_from_list(
+        list_input,
+        not_selectable_indices=None,
+        max_selected=None):
+    """Return selections made by user from given list of strings."""
+    potential_selections = list_input.copy()
+
+    # human readable exit string, insert ahead of other selection options
+    exit_selection_message = '-FINISH SELECTION-'
+    # insert exit key
+    potential_selections.insert(0, exit_selection_message)
+
+    # human readable reset string, insert behind other selection options
+    reset_selection_message = '-RESTART SELECTION-'
+    potential_selections.insert(
+        len(potential_selections), reset_selection_message)
+
+    # if no maximum number of selections specified, user retains control
+    if max_selected is None:
+        max_selected = len(list_input) + 1
+
+    # loop in case user wants to start over
+    while True:
+        returning_strings = []
+        if not_selectable_indices is None:
+            current_not_selectable_indices = []
+        else:
+            current_not_selectable_indices = not_selectable_indices.copy()
+
+        # repeat single_response_from_list until exit conditions met
+        while True:
+
+            # return on max number of selections reached
+            if len(returning_strings) == max_selected:
+                return returning_strings
+
+            # user selection made
+            current_selection = single_response_from_list(
+                potential_selections, current_not_selectable_indices)
+
+            # return on user command
+            if current_selection == exit_selection_message:
+                return returning_strings
+
+            # restart selection on user command
+            if current_selection == reset_selection_message:
+                break
+
+            # update current_not_selectable_indices
+            current_not_selectable_indices.append(
+                potential_selections.index(current_selection))
+            # update returning_strings
+            returning_strings.append(current_selection)
