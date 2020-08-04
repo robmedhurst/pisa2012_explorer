@@ -7,7 +7,7 @@ variables are explored concurrently.
 """
 
 import zipfile
-# import warnings
+import pickle
 
 import pandas as pd
 
@@ -209,19 +209,10 @@ if __name__ == '__main__':
                          test_groupings.DEPEN_TEST_GROUPING01]
                         )
 
+    def show_all_results():
+        """Display results."""
+        for i in OUTPUT[3]:
+            i.seek(0)
+            pickle.load(i)
 
-OUTPUT[3][0]
-OUTPUT[3][1]
-OUTPUT[3][2]
-OUTPUT[3][3]
-OUTPUT[3][4]
-OUTPUT[3][5]
-OUTPUT[3][6]
-OUTPUT[3][7]
-OUTPUT[3][8]
-OUTPUT[3][9]
-OUTPUT[3][10]
-OUTPUT[3][11]
-OUTPUT[3][12]
-OUTPUT[3][13]
-OUTPUT[3][14]
+    show_all_results()
