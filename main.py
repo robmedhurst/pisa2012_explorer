@@ -16,6 +16,7 @@ import post_wrangling
 import category_definitions
 import test_groupings
 import univariate_graphics_pool
+import user_interaction
 
 
 # Dataset can take a few minutes to load on some systems.
@@ -209,10 +210,18 @@ if __name__ == '__main__':
                          test_groupings.DEPEN_TEST_GROUPING01]
                         )
 
-    def show_all_results():
-        """Display results."""
-        for i in OUTPUT[3]:
-            i.seek(0)
-            pickle.load(i)
+    # def show_all_output():
+    #     """Display results."""
+    #     for i in OUTPUT[3]:
+    #         i.seek(0)
+    #         pickle.load(i)
 
-    show_all_results()
+    # show_all_output()
+
+    # test_list = [
+    #     'Not at all confident',
+    #     'Not very confident',
+    #     'Confident',
+    #     'Very confident']
+
+    # user_interaction.multi_responses_from_list(test_list, max_selected=3)
