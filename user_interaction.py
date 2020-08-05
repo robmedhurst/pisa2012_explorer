@@ -3,6 +3,43 @@
 import pandas as pd
 
 
+def user_batch_questioning(question_set=None):
+    """Prompt user for necessary specifications."""
+    # dummie set, delete this
+    if question_set is None:
+        question_set = {
+            'question1': {
+                'type': "single",
+                'not_selectable': [],
+                'selections': [
+                    'blue',
+                    'red',
+                    'green']
+                },
+            'question2': {
+                'type': "multi",
+                'not_selectable': [],
+                'selections': [
+                    'blue',
+                    'red',
+                    'green']
+                }
+            }
+
+    for question in question_set['single_response']:
+        if question[type] == 'single':
+            question_set[question]['response'] = single_response_from_list(
+                    question_set[question]
+                    )
+
+        elif question[type] == 'single':
+            question_set[question]['response'] = multi_responses_from_list(
+                    question_set['multiple_choice'][question]
+                    )
+
+    return question_set
+
+
 def single_response_from_list(list_input, not_selectable_indices=None):
     """
     Return a single selection by user from given list of strings.
