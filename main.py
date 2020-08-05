@@ -16,7 +16,7 @@ import post_wrangling
 import category_definitions
 import test_groupings
 import univariate_graphics_pool
-import user_interaction
+import user_interaction as ui
 
 
 # Dataset can take a few minutes to load on some systems.
@@ -24,13 +24,13 @@ import user_interaction
 # Try to laod from csv then from zip.
 def load_original(reload=False, integrity_check=False):
     """
-    Load original PISA2012 dataset from file and return it as an DataFrame.
+    Load original pisa2012 dataset from file and return it as an DataFrame.
 
     Does not load if already in memory.
     Forces reload on parameter 'reload=True'.
     Checks datastructure if parameter 'integrety_check=True'.
     """
-    def confirm_pisa_df():
+    def confirm_pisa_df(df):
         """
         Placehold function.
 
@@ -50,9 +50,10 @@ def load_original(reload=False, integrity_check=False):
             # return if test passed, raise error if failed
             if passed:
                 print("Dataframe passed integrity check.\n")
-                return pisa_df
+                return df
             raise FileExistsError("Datafrane failed integrity check!")
-        return pisa_df
+        return df
+
     if 'PISA2012' not in globals():
         print("PISA2012 original not in locals, attempting to load",
               "(this may take a few minutes)...\n")
@@ -61,8 +62,8 @@ def load_original(reload=False, integrity_check=False):
               "(this may take a few minutes)...\n")
     else:
         print("Variable with name PISA2012 already in memory.\n")
-        pisa_df = PISA2012
-        return confirm_pisa_df()
+        return confirm_pisa_df(PISA2012)
+
     # load, check, raise error if needed
     if ('PISA2012' not in globals()) or (reload):
         # global PISA2012
@@ -71,7 +72,7 @@ def load_original(reload=False, integrity_check=False):
                 'pisa2012.csv', sep=',', encoding='latin-1',
                 error_bad_lines=False, dtype='unicode', index_col=False)
             print("Loaded from csv.\n")
-            return confirm_pisa_df()
+            return confirm_pisa_df(pisa_df)
         except FileNotFoundError:
             try:    # loading directly from zip
                 pisa_df = pd.read_csv(
@@ -80,14 +81,14 @@ def load_original(reload=False, integrity_check=False):
                     sep=',', encoding='latin-1', error_bad_lines=False,
                     dtype='unicode', index_col=False)
                 print("Loaded from zip.\n")
-                return confirm_pisa_df()
+                return confirm_pisa_df(pisa_df)
             except FileNotFoundError:    # loading failed
-                raise FileNotFoundError("PISA2012 not in local directory.")
+                raise FileNotFoundError("pisa2012 not in local directory.")
 
 
 def get_longnames(names):
     """
-    Return PISA2012 long names given short names.
+    Return PISA 2012 long names given short names.
 
     Return list of PISA variable descriptions corresponding to variable
     shortnames given by list name.
@@ -118,23 +119,6 @@ def post_wrangle(pisa_df, inputs, group_category_matches):
                     (category + "_group_post_wrangle"))(
                         group_name, pisa_df, inputs)
     return pisa_df, inputs, group_category_matches
-
-
-def initialize(pisa_df, inputs=None):
-    """Wrap function calls."""
-    # use test inputs if none given
-    if inputs is None:
-        inputs = [
-            category_definitions.KNOWN_CATEGORIES,
-            category_definitions.PREFERRED_NAMING,
-            test_groupings.INDEP_TEST_GROUPING01,
-            test_groupings.DEPEN_TEST_GROUPING01]
-    # returns pisa_df, inputs, categories_found, and graphics_objects
-    return (
-        univariate_graphics(
-            *post_wrangle(
-                *wrangler(
-                    pisa_df, inputs))))
 
 
 def univariate_graphics(pisa_df, inputs, group_category_matches):
@@ -197,18 +181,98 @@ def univariate_graphics(pisa_df, inputs, group_category_matches):
     return pisa_df, inputs, group_category_matches, graphic_objects
 
 
+def initialize(pisa_sample=None):
+    """Wrap function calls."""
+    # returns pisa_df, inputs, categories_found, and graphics_objects
+    return (
+        univariate_graphics(
+            *post_wrangle(
+                *wrangler(
+                    *user_initialize(pisa_sample)))))
+
+
+def user_initialize(pisa_sample=None):
+    """User inputs to initialize."""
+    # =====================#
+    #     INTERACTIONS     #
+    # =====================#
+
+    init_q1 = {'q': {'preface': "Perform integrity check on original csv?"}}
+
+    init_q2 = {'q': {'preface': "Do you want to resample?"}}
+
+    init_q3 = {'q': {
+        'preface': "Which sample size should we start with?",
+        'question_type': "single",
+        'selection_options': [
+            "500",
+            "5000",
+            "50000"]}}
+
+    init_q4 = {'q': {'question_type': "integer", 'max_min_vals': (1, 5)}}
+
+    init_q5 = {'q': {'question_type': "string", 'max_min_vals': (1, 20)}}
+
+    # preform integrity check?
+    if ui.user_batch_questioning(init_q1)['q']['response'] == 'yes':
+        pisa2012 = load_original(integrity_check=True)
+    else:
+        pisa2012 = load_original()
+
+    # reload sample if loaded? what size sample?
+    if pisa_sample is None:
+        pisa_sample = pisa2012.sample(
+            int(ui.user_batch_questioning(init_q3)['q']['response']))
+    elif ui.user_batch_questioning(init_q2)['q']['response'] == 'yes':
+        pisa_sample = pisa2012.sample(
+            int(ui.user_batch_questioning(init_q3)['q']['response']))
+
+# =============================================================================
+#     Have PISA_SAMPLE, Need INPUTS
+# =============================================================================
+    inputs = [
+        category_definitions.KNOWN_CATEGORIES,
+        category_definitions.PREFERRED_NAMING]
+
+    print("Lets input all of our independent variables.")
+    print("How many groups of independent vars would you like to explore?")
+    number_of_groups = ui.user_batch_questioning(init_q4)['q']['response']
+    indep_groups = {}
+    for x in range(number_of_groups):
+
+        group = []
+        print("How many variables will this group contain?")
+        group_size = ui.user_batch_questioning(init_q4)['q']['response']
+        print("What would you like to name this group?")
+        group_name = ui.user_batch_questioning(init_q5)['q']['response']
+        for y in range(group_size):
+
+            print("enter a pisa variable")
+            group.append(ui.input_pisa_var_name(list(PISA2012.columns)))
+
+        indep_groups[group_name] = group
+    inputs.append(indep_groups)
+
+    # inputs.append(test_groupings.INDEP_TEST_GROUPING01)
+    inputs.append(test_groupings.DEPEN_TEST_GROUPING01)
+    print(inputs)
+    return pisa_sample, inputs
+
 # %%
 
 
 if __name__ == '__main__':
-    PISA2012 = load_original(reload=False, integrity_check=False)
-    PISA_SAMPLE = PISA2012.sample(500)
-    OUTPUT = initialize(PISA_SAMPLE.copy(),
-                        [category_definitions.KNOWN_CATEGORIES,
-                         category_definitions.PREFERRED_NAMING,
-                         test_groupings.INDEP_TEST_GROUPING01,
-                         test_groupings.DEPEN_TEST_GROUPING01]
-                        )
+    PISA2012 = load_original()
+    OUTPUT = initialize()
+
+    # PISA2012 = load_original(reload=False, integrity_check=False)
+    # PISA_SAMPLE = PISA2012.sample(500)
+    # OUTPUT = initialize(PISA_SAMPLE.copy(),
+    #                     [category_definitions.KNOWN_CATEGORIES,
+    #                      category_definitions.PREFERRED_NAMING,
+    #                      test_groupings.INDEP_TEST_GROUPING01,
+    #                      test_groupings.DEPEN_TEST_GROUPING01]
+    #                     )
 
     # def show_all_output():
     #     """Display results."""
