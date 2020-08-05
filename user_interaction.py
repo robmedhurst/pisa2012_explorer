@@ -158,6 +158,3 @@ def multi_responses_from_list(list_input, not_selectable_indices=None,
                 potential_selections.index(current_selection))
             # update returning_strings
             returning_strings.append(current_selection)
-
-
-user_batch_questioning()
