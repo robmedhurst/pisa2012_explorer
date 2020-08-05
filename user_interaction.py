@@ -72,6 +72,10 @@ def user_batch_questioning(question_set=None):
         elif question_type in ['integer']:
             question_set[question]['response'] = input_integer(*max_min_vals)
 
+        elif question_type in ['string']:
+            question_set[question]['response'] = input_simple_string(
+                *max_min_vals)
+
     return question_set
 
 
@@ -234,3 +238,13 @@ def input_simple_string(min_length=None, max_length=None):
                 print("string length expected greater than ", min_length-1)
 
     return response
+
+
+def input_pisa_var_name(valid_names):
+    """Return valid PISA variable name input by user."""
+    prompt_string = "Please enter a valid PISA variable (column name): "
+
+    while True:
+        response = input(prompt_string)
+        if response in valid_names:
+            return response
