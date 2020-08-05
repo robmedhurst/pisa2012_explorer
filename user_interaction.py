@@ -201,3 +201,36 @@ def input_integer(min_int=None, max_int=None):
 
         except ValueError:
             print("not an integer")
+
+
+def input_simple_string(min_length=None, max_length=None):
+    """Return a simple string specified by user."""
+    prompt_string = "Please enter a simple string: "
+    while True:
+        response = input(prompt_string)
+
+        response.strip()
+
+        if min_length is None and max_length is None:
+            break
+
+        elif min_length is not None and max_length is not None:
+            if min_length <= len(response) <= max_length:
+                break
+            else:
+                print("string length expected between ",
+                      min_length, " and ", max_length)
+
+        elif max_length is not None:
+            if max_length >= len(response):
+                break
+            else:
+                print("string length expected less than ", max_length+1)
+
+        else:
+            if min_length <= len(response):
+                break
+            else:
+                print("string length expected greater than ", min_length-1)
+
+    return response
