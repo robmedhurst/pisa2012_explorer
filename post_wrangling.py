@@ -12,14 +12,14 @@ These functions edit in place or return a graphic.
 
 # handle independent and dependent variables seperately
 
-# text_response
-def text_response_group_post_wrangle():
-    """Apply text only group operations: None."""
+# # text_response
+# def text_response_group_post_wrangle(group_name, pisa_df, inputs):
+#     """Apply text only group operations: None."""
 
 
-# integer
-def integer_group_post_wrangle():
-    """Apply integer group operations: None."""
+# # integer
+# def integer_group_post_wrangle(group_name, pisa_df, inputs):
+#     """Apply integer group operations: None."""
 
 
 # float
