@@ -52,6 +52,12 @@ def user_batch_questioning(question_set=None):
         except KeyError:
             not_selectable = None
 
+        # default to no max or min
+        try:
+            max_min_vals = question_set[question]['max_min_vals']
+        except KeyError:
+            max_min_vals = (None, None)
+
         # user to select one or multiple
         if question_type in ['single']:
             question_set[question]['response'] = single_response_from_list(
@@ -62,6 +68,9 @@ def user_batch_questioning(question_set=None):
             question_set[question]['response'] = multi_responses_from_list(
                 selection_options, not_selectable, max_selectable
                 )
+
+        elif question_type in ['integer']:
+            question_set[question]['response'] = input_integer(*max_min_vals)
 
     return question_set
 
