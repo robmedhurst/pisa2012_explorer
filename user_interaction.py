@@ -158,3 +158,37 @@ def multi_responses_from_list(list_input, not_selectable_indices=None,
                 potential_selections.index(current_selection))
             # update returning_strings
             returning_strings.append(current_selection)
+
+
+def input_integer(min_int=None, max_int=None):
+    """Return an integer within given range, specified by user."""
+    prompt_string = "Please enter an integer: "
+    while True:
+        response = input(prompt_string)
+
+        try:
+            response = int(response)
+            if max_int is None and min_int is None:
+                return response
+
+            elif max_int is not None and min_int is not None:
+                if min_int <= response <= max_int:
+                    return response
+                else:
+                    print("integer expected between ",
+                          min_int, " and ", max_int)
+
+            elif max_int is not None:
+                if max_int >= response:
+                    return response
+                else:
+                    print("integer expected less than ", max_int+1)
+
+            else:
+                if min_int <= response:
+                    return response
+                else:
+                    print("integer expected greater than ", min_int-1)
+
+        except ValueError:
+            print("not an integer")
