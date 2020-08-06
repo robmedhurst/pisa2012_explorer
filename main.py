@@ -30,7 +30,7 @@ def load_original(reload=False, integrity_check=False):
     Forces reload on parameter 'reload=True'.
     Checks datastructure if parameter 'integrety_check=True'.
     """
-    def confirm_pisa_df(df):
+    def confirm_pisa_df(df_through):
         """
         Placehold function.
 
@@ -50,9 +50,9 @@ def load_original(reload=False, integrity_check=False):
             # return if test passed, raise error if failed
             if passed:
                 print("Dataframe passed integrity check.\n")
-                return df
+                return df_through
             raise FileExistsError("Datafrane failed integrity check!")
-        return df
+        return df_through
 
     if 'PISA2012' not in globals():
         print("PISA2012 original not in locals, attempting to load",
@@ -227,36 +227,52 @@ def user_initialize(pisa_sample=None):
         pisa_sample = pisa2012.sample(
             int(ui.user_batch_questioning(init_q3)['q']['response']))
 
-# =============================================================================
-#     Have PISA_SAMPLE, Need INPUTS
-# =============================================================================
+    # =========================================
+    #     Have PISA_SAMPLE, Need INPUTS
+    # =========================================
     inputs = [
         category_definitions.KNOWN_CATEGORIES,
         category_definitions.PREFERRED_NAMING]
 
-    print("Lets input all of our independent variables.")
-    print("How many groups of independent vars would you like to explore?")
-    number_of_groups = ui.user_batch_questioning(init_q4)['q']['response']
-    indep_groups = {}
-    for x in range(number_of_groups):
+    def user_input_groups(num_groups=1):
+        groups = {}
+        print("Groups each need a name and list of variables.")
+        for x in range(num_groups):
+            group = []
 
-        group = []
-        print("How many variables will this group contain?")
-        group_size = ui.user_batch_questioning(init_q4)['q']['response']
-        print("What would you like to name this group?")
-        group_name = ui.user_batch_questioning(init_q5)['q']['response']
-        for y in range(group_size):
+            print("What would you like to name this group?")
+            # user input group_name
+            group_name = ui.user_batch_questioning(init_q5)['q']['response']
 
-            print("enter a pisa variable")
-            group.append(ui.input_pisa_var_name(list(PISA2012.columns)))
+            print("How many variables will this group contain?")
+            # user input group_size
+            group_size = ui.user_batch_questioning(init_q4)['q']['response']
 
-        indep_groups[group_name] = group
-    inputs.append(indep_groups)
+            for y in range(group_size):
+                print("Enter a pisa variable (column name):")
+                group.append(
+                    ui.input_pisa_var_name(list(PISA2012.columns)))
 
-    # inputs.append(test_groupings.INDEP_TEST_GROUPING01)
-    inputs.append(test_groupings.DEPEN_TEST_GROUPING01)
-    print(inputs)
+            groups[group_name] = group
+        return groups
+
+    print("\nFirst input a group of dependent variables.")
+    inputs.append(user_input_groups())  # defaults to one group
+
+    print("Now input the groups of independent variables.")
+    print("How many groups of independent variables will you enter?")
+    # number_of_groups = ui.user_batch_questioning(init_q4)['q']['response']
+    inputs.insert(2, user_input_groups(
+        ui.user_batch_questioning(init_q4)['q']['response']))
+
     return pisa_sample, inputs
+
+
+def show_all_output():
+    """Display results."""
+    for i in OUTPUT[3]:
+        i.seek(0)
+        pickle.load(i)
 
 # %%
 
@@ -264,28 +280,4 @@ def user_initialize(pisa_sample=None):
 if __name__ == '__main__':
     PISA2012 = load_original()
     OUTPUT = initialize()
-
-    # PISA2012 = load_original(reload=False, integrity_check=False)
-    # PISA_SAMPLE = PISA2012.sample(500)
-    # OUTPUT = initialize(PISA_SAMPLE.copy(),
-    #                     [category_definitions.KNOWN_CATEGORIES,
-    #                      category_definitions.PREFERRED_NAMING,
-    #                      test_groupings.INDEP_TEST_GROUPING01,
-    #                      test_groupings.DEPEN_TEST_GROUPING01]
-    #                     )
-
-    # def show_all_output():
-    #     """Display results."""
-    #     for i in OUTPUT[3]:
-    #         i.seek(0)
-    #         pickle.load(i)
-
-    # show_all_output()
-
-    # test_list = [
-    #     'Not at all confident',
-    #     'Not very confident',
-    #     'Confident',
-    #     'Very confident']
-
-    # user_interaction.multi_responses_from_list(test_list, max_selected=3)
+    show_all_output()

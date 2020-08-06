@@ -22,7 +22,7 @@ def user_batch_questioning(question_set=None):
 
     # parse each question
     for question in question_set:
-        print("\n\n")
+        # print("\n\n")
         try:
             print(question_set[question]['preface'])
         except KeyError:
