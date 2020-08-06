@@ -1,4 +1,9 @@
-"""Functions with verbose names to be caught by keyword."""
+"""
+Functions for univariate group plotting.
+
+Functions for univariate group plotting with verbose names to be
+caught by keyword.
+"""
 
 import univariate_graphics_support as u
 
