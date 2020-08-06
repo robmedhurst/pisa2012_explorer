@@ -3,6 +3,82 @@
 import pandas as pd
 
 
+def user_batch_questioning(question_set=None):
+    """
+    Return user selections from set of selections options.
+
+    Each key identifies a question.
+    Values are dictionaries containting at least "type" and "selections"
+
+    question_set is a dictionary, entries are questions to ask the user.
+    Each entry is a dictionary whose keys represent the elements of a
+    question.
+    """
+    # dumbie question set, delete once function is wrapped
+    if question_set is None:
+        # this is never called so keeping import local
+        import test_groupings
+        question_set = test_groupings.PLACEHOLDER_QUESTIONS
+
+    # parse each question
+    for question in question_set:
+        # print("\n\n")
+        try:
+            print(question_set[question]['preface'])
+        except KeyError:
+            pass
+
+        # default to single response if none specified
+        try:
+            question_type = question_set[question]['question_type']
+        except KeyError:
+            question_type = 'single'
+
+        # default to y/n if no selection
+        try:
+            selection_options = question_set[question]['selection_options']
+        except KeyError:
+            selection_options = ['yes', 'no']
+
+        # default to no maximum numer of selections
+        try:
+            max_selectable = question_set[question]['max_selectable']
+        except KeyError:
+            max_selectable = None
+
+        # default to no excluded selections
+        try:
+            not_selectable = question_set[question]['not_selectable']
+        except KeyError:
+            not_selectable = None
+
+        # default to no max or min
+        try:
+            max_min_vals = question_set[question]['max_min_vals']
+        except KeyError:
+            max_min_vals = (None, None)
+
+        # user to select one or multiple
+        if question_type in ['single']:
+            question_set[question]['response'] = single_response_from_list(
+                selection_options, not_selectable
+                )
+
+        elif question_type in ['multi']:
+            question_set[question]['response'] = multi_responses_from_list(
+                selection_options, not_selectable, max_selectable
+                )
+
+        elif question_type in ['integer']:
+            question_set[question]['response'] = input_integer(*max_min_vals)
+
+        elif question_type in ['string']:
+            question_set[question]['response'] = input_simple_string(
+                *max_min_vals)
+
+    return question_set
+
+
 def single_response_from_list(list_input, not_selectable_indices=None):
     """
     Return a single selection by user from given list of strings.
@@ -29,7 +105,7 @@ def single_response_from_list(list_input, not_selectable_indices=None):
     accepted_responses.difference_update(set(not_selectable_indices))
     accepted_responses = pd.array(list(accepted_responses)).astype(str)
 
-    prompt_string = "\n\nSelect an option by index:\n"
+    prompt_string = "Select an option by index:\n"
     for index, phrase in enumerate(list_input):
         # not selectable items are marked with a dash instead of index number
         if index in not_selectable_indices:
@@ -44,10 +120,8 @@ def single_response_from_list(list_input, not_selectable_indices=None):
     return list_input[int(response)]
 
 
-def multi_responses_from_list(
-        list_input,
-        not_selectable_indices=None,
-        max_selected=None):
+def multi_responses_from_list(list_input, not_selectable_indices=None,
+                              max_selected=None):
     """Return selections made by user from given list of strings."""
     potential_selections = list_input.copy()
 
@@ -97,3 +171,80 @@ def multi_responses_from_list(
                 potential_selections.index(current_selection))
             # update returning_strings
             returning_strings.append(current_selection)
+
+
+def input_integer(min_int=None, max_int=None):
+    """Return an integer within given range, specified by user."""
+    prompt_string = "Please enter an integer: "
+    while True:
+        response = input(prompt_string)
+
+        try:
+            response = int(response)
+            if max_int is None and min_int is None:
+                return response
+
+            elif max_int is not None and min_int is not None:
+                if min_int <= response <= max_int:
+                    return response
+                else:
+                    print("integer expected between ",
+                          min_int, " and ", max_int)
+
+            elif max_int is not None:
+                if max_int >= response:
+                    return response
+                else:
+                    print("integer expected less than ", max_int+1)
+
+            else:
+                if min_int <= response:
+                    return response
+                else:
+                    print("integer expected greater than ", min_int-1)
+
+        except ValueError:
+            print("not an integer")
+
+
+def input_simple_string(min_length=None, max_length=None):
+    """Return a simple string specified by user."""
+    prompt_string = "Please enter a simple string: "
+    while True:
+        response = input(prompt_string)
+
+        response.strip()
+
+        if min_length is None and max_length is None:
+            break
+
+        elif min_length is not None and max_length is not None:
+            if min_length <= len(response) <= max_length:
+                break
+            else:
+                print("string length expected between ",
+                      min_length, " and ", max_length)
+
+        elif max_length is not None:
+            if max_length >= len(response):
+                break
+            else:
+                print("string length expected less than ", max_length+1)
+
+        else:
+            if min_length <= len(response):
+                break
+            else:
+                print("string length expected greater than ", min_length-1)
+
+    return response
+
+
+def input_pisa_var_name(valid_names):
+    """Return valid PISA variable name input by user."""
+    prompt_string = "Please enter a valid PISA variable (column name): "
+
+    while True:
+        response = input(prompt_string)
+        if response in valid_names:
+            return response

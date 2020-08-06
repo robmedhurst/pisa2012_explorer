@@ -51,6 +51,27 @@ DEPEN_TEST_GROUPING99 = {
     'grpname2': []}
 
 
+PLACEHOLDER_QUESTIONS = {
+    'question1': {
+        'question_type': "single",
+        'not_selectable': [1],
+        'selection_options': [
+            'blue',
+            'red',
+            'green']
+        },
+    'question2': {
+        'preface': 'What are your favorite colors? ',
+        'question_type': "multi",
+        'not_selectable': [],
+        'max_selectable': 2,
+        'selection_options': [
+            'blue',
+            'red',
+            'green']
+        }
+    }
+
 # =============================================================================
 # Unused helper functions, will delete later
 # =============================================================================
