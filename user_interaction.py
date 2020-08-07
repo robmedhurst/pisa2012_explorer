@@ -117,6 +117,7 @@ def single_response_from_list(list_input, not_selectable_indices=None):
     response = ''
     while response.lower() not in accepted_responses:
         response = input(prompt_string)
+    print(list_input[int(response)])
     return list_input[int(response)]
 
 
