@@ -26,12 +26,6 @@ def categorical_horizontalcomparison_counts(parameters, pisa_df, inputs):
         parameters, pisa_df, inputs, "categorical")
 
 
-def float_means_singleplot(parameters, pisa_df, inputs):
-    """Return mean distribution."""
-    return u.float_horizontal_frequency(
-        parameters, pisa_df, inputs, "float_no_kde")
-
-
 def binary_counts_singleplot(parameters, pisa_df, inputs):
     """Return binary group summary as counts bar chart."""
     return u.binary_counts_singleplot(parameters, pisa_df, inputs)
