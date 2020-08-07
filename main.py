@@ -293,26 +293,48 @@ def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
     # private functions
     # ====================================================================
     def user_select_groups(list_of_groups):
+        """User choose any number from list of groups."""
         if len(list_of_groups) > 1:
             print("\n")
-            print("Which groups to plot...")
-            print("Print all groups?")
+            print("Which groups to use...")
+            print("Use all groups?")
             if ui.single_response_from_list(['yes', 'no']) == 'yes':
                 return list_of_groups
             else:
-                print("Which groups to plot...")
+                print("Which groups to use...")
                 return ui.multi_responses_from_list(list_of_groups)
         return list_of_groups
 
-    def user_select_functions(group_name, list_of_functions):
-        if len(list_of_functions) > 1:
+    def user_select_functions(group_info, list_of_functions):
+
+        # if group is BINARY, add binary functions despite category name
+        # (group_name, group_vars, category) = group_info
+        if group_info[2] in inputs[0] and len(
+                inputs[0][group_info[2]]) == 2:
+            # get binary functions
+            list_of_functions.extend(
+                get_function_by_key('binary', univariate_graphics_pool))
+
+        # if group is CATEGORICAL, add binary functions despite category name
+        # (group_name, group_vars, category) = group_info
+        if group_info[2] in inputs[0]:
+            # get binary functions
+            list_of_functions.extend(
+                get_function_by_key('categorical', univariate_graphics_pool))
+
+        # different user prompts for different number of available functions
+        if len(list_of_functions) == 1:
             print("\n")
-            print("Print all functions for group", group_name, "?")
-            if ui.single_response_from_list(['yes', 'no']) == 'yes':
-                return list_of_functions
-            else:
+            print("Do you want to use function",
+                  list_of_functions[0], "for group", group_info[0], "?")
+            if ui.single_response_from_list(['yes', 'no']) == 'no':
+                return []
+        elif len(list_of_functions) > 1:
+            print("\n")
+            print("Use all functions for group", group_info[0], "?")
+            if ui.single_response_from_list(['yes', 'no']) == 'no':
                 print("\n")
-                print("Which functions to plot for group", group_name, "?")
+                print("Which functions to use for group", group_info[0], "?")
                 return ui.multi_responses_from_list(list_of_functions)
         return list_of_functions
 
@@ -326,22 +348,18 @@ def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
         for group_name in function_selection:
             graphics_by_group[group_name] = {}
             # group_info
-            # [group_name, group_vars, group_known_cat]
             if location == 'depen_categories':
-                group_info = [
-                    group_name,
-                    inputs[3][group_name],  # group_vars
-                    group_category_matches[location][group_name]
-                    ]
+                i = 3
             elif location == 'indep_categories':
-                group_info = [
-                    group_name,
-                    inputs[2][group_name],
-                    group_category_matches[location][group_name]
-                    ]
+                i = 2
+            group_info = [
+                group_name,
+                inputs[i][group_name],  # group_vars
+                group_category_matches[location][group_name]
+                ]
             # user select graphic and add to output
             for function_name in user_select_functions(
-                    group_name,
+                    group_info,
                     get_function_by_key(
                         group_info[2], univariate_graphics_pool)):
                 graphics_by_group[group_name][function_name] = (
@@ -377,11 +395,16 @@ def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
     return pisa_df, inputs, group_category_matches, graphic_objects
 
 
-# def show_all_output():
-#     """Display results."""
-#     for i in OUTPUT[3]:
-#         i.seek(0)
-#         pickle.load(i)
+def show_all_output():
+    """Display results."""
+    def rip_set(lane, sub_lane):
+        for group_name in OUTPUT[3][lane][sub_lane]:
+            for graphic in OUTPUT[3][lane][sub_lane][group_name].values():
+                graphic.seek(0)
+                pickle.load(graphic)
+    rip_set('univariate', 'dependent_groups')
+    rip_set('univariate', 'independent_groups')
+
 
 # %% Main
 
@@ -389,7 +412,5 @@ def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
 if __name__ == '__main__':
     # load a global copy to avoid reloading
     PISA2012 = load_original()
-
     OUTPUT = initialize()
-
-    # show_all_output()
+    show_all_output()
