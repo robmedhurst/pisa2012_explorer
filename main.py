@@ -196,8 +196,9 @@ def user_initialize(pisa_sample=None, preset=None):
     # ====================================================================
     # User option to use quick preset var groups (demo)
     # ====================================================================
-    print("Enter group information? (No to load preset)")
-    if ui.user_batch_questioning({'q': {}})['q']['response'] == 'no':
+    print("\n")
+    print("Enter group information? ('no' to load preset)")
+    if ui.single_response_from_list(['yes', 'no']) == 'no':
         print("Using preset...")
         # example inputs
         inputs = [
@@ -212,8 +213,9 @@ def user_initialize(pisa_sample=None, preset=None):
     # ====================================================================
     # User integrity check
     # ====================================================================
-    question = {'q': {'preface': "Perform integrity check on original csv?"}}
-    if ui.user_batch_questioning(question)['q']['response'] == 'yes':
+    print("\n")
+    print("Perform integrity check on original csv?")
+    if ui.single_response_from_list(['yes', 'no']) == 'yes':
         pisa2012 = load_original(integrity_check=True)
     else:
         pisa2012 = load_original()
@@ -238,33 +240,44 @@ def user_initialize(pisa_sample=None, preset=None):
         """Return user defined group of pisa variables."""
         group = []
         if not group_name:
-            print("What would you like to name this group?")
-            # user input group_name
+            print("\n")
+            print("Enter short name for this group...")
+            # user input group name
             group_name = ui.input_simple_string(1, 20)
         if not group_size:
+            print("\n")
             print("How many variables will this group contain?")
-            # user input group_size
+            # user input group size
             group_size = ui.input_integer(1, 5)
         for new_entry in range(group_size):
-            print("Enter a pisa variable (column name):")
+            # user input variable names
+            print("\n")
             group.append(
                 ui.input_pisa_var_name(list(PISA2012.columns)))
         return group, group_name
 
     # dependend variables
-    print("\nInput a group of dependent variables (numeric).")
+    print("\n")
+    print("Dependent Variable Input")
+    print("Input a group of dependent variables (numeric).")
     current_input = user_input_group()
     inputs.append({current_input[1]: current_input[0]})
 
     # independent variables
-    print("Input the groups of independent variables.")
+    print("\n")
+    print("Independent Variable Input")
+    print("Input groups of independent variables.")
+    # print("\n")
     print("How many groups of independent variables?")
     num_groups = ui.input_integer(1, 5)
+    print("\n")
     print("Groups each need a name and list of variables.")
     independent_groups = {}
-    for x in range(num_groups):
+    for index in range(num_groups):
+        print("Describe group number", index+1, "of", num_groups)
         current_input = user_input_group()
         independent_groups[current_input[1]] = current_input[0]
+        print("Group entered.")
     inputs.insert(2, independent_groups)
 
     return pisa_sample, inputs
@@ -273,7 +286,7 @@ def user_initialize(pisa_sample=None, preset=None):
 def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
     """User select plots."""
     graphic_objects = []
-    print("\n\nUnivariate Graphics\n\n")
+    print("\n\nChoose Univariate Graphics\n\n")
 
     def get_univariate_graphic(function_name, group_info):
         return getattr(
@@ -348,51 +361,9 @@ def show_all_output():
 
 
 if __name__ == '__main__':
+    # load a global copy to avoid reloading
     PISA2012 = load_original()
-
-    preset1 = {
-        'initialize': {
-            'indep_sets': test_groupings.INDEP_TEST_GROUPING01,
-            'dep_sets': test_groupings.DEPEN_TEST_GROUPING01,
-            'sample': 1000}}
 
     OUTPUT = initialize()
 
     show_all_output()
-
-# ===========================================================================
-#     inputs = [
-#         category_definitions.KNOWN_CATEGORIES,
-#         category_definitions.PREFERRED_NAMING,
-#         test_groupings.INDEP_TEST_GROUPING01,
-#         test_groupings.DEPEN_TEST_GROUPING01]
-# ===========================================================================
-
-# ===========================================================================
-#     preset1 = {
-#         'initialize': {
-#             'indep_sets': test_groupings.INDEP_TEST_GROUPING01,
-#             'dep_sets': test_groupings.DEPEN_TEST_GROUPING01,
-#             'sample': 1000  # or subset of pisa}}
-# ===========================================================================
-
-# ===========================================================================
-#     preset1 = {
-#         'initialize': {
-#             'indep_sets': {
-#                 'family_home': ['ST11Q01', 'ST11Q02', 'ST11Q03', 'ST11Q04',
-#                                 'ST11Q05'],
-#                 'parent_work': ['ST15Q01', 'ST19Q01'],
-#                 'parent_isei': ['BFMJ2', 'BMMJ1', 'HISEI'],
-#                 'HOMEPOS': ['HOMEPOS'],
-#                 'person_item': ['ST26Q02', 'ST26Q03', 'ST26Q08', 'ST26Q09',
-#                                 'ST26Q10', 'ST26Q11']},
-#             'dep_sets': {
-#                 'math_result': ['PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH',
-#                                 'PV5MATH'],
-#                 'read_result': ['PV1READ', 'PV2READ', 'PV3READ', 'PV4READ',
-#                                 'PV5READ']},
-#             'sample': 1000  # or subset of pisa
-#             }
-#         }
-# ===========================================================================
