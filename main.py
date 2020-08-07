@@ -181,26 +181,29 @@ def post_wrangle(pisa_df, inputs, group_category_matches):
 #     return pisa_df, inputs, group_category_matches, graphic_objects
 
 
-def initialize(pisa_sample=None):
+def get_function_by_key(name_key, local_py_file):
+    """Return function names from local_py_file.py that contain name_key."""
+    matching_functions = []
+    for function_name in dir(local_py_file)[8:]:
+        if name_key in function_name:
+            matching_functions.append(function_name)
+    return matching_functions
+
+
+def initialize(pisa_sample=None, preset=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
     return (
         user_request_univariate_graphics(
             *post_wrangle(
                 *wrangler(
-                    *user_initialize(pisa_sample)))))
+                    *user_initialize(pisa_sample, preset)))))
 
 
-def user_initialize(pisa_sample=None):
+def user_initialize(pisa_sample=None, preset=None):
     """User inputs to initialize."""
-    # =====================#
-    #     INTERACTIONS     #
-    # =====================#
-
     init_q1 = {'q': {'preface': "Perform integrity check on original csv?"}}
-
     init_q2 = {'q': {'preface': "Do you want to resample?"}}
-
     init_q3 = {'q': {
         'preface': "Which sample size should we start with?",
         'question_type': "single",
@@ -208,18 +211,55 @@ def user_initialize(pisa_sample=None):
             "500",
             "5000",
             "50000"]}}
-
     init_q4 = {'q': {'question_type': "integer", 'max_min_vals': (1, 5)}}
-
     init_q5 = {'q': {'question_type': "string", 'max_min_vals': (1, 20)}}
+    inputs = [
+        category_definitions.KNOWN_CATEGORIES,
+        category_definitions.PREFERRED_NAMING]
 
-    # preform integrity check?
+    # ====================================================================
+    # User bypass user_initialize interactions with 'preset'
+    # ====================================================================
+    # ====================================================================
+    # ex:
+    #     preset1 = {
+    #         'initialize': {
+    #             'indep_sets': test_groupings.INDEP_TEST_GROUPING01,
+    #             'dep_sets': test_groupings.DEPEN_TEST_GROUPING01,
+    #             'sample': 1000  # or subset of pisa}}
+    # ====================================================================
+    def do_preset():
+        try:
+            sample = preset['initialize']['sample']
+            pisa2012 = load_original()
+            inputs.append(preset['initialize']['indep_sets'])
+            inputs.append(preset['initialize']['dep_sets'])
+            if isinstance(sample, int):
+                pisa_sample = pisa2012.sample(sample)
+            elif isinstance(sample, pd.DataFrame):
+                pisa_sample = sample
+            return pisa_sample, inputs  # , preset    may want to pass along
+        except KeyError:
+            return "KeyError on user initialization 'preset'"
+    if preset is not None:
+        return do_preset()
+
+    # ====================================================================
+    #     User integrity check
+    # ====================================================================
     if ui.user_batch_questioning(init_q1)['q']['response'] == 'yes':
         pisa2012 = load_original(integrity_check=True)
     else:
         pisa2012 = load_original()
 
-    # reload sample if loaded? what size sample?
+    # ====================================================================
+    #     User option to use quick preset var groups (demo)
+    # ====================================================================
+    # TODO: offer initialize preset
+
+    # ====================================================================
+    #     User sample/resample
+    # ====================================================================
     if pisa_sample is None:
         pisa_sample = pisa2012.sample(
             int(ui.user_batch_questioning(init_q3)['q']['response']))
@@ -227,50 +267,107 @@ def user_initialize(pisa_sample=None):
         pisa_sample = pisa2012.sample(
             int(ui.user_batch_questioning(init_q3)['q']['response']))
 
-    # =========================================
-    #     Have PISA_SAMPLE, Need INPUTS
-    # =========================================
-    inputs = [
-        category_definitions.KNOWN_CATEGORIES,
-        category_definitions.PREFERRED_NAMING]
-
-    def user_input_groups(num_groups=1):
-        groups = {}
-        print("Groups each need a name and list of variables.")
-        for x in range(num_groups):
-            group = []
-
+    # ====================================================================
+    #     User manual input group information
+    # ====================================================================
+    def user_input_group(group_size=None, group_name=None):
+        group = []
+        if not group_name:
             print("What would you like to name this group?")
             # user input group_name
             group_name = ui.user_batch_questioning(init_q5)['q']['response']
-
+        if not group_size:
             print("How many variables will this group contain?")
             # user input group_size
             group_size = ui.user_batch_questioning(init_q4)['q']['response']
+        for new_entry in range(group_size):
+            print("Enter a pisa variable (column name):")
+            group.append(
+                ui.input_pisa_var_name(list(PISA2012.columns)))
+        return group, group_name
 
-            for y in range(group_size):
-                print("Enter a pisa variable (column name):")
-                group.append(
-                    ui.input_pisa_var_name(list(PISA2012.columns)))
-
-            groups[group_name] = group
-        return groups
-
-    print("\nFirst input a group of dependent variables.")
-    inputs.append(user_input_groups())  # defaults to one group
-
+    print("\nInput a group of dependent variables (numeric).")
+    current_input = user_input_group()
+    inputs.append({current_input[1]: current_input[0]})
     print("Now input the groups of independent variables.")
-    print("How many groups of independent variables will you enter?")
-    # number_of_groups = ui.user_batch_questioning(init_q4)['q']['response']
-    inputs.insert(2, user_input_groups(
-        ui.user_batch_questioning(init_q4)['q']['response']))
+    independent_groups = {}
+    print("How many groups of independent variables?")
+    num_groups = ui.user_batch_questioning(init_q4)['q']['response']
+    print("Groups each need a name and list of variables.")
+    for x in range(num_groups):
+        current_input = user_input_group()
+        independent_groups[current_input[1]] = current_input[0]
+    inputs.insert(2, independent_groups)
 
     return pisa_sample, inputs
 
 
 def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
-    """User select univariate graphics to display."""
-    return univariate_graphics(pisa_df, inputs, group_category_matches)
+    """User select plots."""
+    graphic_objects = []
+    print("\n\nUnivariate Graphics\n\n")
+
+    def get_univariate_graphic(function_name, group_info):
+        return getattr(
+            univariate_graphics_pool,
+            (function_name))(group_info, pisa_df, inputs)
+
+    # # ====================================================================
+    # # Selected dependent group
+    # # ====================================================================
+    # for dep_gp_name in group_category_matches['depen_categories']:
+    #     dep_gp_vars = inputs[3][dep_gp_name]
+    #     dep_gp_kcat = (
+    #         group_category_matches['depen_categories'][dep_gp_name])
+    #     break
+    # print("Using first dependent group, ", dep_gp_name)
+
+    # ====================================================================
+    # Selected independent group
+    # ====================================================================
+    selected_indep_groups = []
+    # TODO: Plot all independent variable groups?
+    #     if yes: use all
+    selected_indep_groups = inputs[2].keys()  # all
+    # TODO: else: user_select_mult from list of independent group
+
+    # Iterate independent groups
+    for ind_gp_name in selected_indep_groups:
+        group_info = [
+            ind_gp_name,
+            inputs[2][ind_gp_name],
+            group_category_matches['indep_categories'][ind_gp_name]
+            ]
+    # fetch functions by category
+        avail_plots = get_function_by_key(
+            group_info[2], univariate_graphics_pool)
+
+    # TODO: Plot all possible univariate plots for this variable?
+        plots_decided = []
+    #   if yes, do all, if not:
+        plots_decided = avail_plots
+    # TODO: user_select_mult
+        for function_name in plots_decided:
+            new_graphic = get_univariate_graphic(function_name, group_info)
+            graphic_objects.append(new_graphic)
+
+# get_function_by_key(name_key, univariate_graphics_pool)
+# get_univariate_graphic(function_name, group_info)
+
+# roup_name, get_vars(group_name), category
+
+#     for ind_gp_name in group_category_matches['indep_categories']:
+#         ind_gp_vars = inputs[2][ind_gp_name]
+#         ind_gp_kcat = (
+#             group_category_matches['indep_categories'][ind_gp_name])
+
+# Plot all independent variable groups?
+#     if not: user_select_mult from list of independent groups:
+# For independent group in selected groups:
+#     determine which from graphics_pool apply to category(if any)
+#     user_select_mult from list of appropriate_graphics
+
+    return pisa_df, inputs, group_category_matches, graphic_objects
 
 
 def show_all_output():
@@ -284,5 +381,50 @@ def show_all_output():
 
 if __name__ == '__main__':
     PISA2012 = load_original()
-    OUTPUT = initialize()
+
+    preset1 = {
+        'initialize': {
+            'indep_sets': test_groupings.INDEP_TEST_GROUPING01,
+            'dep_sets': test_groupings.DEPEN_TEST_GROUPING01,
+            'sample': 1000}}
+
+    OUTPUT = initialize(preset=preset1)
+
     show_all_output()
+
+# ===========================================================================
+#     input = [
+#         category_definitions.KNOWN_CATEGORIES,
+#         category_definitions.PREFERRED_NAMING,
+#         test_groupings.INDEP_TEST_GROUPING01,
+#         test_groupings.DEPEN_TEST_GROUPING01]
+# ===========================================================================
+
+# ===========================================================================
+#     preset1 = {
+#         'initialize': {
+#             'indep_sets': test_groupings.INDEP_TEST_GROUPING01,
+#             'dep_sets': test_groupings.DEPEN_TEST_GROUPING01,
+#             'sample': 1000  # or subset of pisa}}
+# ===========================================================================
+
+# ===========================================================================
+#     preset1 = {
+#         'initialize': {
+#             'indep_sets': {
+#                 'family_home': ['ST11Q01', 'ST11Q02', 'ST11Q03', 'ST11Q04',
+#                                 'ST11Q05'],
+#                 'parent_work': ['ST15Q01', 'ST19Q01'],
+#                 'parent_isei': ['BFMJ2', 'BMMJ1', 'HISEI'],
+#                 'HOMEPOS': ['HOMEPOS'],
+#                 'person_item': ['ST26Q02', 'ST26Q03', 'ST26Q08', 'ST26Q09',
+#                                 'ST26Q10', 'ST26Q11']},
+#             'dep_sets': {
+#                 'math_result': ['PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH',
+#                                 'PV5MATH'],
+#                 'read_result': ['PV1READ', 'PV2READ', 'PV3READ', 'PV4READ',
+#                                 'PV5READ']},
+#             'sample': 1000  # or subset of pisa
+#             }
+#         }
+# ===========================================================================
