@@ -106,19 +106,6 @@ def get_function_by_key(name_key, local_py_file):
     return matching_functions
 
 
-#             if category in inputs[0] and len(inputs[0][category]) == 2:
-#                 function_name = "binary_counts_singleplot"
-#                 group_specific_parameters = (
-#                     group_name, get_vars(group_name), category)
-#                 graphic_objects.append(get_univariate_graphic())
-
-#             if category == "float" and len(get_vars(group_name)) > 1:
-#                 function_name = "float_means_singleplot"
-#                 group_specific_parameters = (
-#                     group_name, [group_name + "_mean"], category)
-#                 graphic_objects.append(get_univariate_graphic())
-
-
 def initialize(pisa_sample=None, preset=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
@@ -148,8 +135,10 @@ def post_wrangle(pisa_df, inputs, group_category_matches):
 
 
 # =============================================================================
-# user interaction functions
+# %% user interaction
 # =============================================================================
+
+# %%% user_initialize
 
 def user_initialize(pisa_sample=None, preset=None):
     """
@@ -197,8 +186,8 @@ def user_initialize(pisa_sample=None, preset=None):
     # User option to use quick preset var groups (demo)
     # ====================================================================
     print("\n")
-    print("Enter group information? ('no' to load preset)")
-    if ui.single_response_from_list(['yes', 'no']) == 'no':
+    print("Use preset? ('no' to enter groups)")
+    if ui.single_response_from_list(['yes', 'no']) == 'yes':
         print("Using preset...")
         # example inputs
         inputs = [
@@ -283,81 +272,118 @@ def user_initialize(pisa_sample=None, preset=None):
     return pisa_sample, inputs
 
 
+# %%% user_request_univariate_graphics
+
+#             if category in inputs[0] and len(inputs[0][category]) == 2:
+#                 function_name = "binary_counts_singleplot"
+#                 group_specific_parameters = (
+#                     group_name, get_vars(group_name), category)
+#                 graphic_objects.append(get_univariate_graphic())
+
+#             if category == "float" and len(get_vars(group_name)) > 1:
+#                 function_name = "float_means_singleplot"
+#                 group_specific_parameters = (
+#                     group_name, [group_name + "_mean"], category)
+#                 graphic_objects.append(get_univariate_graphic())
+
+
 def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
     """User select plots."""
-    graphic_objects = []
-    print("\n\nChoose Univariate Graphics\n\n")
+    # ====================================================================
+    # private functions
+    # ====================================================================
+    def user_select_groups(list_of_groups):
+        if len(list_of_groups) > 1:
+            print("\n")
+            print("Which groups to plot...")
+            print("Print all groups?")
+            if ui.single_response_from_list(['yes', 'no']) == 'yes':
+                return list_of_groups
+            else:
+                print("Which groups to plot...")
+                return ui.multi_responses_from_list(list_of_groups)
+        return list_of_groups
+
+    def user_select_functions(group_name, list_of_functions):
+        if len(list_of_functions) > 1:
+            print("\n")
+            print("Print all functions for group", group_name, "?")
+            if ui.single_response_from_list(['yes', 'no']) == 'yes':
+                return list_of_functions
+            else:
+                print("\n")
+                print("Which functions to plot for group", group_name, "?")
+                return ui.multi_responses_from_list(list_of_functions)
+        return list_of_functions
 
     def get_univariate_graphic(function_name, group_info):
         return getattr(
             univariate_graphics_pool,
             (function_name))(group_info, pisa_df, inputs)
 
-    # # ====================================================================
-    # # Selected dependent group
-    # # ====================================================================
-    # for dep_gp_name in group_category_matches['depen_categories']:
-    #     dep_gp_vars = inputs[3][dep_gp_name]
-    #     dep_gp_kcat = (
-    #         group_category_matches['depen_categories'][dep_gp_name])
-    #     break
-    # print("Using first dependent group, ", dep_gp_name)
+    def interate_group_function_selection(function_selection, location):
+        graphics_by_group = {}
+        for group_name in function_selection:
+            graphics_by_group[group_name] = {}
+            # group_info
+            # [group_name, group_vars, group_known_cat]
+            if location == 'depen_categories':
+                group_info = [
+                    group_name,
+                    inputs[3][group_name],  # group_vars
+                    group_category_matches[location][group_name]
+                    ]
+            elif location == 'indep_categories':
+                group_info = [
+                    group_name,
+                    inputs[2][group_name],
+                    group_category_matches[location][group_name]
+                    ]
+            # user select graphic and add to output
+            for function_name in user_select_functions(
+                    group_name,
+                    get_function_by_key(
+                        group_info[2], univariate_graphics_pool)):
+                graphics_by_group[group_name][function_name] = (
+                    get_univariate_graphic(function_name, group_info))
+        return graphics_by_group
 
+    # graphics_objects structure
+    graphic_objects = {'univariate': {
+        'dependent_groups': {}, 'independent_groups': {}}}
+    print("\n\n")
+    print("Choose Univariate Graphics")
     # ====================================================================
-    # Selected independent group
+    # dependent groups
     # ====================================================================
-    selected_indep_groups = []
-    # TODO: Plot all independent variable groups?
-    #     if yes: use all
-    selected_indep_groups = inputs[2].keys()  # all
-    # TODO: else: user_select_mult from list of independent group
-
-    # Iterate independent groups
-    for ind_gp_name in selected_indep_groups:
-        group_info = [
-            ind_gp_name,
-            inputs[2][ind_gp_name],
-            group_category_matches['indep_categories'][ind_gp_name]
-            ]
-    # fetch functions by category
-        avail_plots = get_function_by_key(
-            group_info[2], univariate_graphics_pool)
-
-    # TODO: Plot all possible univariate plots for this variable?
-        plots_decided = []
-    #   if yes, do all, if not:
-        plots_decided = avail_plots
-    # TODO: user_select_mult
-        for function_name in plots_decided:
-            new_graphic = get_univariate_graphic(function_name, group_info)
-            graphic_objects.append(new_graphic)
-
-# get_function_by_key(name_key, univariate_graphics_pool)
-# get_univariate_graphic(function_name, group_info)
-
-# roup_name, get_vars(group_name), category
-
-#     for ind_gp_name in group_category_matches['indep_categories']:
-#         ind_gp_vars = inputs[2][ind_gp_name]
-#         ind_gp_kcat = (
-#             group_category_matches['indep_categories'][ind_gp_name])
-
-# Plot all independent variable groups?
-#     if not: user_select_mult from list of independent groups:
-# For independent group in selected groups:
-#     determine which from graphics_pool apply to category(if any)
-#     user_select_mult from list of appropriate_graphics
+    print("\n")
+    print("Dependent Variables")
+    selection = user_select_groups(list(
+        group_category_matches['depen_categories'].keys()))
+    # graphics_objects structure
+    graphic_objects['univariate']['dependent_groups'] = (
+        interate_group_function_selection(selection, 'depen_categories'))
+    # ====================================================================
+    # independent groups
+    # ====================================================================
+    print("\n")
+    print("Independent Variables")
+    selection = user_select_groups(list(
+        group_category_matches['indep_categories'].keys()))
+    # graphics_objects structure
+    graphic_objects['univariate']['independent_groups'] = (
+        interate_group_function_selection(selection, 'indep_categories'))
 
     return pisa_df, inputs, group_category_matches, graphic_objects
 
 
-def show_all_output():
-    """Display results."""
-    for i in OUTPUT[3]:
-        i.seek(0)
-        pickle.load(i)
+# def show_all_output():
+#     """Display results."""
+#     for i in OUTPUT[3]:
+#         i.seek(0)
+#         pickle.load(i)
 
-# %%
+# %% Main
 
 
 if __name__ == '__main__':
@@ -366,4 +392,4 @@ if __name__ == '__main__':
 
     OUTPUT = initialize()
 
-    show_all_output()
+    # show_all_output()
