@@ -30,30 +30,6 @@ def load_original(reload=False, integrity_check=False):
     Forces reload on parameter 'reload=True'.
     Checks datastructure if parameter 'integrety_check=True'.
     """
-    def confirm_pisa_df(df_through):
-        """
-        Placehold function.
-
-        Will implement hash check on the csv and/or zip files.
-        """
-        if integrity_check:
-            print("Checking file integrity(this may take a few minutes)...\n")
-            # TODO: implement integrity check
-            #
-            # do the check here
-            #
-            #
-            #
-            #
-            #
-            passed = True    # result of check
-            # return if test passed, raise error if failed
-            if passed:
-                print("Dataframe passed integrity check.\n")
-                return df_through
-            raise FileExistsError("Datafrane failed integrity check!")
-        return df_through
-
     if 'PISA2012' not in globals():
         print("PISA2012 original not in locals, attempting to load",
               "(this may take a few minutes)...\n")
@@ -62,7 +38,7 @@ def load_original(reload=False, integrity_check=False):
               "(this may take a few minutes)...\n")
     else:
         print("Variable with name PISA2012 already in memory.\n")
-        return confirm_pisa_df(PISA2012)
+        return confirm_pisa_df(PISA2012, integrity_check)
 
     # load, check, raise error if needed
     if ('PISA2012' not in globals()) or (reload):
@@ -72,7 +48,7 @@ def load_original(reload=False, integrity_check=False):
                 'pisa2012.csv', sep=',', encoding='latin-1',
                 error_bad_lines=False, dtype='unicode', index_col=False)
             print("Loaded from csv.\n")
-            return confirm_pisa_df(pisa_df)
+            return confirm_pisa_df(pisa_df, integrity_check)
         except FileNotFoundError:
             try:    # loading directly from zip
                 pisa_df = pd.read_csv(
@@ -81,9 +57,27 @@ def load_original(reload=False, integrity_check=False):
                     sep=',', encoding='latin-1', error_bad_lines=False,
                     dtype='unicode', index_col=False)
                 print("Loaded from zip.\n")
-                return confirm_pisa_df(pisa_df)
+                return confirm_pisa_df(pisa_df, integrity_check)
             except FileNotFoundError:    # loading failed
                 raise FileNotFoundError("pisa2012 not in local directory.")
+
+
+def confirm_pisa_df(df_through, integrity_check):
+    """Verify pisa csv and/or zip files."""
+    if integrity_check:
+        print("Checking file integrity(this may take a few minutes)...\n")
+        # TODO: implement integrity check
+        #
+        # do the check here
+        #
+        #
+        passed = True    # result of check
+        # return if test passed, raise error if failed
+        if passed:
+            print("Dataframe passed integrity check.\n")
+            return df_through
+        raise FileExistsError("Datafrane failed integrity check!")
+    return df_through
 
 
 def get_longnames(names):
@@ -101,6 +95,38 @@ def get_longnames(names):
             columns={'Unnamed: 0': 'varname', 'x': 'description'})
     names = list(names)
     return list(pisadict2012.query("varname in @names")['description'])
+
+
+def get_function_by_key(name_key, local_py_file):
+    """Return function names from local_py_file.py that contain name_key."""
+    matching_functions = []
+    for function_name in dir(local_py_file)[8:]:
+        if name_key in function_name:
+            matching_functions.append(function_name)
+    return matching_functions
+
+
+#             if category in inputs[0] and len(inputs[0][category]) == 2:
+#                 function_name = "binary_counts_singleplot"
+#                 group_specific_parameters = (
+#                     group_name, get_vars(group_name), category)
+#                 graphic_objects.append(get_univariate_graphic())
+
+#             if category == "float" and len(get_vars(group_name)) > 1:
+#                 function_name = "float_means_singleplot"
+#                 group_specific_parameters = (
+#                     group_name, [group_name + "_mean"], category)
+#                 graphic_objects.append(get_univariate_graphic())
+
+
+def initialize(pisa_sample=None, preset=None):
+    """Wrap function calls."""
+    # returns pisa_df, inputs, categories_found, and graphics_objects
+    return (
+        user_request_univariate_graphics(
+            *post_wrangle(
+                *wrangler(
+                    *user_initialize(pisa_sample, preset)))))
 
 
 def post_wrangle(pisa_df, inputs, group_category_matches):
@@ -121,98 +147,21 @@ def post_wrangle(pisa_df, inputs, group_category_matches):
     return pisa_df, inputs, group_category_matches
 
 
-# def univariate_graphics(pisa_df, inputs, group_category_matches):
-#     """
-#     Call category specific graphics functions.
-
-#     undesired_graphics, is a list of strings to ignore when searching for
-#     graphics functions.
-#     """
-#     (independent_groups, dependent_groups) = inputs[2:]
-
-#     def get_vars(group_name):
-#         """Get list of variable names for group of vars, group_name."""
-#         v_list = []
-#         if group_name in independent_groups:
-#             v_list = independent_groups[group_name]
-#         elif group_name in dependent_groups:
-#             v_list = dependent_groups[group_name]
-#         return v_list
-
-#     def get_univariate_graphic():
-#         print("calling:  ", function_name)
-#         return getattr(
-#             univariate_graphics_pool,
-#             (function_name))(
-#                 group_specific_parameters, pisa_df, inputs)
-
-#     graphic_objects = []
-#     # iterate group category matches
-#     for subset in group_category_matches:
-#         print("\n\n", list(group_category_matches[subset]))
-#         for group_name in group_category_matches[subset]:
-
-#             # group specific parameters:
-#             category = group_category_matches[subset][group_name]
-#             group_specific_parameters = (
-#                 group_name, get_vars(group_name), category)
-#             print("\n", group_name, " -  ", category)
-#             # univariate_graphics_pool contains univariate graphics functions
-#             for function_name in dir(univariate_graphics_pool)[8:]:
-
-#                 if category in function_name:
-#                     graphic_objects.append(get_univariate_graphic())
-
-#                 if category in inputs[0] and "categorical" in function_name:
-#                     graphic_objects.append(get_univariate_graphic())
-
-#             if category in inputs[0] and len(inputs[0][category]) == 2:
-#                 function_name = "binary_counts_singleplot"
-#                 group_specific_parameters = (
-#                     group_name, get_vars(group_name), category)
-#                 graphic_objects.append(get_univariate_graphic())
-
-#             if category == "float" and len(get_vars(group_name)) > 1:
-#                 function_name = "float_means_singleplot"
-#                 group_specific_parameters = (
-#                     group_name, [group_name + "_mean"], category)
-#                 graphic_objects.append(get_univariate_graphic())
-
-#     return pisa_df, inputs, group_category_matches, graphic_objects
-
-
-def get_function_by_key(name_key, local_py_file):
-    """Return function names from local_py_file.py that contain name_key."""
-    matching_functions = []
-    for function_name in dir(local_py_file)[8:]:
-        if name_key in function_name:
-            matching_functions.append(function_name)
-    return matching_functions
-
-
-def initialize(pisa_sample=None, preset=None):
-    """Wrap function calls."""
-    # returns pisa_df, inputs, categories_found, and graphics_objects
-    return (
-        user_request_univariate_graphics(
-            *post_wrangle(
-                *wrangler(
-                    *user_initialize(pisa_sample, preset)))))
-
+# =============================================================================
+# user interaction functions
+# =============================================================================
 
 def user_initialize(pisa_sample=None, preset=None):
-    """User inputs to initialize."""
-    init_q1 = {'q': {'preface': "Perform integrity check on original csv?"}}
-    init_q2 = {'q': {'preface': "Do you want to resample?"}}
-    init_q3 = {'q': {
-        'preface': "Which sample size should we start with?",
-        'question_type': "single",
-        'selection_options': [
-            "500",
-            "5000",
-            "50000"]}}
-    init_q4 = {'q': {'question_type': "integer", 'max_min_vals': (1, 5)}}
-    init_q5 = {'q': {'question_type': "string", 'max_min_vals': (1, 20)}}
+    """
+    User inputs to initialize.
+
+    Question user to build sample data and groups of interest.
+
+    Returns pisa_sample, inputs
+    """
+    # ====================================================================
+    # Inputs expected (# TODO: these shouldnt be inputs)
+    # ====================================================================
     inputs = [
         category_definitions.KNOWN_CATEGORIES,
         category_definitions.PREFERRED_NAMING]
@@ -221,14 +170,13 @@ def user_initialize(pisa_sample=None, preset=None):
     # User bypass user_initialize interactions with 'preset'
     # ====================================================================
     # ====================================================================
-    # ex:
-    #     preset1 = {
-    #         'initialize': {
+    # ex:  preset1 = {'initialize': {
     #             'indep_sets': test_groupings.INDEP_TEST_GROUPING01,
     #             'dep_sets': test_groupings.DEPEN_TEST_GROUPING01,
     #             'sample': 1000  # or subset of pisa}}
     # ====================================================================
-    def do_preset():
+
+    def do_preset(preset):
         try:
             sample = preset['initialize']['sample']
             pisa2012 = load_original()
@@ -238,62 +186,82 @@ def user_initialize(pisa_sample=None, preset=None):
                 pisa_sample = pisa2012.sample(sample)
             elif isinstance(sample, pd.DataFrame):
                 pisa_sample = sample
-            return pisa_sample, inputs  # , preset    may want to pass along
+            return pisa_sample, inputs
         except KeyError:
             return "KeyError on user initialization 'preset'"
+
     if preset is not None:
-        return do_preset()
+        return do_preset(preset)
 
     # ====================================================================
-    #     User integrity check
+    # User option to use quick preset var groups (demo)
     # ====================================================================
-    if ui.user_batch_questioning(init_q1)['q']['response'] == 'yes':
+    print("Enter group information? (No to load preset)")
+    if ui.user_batch_questioning({'q': {}})['q']['response'] == 'no':
+        print("Using preset...")
+        # example inputs
+        inputs = [
+            category_definitions.KNOWN_CATEGORIES,
+            category_definitions.PREFERRED_NAMING,
+            test_groupings.INDEP_TEST_GROUPING01,
+            test_groupings.DEPEN_TEST_GROUPING01]
+        pisa2012 = load_original()
+        pisa_sample = pisa2012.sample(500)
+        return pisa_sample, inputs
+
+    # ====================================================================
+    # User integrity check
+    # ====================================================================
+    question = {'q': {'preface': "Perform integrity check on original csv?"}}
+    if ui.user_batch_questioning(question)['q']['response'] == 'yes':
         pisa2012 = load_original(integrity_check=True)
     else:
         pisa2012 = load_original()
 
     # ====================================================================
-    #     User option to use quick preset var groups (demo)
+    # User sample/resample
     # ====================================================================
-    # TODO: offer initialize preset
-
-    # ====================================================================
-    #     User sample/resample
-    # ====================================================================
+    question = {'q': {
+        'preface': "Select a sample size.",
+        'selection_options': [
+            "500",
+            "5000",
+            "50000"]}}
     if pisa_sample is None:
         pisa_sample = pisa2012.sample(
-            int(ui.user_batch_questioning(init_q3)['q']['response']))
-    elif ui.user_batch_questioning(init_q2)['q']['response'] == 'yes':
-        pisa_sample = pisa2012.sample(
-            int(ui.user_batch_questioning(init_q3)['q']['response']))
+            int(ui.user_batch_questioning(question)['q']['response']))
 
     # ====================================================================
-    #     User manual input group information
+    # User input group information
     # ====================================================================
     def user_input_group(group_size=None, group_name=None):
+        """Return user defined group of pisa variables."""
         group = []
         if not group_name:
             print("What would you like to name this group?")
             # user input group_name
-            group_name = ui.user_batch_questioning(init_q5)['q']['response']
+            group_name = ui.input_simple_string(1, 20)
         if not group_size:
             print("How many variables will this group contain?")
             # user input group_size
-            group_size = ui.user_batch_questioning(init_q4)['q']['response']
+            group_size = ui.input_integer(1, 5)
         for new_entry in range(group_size):
             print("Enter a pisa variable (column name):")
             group.append(
                 ui.input_pisa_var_name(list(PISA2012.columns)))
         return group, group_name
 
+    # dependend variables
     print("\nInput a group of dependent variables (numeric).")
     current_input = user_input_group()
     inputs.append({current_input[1]: current_input[0]})
-    print("Now input the groups of independent variables.")
-    independent_groups = {}
+
+    # independent variables
+    print("Input the groups of independent variables.")
     print("How many groups of independent variables?")
-    num_groups = ui.user_batch_questioning(init_q4)['q']['response']
+    num_groups = ui.input_integer(1, 5)
     print("Groups each need a name and list of variables.")
+    independent_groups = {}
     for x in range(num_groups):
         current_input = user_input_group()
         independent_groups[current_input[1]] = current_input[0]
@@ -388,12 +356,12 @@ if __name__ == '__main__':
             'dep_sets': test_groupings.DEPEN_TEST_GROUPING01,
             'sample': 1000}}
 
-    OUTPUT = initialize(preset=preset1)
+    OUTPUT = initialize()
 
     show_all_output()
 
 # ===========================================================================
-#     input = [
+#     inputs = [
 #         category_definitions.KNOWN_CATEGORIES,
 #         category_definitions.PREFERRED_NAMING,
 #         test_groupings.INDEP_TEST_GROUPING01,
