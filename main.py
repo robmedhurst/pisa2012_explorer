@@ -110,10 +110,11 @@ def initialize(pisa_sample=None, preset=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
     return (
-        user_request_univariate_graphics(
-            *post_wrangle(
-                *wrangler(
-                    *user_initialize(pisa_sample, preset)))))
+        user_request_bivariate_graphics(
+            *user_request_univariate_graphics(
+                *post_wrangle(
+                    *wrangler(
+                        *user_initialize(pisa_sample, preset))))))
 
 
 def post_wrangle(pisa_df, inputs, group_category_matches):
@@ -273,20 +274,6 @@ def user_initialize(pisa_sample=None, preset=None):
 
 
 # %%% user_request_univariate_graphics
-
-#             if category in inputs[0] and len(inputs[0][category]) == 2:
-#                 function_name = "binary_counts_singleplot"
-#                 group_specific_parameters = (
-#                     group_name, get_vars(group_name), category)
-#                 graphic_objects.append(get_univariate_graphic())
-
-#             if category == "float" and len(get_vars(group_name)) > 1:
-#                 function_name = "float_means_singleplot"
-#                 group_specific_parameters = (
-#                     group_name, [group_name + "_mean"], category)
-#                 graphic_objects.append(get_univariate_graphic())
-
-
 def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
     """User select plots."""
     # ====================================================================
@@ -392,6 +379,13 @@ def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
     graphic_objects['univariate']['independent_groups'] = (
         interate_group_function_selection(selection, 'indep_categories'))
 
+    return pisa_df, inputs, group_category_matches, graphic_objects
+
+
+# %%% user_request_univariate_graphics
+def user_request_bivariate_graphics(
+        pisa_df, inputs, group_category_matches, graphic_objects):
+    """."""
     return pisa_df, inputs, group_category_matches, graphic_objects
 
 
