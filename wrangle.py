@@ -5,15 +5,21 @@ This tool aims to aid in the exploration of the PISA 2012 dataset,
 allowing users to concurrently examine a group of similar variables.
 """
 
+import category_definitions
+
 
 # =============================================================================
 # Wrangling Functions
 # =============================================================================
 
-def wrangle(pisa_df, inputs):
+def wrangle(user_data):
     """Wrap functions for wrangling. Return edited inputs."""
-    (known_categories, preferred_naming,
-     independent_groups, dependent_groups) = inputs
+    known_categories = category_definitions.KNOWN_CATEGORIES
+    preferred_naming = category_definitions.PREFERRED_NAMING
+
+    pisa_df = user_data['pisa_sample'].copy()
+    independent_groups = user_data['independent_groups']
+    dependent_groups = user_data['dependent_groups']
 
     def select_columns_and_drop_nulls():
         """
@@ -136,7 +142,10 @@ def wrangle(pisa_df, inputs):
 
     # independent_groups_keys = process_pisa_set_of_groups(independent_groups)
     group_category_matches = {
-        'indep_categories': process_pisa_set_of_groups(independent_groups),
-        'depen_categories': process_pisa_set_of_groups(dependent_groups)}
+        'independent_groups': process_pisa_set_of_groups(independent_groups),
+        'dependent_groups': process_pisa_set_of_groups(dependent_groups)}
 
-    return pisa_df, inputs, group_category_matches
+    # update and return user_data
+    user_data['custom_dataframe'] = pisa_df
+    user_data['group_category_matches'] = group_category_matches
+    return user_data
