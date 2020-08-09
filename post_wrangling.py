@@ -23,13 +23,15 @@ These functions edit in place or return a graphic.
 
 
 # float
-def float_group_post_wrangle(group_name, pisa_df, inputs):
+def float_group_post_wrangle(group_name, user_data):
     """
     Apply float group operations.
 
         - create mean value column
     """
-    independent_groups, dependent_groups = inputs[2:4]
+    pisa_df = user_data['custom_dataframe']
+    independent_groups = user_data['independent_groups']
+    dependent_groups = user_data['dependent_groups']
 
     def create_mean(name, grp):
         pisa_df[name + '_mean'] = pisa_df[grp].transpose(
@@ -45,13 +47,15 @@ def float_group_post_wrangle(group_name, pisa_df, inputs):
 
 
 # binary_yn
-def binary_yn1_group_post_wrangle(group_name, pisa_df, inputs):
+def binary_yn1_group_post_wrangle(group_name, user_data):
     """
     Apply binary_yn group operations.
 
         - create total column for binary group given
     """
-    independent_groups, dependent_groups = inputs[2:4]
+    pisa_df = user_data['custom_dataframe']
+    independent_groups = user_data['independent_groups']
+    dependent_groups = user_data['dependent_groups']
 
     def create_count(name, grp):
         pisa_df[name + '_count'] = pisa_df[grp].transpose().sum().astype(int)
