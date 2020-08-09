@@ -10,7 +10,18 @@
 # The variables must be numeric.
 #
 """
-
+# =============================================================================
+#     user_data structure
+# =============================================================================
+# =============================================================================
+#     user_data = {
+#         'dependent_groups': {},
+#         'independent_groups': {},
+#         'pisa_sample': pisa_sample,
+#         'custom_dataframe': pisa_df,
+#         'group_category_matches': group_category_matches
+#         }
+# =============================================================================
 
 # test_grouping01
 # intial test set, no real meaning oustide of the study it emerged from
@@ -24,7 +35,10 @@ INDEP_TEST_GROUPING01 = {
 DEPEN_TEST_GROUPING01 = {
     'math_result': ['PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH', 'PV5MATH'],
     'read_result': ['PV1READ', 'PV2READ', 'PV3READ', 'PV4READ', 'PV5READ']}
-
+PRESET1 = {
+    'dependent_groups': DEPEN_TEST_GROUPING01,
+    'independent_groups': INDEP_TEST_GROUPING01,
+    'pisa_sample': 1000}
 
 # test_grouping02
 # intended to cover a few unresolved response types
@@ -71,6 +85,7 @@ PLACEHOLDER_QUESTIONS = {
             'green']
         }
     }
+
 
 # =============================================================================
 # Unused helper functions, will delete later

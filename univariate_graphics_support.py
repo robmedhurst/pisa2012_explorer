@@ -6,13 +6,14 @@ import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import category_definitions
 from main import get_longnames
 
 
-def binary_counts_singleplot(parameters, pisa_df, inputs):
+def binary_counts_singleplot(group_info, user_data):
     """Return binary group summary as counts bar chart."""
-    (independent_groups, dependent_groups) = inputs[2:]
-    (group_name, var_list, category) = parameters
+    pisa_df = user_data['custom_dataframe']
+    var_list = group_info['variables']
 
     base_color = sns.color_palette()[0]
     # fig = plt.figure()
@@ -33,9 +34,12 @@ def binary_counts_singleplot(parameters, pisa_df, inputs):
     return buf
 
 
-def float_horizontal_frequency(parameters, pisa_df, inputs, switcher):
+def float_horizontal_frequency(group_info, user_data, switcher):
     """Return a subplot of scatterplots of these float type varibles."""
-    var_list, max_ylim = parameters[1], 0
+    pisa_df = user_data['custom_dataframe']
+    var_list = group_info['variables']
+    category = group_info['category']
+    max_ylim = 0
 
     if switcher == "float_yes_kde":
         switcher = True
@@ -46,7 +50,7 @@ def float_horizontal_frequency(parameters, pisa_df, inputs, switcher):
 
     elif switcher == "categorical":
         first_y_name = "Count"
-        switcher = inputs[1][parameters[2]]
+        switcher = category_definitions.PREFERRED_NAMING[category]
 
     for first_pass in [True, False]:
         # initialize figure

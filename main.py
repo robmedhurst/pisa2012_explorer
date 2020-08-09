@@ -11,7 +11,7 @@ import pickle
 
 import pandas as pd
 
-from wrangle import wrangle as wrangler
+from wrangle import wrangle
 import post_wrangling
 import category_definitions
 import test_groupings
@@ -38,7 +38,6 @@ def load_original(reload=False, integrity_check=False):
               "(this may take a few minutes)...\n")
     else:
         print("Variable with name PISA2012 already in memory.\n")
-        return confirm_pisa_df(PISA2012, integrity_check)
 
     # load, check, raise error if needed
     if ('PISA2012' not in globals()) or (reload):
@@ -60,6 +59,8 @@ def load_original(reload=False, integrity_check=False):
                 return confirm_pisa_df(pisa_df, integrity_check)
             except FileNotFoundError:    # loading failed
                 raise FileNotFoundError("pisa2012 not in local directory.")
+    pisa_df = PISA2012.copy()
+    return confirm_pisa_df(pisa_df, integrity_check)
 
 
 def confirm_pisa_df(df_through, integrity_check):
@@ -106,18 +107,21 @@ def get_function_by_key(name_key, local_py_file):
     return matching_functions
 
 
-def initialize(pisa_sample=None, preset=None):
+def initialize(user_data=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
     return (
         user_request_univariate_graphics(
-            *post_wrangle(
-                *wrangler(
-                    *user_initialize(pisa_sample, preset)))))
+            post_wrangle(
+                wrangle(
+                    user_initialize(user_data)))))
 
 
-def post_wrangle(pisa_df, inputs, group_category_matches):
+def post_wrangle(user_data):
     """Apply category specific post wrangle functions."""
+    group_category_matches = user_data['group_category_matches']
+    pisa_df = user_data['custom_dataframe']
+
     # group_category_matches holds indep and dependent groups seperately
     for subset in group_category_matches:
         # iterate group category matches
@@ -130,8 +134,10 @@ def post_wrangle(pisa_df, inputs, group_category_matches):
                 getattr(
                     post_wrangling,
                     (category + "_group_post_wrangle"))(
-                        group_name, pisa_df, inputs)
-    return pisa_df, inputs, group_category_matches
+                        group_name, user_data)
+    # update and return user_data
+    user_data['custom_dataframe'] = pisa_df
+    return user_data
 
 
 # =============================================================================
@@ -140,7 +146,7 @@ def post_wrangle(pisa_df, inputs, group_category_matches):
 
 # %%% user_initialize
 
-def user_initialize(pisa_sample=None, preset=None):
+def user_initialize(user_data=None):
     """
     User inputs to initialize.
 
@@ -148,83 +154,6 @@ def user_initialize(pisa_sample=None, preset=None):
 
     Returns pisa_sample, inputs
     """
-    # ====================================================================
-    # Inputs expected (# TODO: these shouldnt be inputs)
-    # ====================================================================
-    inputs = [
-        category_definitions.KNOWN_CATEGORIES,
-        category_definitions.PREFERRED_NAMING]
-
-    # ====================================================================
-    # User bypass user_initialize interactions with 'preset'
-    # ====================================================================
-    # ====================================================================
-    # ex:  preset1 = {'initialize': {
-    #             'indep_sets': test_groupings.INDEP_TEST_GROUPING01,
-    #             'dep_sets': test_groupings.DEPEN_TEST_GROUPING01,
-    #             'sample': 1000  # or subset of pisa}}
-    # ====================================================================
-
-    def do_preset(preset):
-        try:
-            sample = preset['initialize']['sample']
-            pisa2012 = load_original()
-            inputs.append(preset['initialize']['indep_sets'])
-            inputs.append(preset['initialize']['dep_sets'])
-            if isinstance(sample, int):
-                pisa_sample = pisa2012.sample(sample)
-            elif isinstance(sample, pd.DataFrame):
-                pisa_sample = sample
-            return pisa_sample, inputs
-        except KeyError:
-            return "KeyError on user initialization 'preset'"
-
-    if preset is not None:
-        return do_preset(preset)
-
-    # ====================================================================
-    # User option to use quick preset var groups (demo)
-    # ====================================================================
-    print("\n")
-    print("Use preset? ('no' to enter groups)")
-    if ui.single_response_from_list(['yes', 'no']) == 'yes':
-        print("Using preset...")
-        # example inputs
-        inputs = [
-            category_definitions.KNOWN_CATEGORIES,
-            category_definitions.PREFERRED_NAMING,
-            test_groupings.INDEP_TEST_GROUPING01,
-            test_groupings.DEPEN_TEST_GROUPING01]
-        pisa2012 = load_original()
-        pisa_sample = pisa2012.sample(500)
-        return pisa_sample, inputs
-
-    # ====================================================================
-    # User integrity check
-    # ====================================================================
-    print("\n")
-    print("Perform integrity check on original csv?")
-    if ui.single_response_from_list(['yes', 'no']) == 'yes':
-        pisa2012 = load_original(integrity_check=True)
-    else:
-        pisa2012 = load_original()
-
-    # ====================================================================
-    # User sample/resample
-    # ====================================================================
-    question = {'q': {
-        'preface': "Select a sample size.",
-        'selection_options': [
-            "500",
-            "5000",
-            "50000"]}}
-    if pisa_sample is None:
-        pisa_sample = pisa2012.sample(
-            int(ui.user_batch_questioning(question)['q']['response']))
-
-    # ====================================================================
-    # User input group information
-    # ====================================================================
     def user_input_group(group_size=None, group_name=None):
         """Return user defined group of pisa variables."""
         group = []
@@ -238,19 +167,69 @@ def user_initialize(pisa_sample=None, preset=None):
             print("How many variables will this group contain?")
             # user input group size
             group_size = ui.input_integer(1, 5)
-        for new_entry in range(group_size):
+        while len(group) < group_size:
             # user input variable names
             print("\n")
             group.append(
                 ui.input_pisa_var_name(list(PISA2012.columns)))
         return group, group_name
 
+    def do_preset(user_data_in):
+        try:
+            sample_in = user_data_in['pisa_sample']
+            if isinstance(sample_in, int):
+                user_data_in['pisa_sample'] = pisa2012.sample(sample_in)
+        except KeyError:
+            return "KeyError on user initialization 'preset'"
+        print("Skipped initialization input, loaded from parameter.\n")
+        return user_data_in
+
+    # ====================================================================
+    # Bypass user initialize interactions via 'preset'
+    # ====================================================================
+    pisa2012 = load_original()
+    if user_data is not None:
+        return do_preset(user_data)
+
+    # ====================================================================
+    # User option to use quick preset var groups (demo)
+    # ====================================================================
+    print("\n")
+    print("Use preset? ('no' to choose sample size and groups)")
+    if ui.single_response_from_list(['yes', 'no']) == 'yes':
+        print("Using preset...")
+        preset = test_groupings.PRESET1
+        return do_preset(preset)
+
+    # ====================================================================
+    # User sample/resample
+    # ====================================================================
+    question = {'q': {
+        'preface': "Select a sample size.",
+        'selection_options': [
+            "500",
+            "5000",
+            "50000",
+            "Other value"
+            ]}}
+    if user_data is None:
+        user_data = {}
+        current_input = ui.user_batch_questioning(question)['q']['response']
+        if current_input == "Other value":
+            current_input = ui.input_integer(50, None)
+        user_data['pisa_sample'] = pisa2012.sample(int(current_input))
+
+    # ====================================================================
+    # User input group information
+    # ====================================================================
+
     # dependend variables
     print("\n")
     print("Dependent Variable Input")
     print("Input a group of dependent variables (numeric).")
     current_input = user_input_group()
-    inputs.append({current_input[1]: current_input[0]})
+    dependent_groups = {current_input[1]: current_input[0]}
+    user_data['dependent_groups'] = dependent_groups
 
     # independent variables
     print("\n")
@@ -267,28 +246,18 @@ def user_initialize(pisa_sample=None, preset=None):
         current_input = user_input_group()
         independent_groups[current_input[1]] = current_input[0]
         print("Group entered.")
-    inputs.insert(2, independent_groups)
+    user_data['independent_groups'] = independent_groups
 
-    return pisa_sample, inputs
+    return user_data
 
 
 # %%% user_request_univariate_graphics
-
-#             if category in inputs[0] and len(inputs[0][category]) == 2:
-#                 function_name = "binary_counts_singleplot"
-#                 group_specific_parameters = (
-#                     group_name, get_vars(group_name), category)
-#                 graphic_objects.append(get_univariate_graphic())
-
-#             if category == "float" and len(get_vars(group_name)) > 1:
-#                 function_name = "float_means_singleplot"
-#                 group_specific_parameters = (
-#                     group_name, [group_name + "_mean"], category)
-#                 graphic_objects.append(get_univariate_graphic())
-
-
-def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
+def user_request_univariate_graphics(user_data):
     """User select plots."""
+    known_categories = category_definitions.KNOWN_CATEGORIES
+    group_category_matches = user_data['group_category_matches']
+    # pisa_df = user_data['custom_dataframe']
+
     # ====================================================================
     # private functions
     # ====================================================================
@@ -300,24 +269,22 @@ def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
             print("Use all groups?")
             if ui.single_response_from_list(['yes', 'no']) == 'yes':
                 return list_of_groups
-            else:
-                print("Which groups to use...")
-                return ui.multi_responses_from_list(list_of_groups)
+            print("Which groups to use...")
+            return ui.multi_responses_from_list(list_of_groups)
         return list_of_groups
 
     def user_select_functions(group_info, list_of_functions):
 
         # if group is BINARY, add binary functions despite category name
         # (group_name, group_vars, category) = group_info
-        if group_info[2] in inputs[0] and len(
-                inputs[0][group_info[2]]) == 2:
+        if group_info['category'] in known_categories and len(
+                known_categories[group_info['category']]) == 2:
             # get binary functions
             list_of_functions.extend(
                 get_function_by_key('binary', univariate_graphics_pool))
 
         # if group is CATEGORICAL, add binary functions despite category name
-        # (group_name, group_vars, category) = group_info
-        if group_info[2] in inputs[0]:
+        if group_info['category'] in known_categories:
             # get binary functions
             list_of_functions.extend(
                 get_function_by_key('categorical', univariate_graphics_pool))
@@ -326,49 +293,46 @@ def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
         if len(list_of_functions) == 1:
             print("\n")
             print("Do you want to use function",
-                  list_of_functions[0], "for group", group_info[0], "?")
+                  list_of_functions[0], "for group", group_info['name'], "?")
             if ui.single_response_from_list(['yes', 'no']) == 'no':
                 return []
         elif len(list_of_functions) > 1:
             print("\n")
-            print("Use all functions for group", group_info[0], "?")
+            print("Use all functions for group", group_info['name'], "?")
             if ui.single_response_from_list(['yes', 'no']) == 'no':
                 print("\n")
-                print("Which functions to use for group", group_info[0], "?")
+                print("Which functions to use for group",
+                      group_info['name'], "?")
                 return ui.multi_responses_from_list(list_of_functions)
         return list_of_functions
 
     def get_univariate_graphic(function_name, group_info):
         return getattr(
             univariate_graphics_pool,
-            (function_name))(group_info, pisa_df, inputs)
+            (function_name))(group_info, user_data)
 
-    def interate_group_function_selection(function_selection, location):
+    def iterate_group_function_selection(function_selection, location):
         graphics_by_group = {}
         for group_name in function_selection:
             graphics_by_group[group_name] = {}
-            # group_info
-            if location == 'depen_categories':
-                i = 3
-            elif location == 'indep_categories':
-                i = 2
-            group_info = [
-                group_name,
-                inputs[i][group_name],  # group_vars
-                group_category_matches[location][group_name]
-                ]
-            # user select graphic and add to output
+            group_info = {
+                'name': group_name,
+                'variables': user_data[location][group_name],
+                'category': group_category_matches[location][group_name]
+                }
             for function_name in user_select_functions(
                     group_info,
                     get_function_by_key(
-                        group_info[2], univariate_graphics_pool)):
+                        group_info['category'], univariate_graphics_pool)):
                 graphics_by_group[group_name][function_name] = (
                     get_univariate_graphic(function_name, group_info))
         return graphics_by_group
 
     # graphics_objects structure
-    graphic_objects = {'univariate': {
-        'dependent_groups': {}, 'independent_groups': {}}}
+    univariate_graphic_objects = {
+        'dependent_groups': {},
+        'independent_groups': {}
+        }
     print("\n\n")
     print("Choose Univariate Graphics")
     # ====================================================================
@@ -377,40 +341,45 @@ def user_request_univariate_graphics(pisa_df, inputs, group_category_matches):
     print("\n")
     print("Dependent Variables")
     selection = user_select_groups(list(
-        group_category_matches['depen_categories'].keys()))
+        group_category_matches['dependent_groups'].keys()))
     # graphics_objects structure
-    graphic_objects['univariate']['dependent_groups'] = (
-        interate_group_function_selection(selection, 'depen_categories'))
+    univariate_graphic_objects['dependent_groups'] = (
+        iterate_group_function_selection(selection, 'dependent_groups'))
     # ====================================================================
     # independent groups
     # ====================================================================
     print("\n")
     print("Independent Variables")
     selection = user_select_groups(list(
-        group_category_matches['indep_categories'].keys()))
+        group_category_matches['independent_groups'].keys()))
     # graphics_objects structure
-    graphic_objects['univariate']['independent_groups'] = (
-        interate_group_function_selection(selection, 'indep_categories'))
+    univariate_graphic_objects['independent_groups'] = (
+        iterate_group_function_selection(selection, 'independent_groups'))
 
-    return pisa_df, inputs, group_category_matches, graphic_objects
-
-
-def show_all_output():
-    """Display results."""
-    def rip_set(lane, sub_lane):
-        for group_name in OUTPUT[3][lane][sub_lane]:
-            for graphic in OUTPUT[3][lane][sub_lane][group_name].values():
-                graphic.seek(0)
-                pickle.load(graphic)
-    rip_set('univariate', 'dependent_groups')
-    rip_set('univariate', 'independent_groups')
+    # update and return user_data
+    user_data['univariate_graphic_objects'] = univariate_graphic_objects
+    return user_data
 
 
 # %% Main
 
 
+def show_all_output(result):
+    """Display results."""
+    def rip_set(lane, sub_lane):
+        for group_name in result[lane][sub_lane]:
+            for graphic in result[lane][sub_lane][group_name].values():
+                graphic.seek(0)
+                pickle.load(graphic)
+    rip_set('univariate_graphic_objects', 'dependent_groups')
+    rip_set('univariate_graphic_objects', 'independent_groups')
+
+
 if __name__ == '__main__':
     # load a global copy to avoid reloading
     PISA2012 = load_original()
+
+    # OUTPUT = initialize(test_groupings.PRESET1)
     OUTPUT = initialize()
-    show_all_output()
+
+    show_all_output(OUTPUT)
