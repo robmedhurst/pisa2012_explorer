@@ -11,12 +11,13 @@ import pickle
 
 import pandas as pd
 
-from wrangle import wrangle
-import post_wrangling
-import category_definitions
-import test_groupings
-import univariate_graphics_pool
-import user_interaction as ui
+import main_category_actions
+
+from main_wrangle import wrangle
+
+import main_user_input as ui
+import main_definitions as definitions
+import graphics_pool_univariate as univariate_graphics_pool
 
 
 # Dataset can take a few minutes to load on some systems.
@@ -111,10 +112,11 @@ def initialize(user_data=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
     return (
-        user_request_univariate_graphics(
-            post_wrangle(
-                wrangle(
-                    user_initialize(user_data)))))
+        user_request_bivariate_graphics(
+            user_request_univariate_graphics(
+                post_wrangle(
+                    wrangle(
+                        user_initialize(user_data))))))
 
 
 def post_wrangle(user_data):
@@ -129,10 +131,10 @@ def post_wrangle(user_data):
             category = group_category_matches[subset][group_name]
 
             # check if associated post wrangling group actions are available
-            if category + "_group_post_wrangle" in dir(post_wrangling):
+            if category + "_group_post_wrangle" in dir(main_category_actions):
                 # function call using getattr
                 getattr(
-                    post_wrangling,
+                    main_category_actions,
                     (category + "_group_post_wrangle"))(
                         group_name, user_data)
     # update and return user_data
@@ -198,7 +200,7 @@ def user_initialize(user_data=None):
     print("Use preset? ('no' to choose sample size and groups)")
     if ui.single_response_from_list(['yes', 'no']) == 'yes':
         print("Using preset...")
-        preset = test_groupings.PRESET1
+        preset = definitions.PRESET1
         return do_preset(preset)
 
     # ====================================================================
@@ -254,7 +256,7 @@ def user_initialize(user_data=None):
 # %%% user_request_univariate_graphics
 def user_request_univariate_graphics(user_data):
     """User select plots."""
-    known_categories = category_definitions.KNOWN_CATEGORIES
+    known_categories = definitions.KNOWN_CATEGORIES
     group_category_matches = user_data['group_category_matches']
     # pisa_df = user_data['custom_dataframe']
 
@@ -274,7 +276,6 @@ def user_request_univariate_graphics(user_data):
         return list_of_groups
 
     def user_select_functions(group_info, list_of_functions):
-
         # if group is BINARY, add binary functions despite category name
         # (group_name, group_vars, category) = group_info
         if group_info['category'] in known_categories and len(
@@ -282,13 +283,11 @@ def user_request_univariate_graphics(user_data):
             # get binary functions
             list_of_functions.extend(
                 get_function_by_key('binary', univariate_graphics_pool))
-
         # if group is CATEGORICAL, add binary functions despite category name
         if group_info['category'] in known_categories:
             # get binary functions
             list_of_functions.extend(
                 get_function_by_key('categorical', univariate_graphics_pool))
-
         # different user prompts for different number of available functions
         if len(list_of_functions) == 1:
             print("\n")
@@ -361,6 +360,21 @@ def user_request_univariate_graphics(user_data):
     return user_data
 
 
+# %%% user_request_univariate_graphics
+def user_request_bivariate_graphics(user_data):
+    """."""
+    # whats the data structure as it stands?
+    # what questions are we asking the user?
+    # to what end? what are the deliverables?
+    # how should deliverables be stored?
+    # user_data[lane][vector]
+
+    # bivariate requires comparisons between groups
+    # some graphics may accept or require multiple indep or dep groups
+
+    return user_data
+
+
 # %% Main
 
 
@@ -379,7 +393,7 @@ if __name__ == '__main__':
     # load a global copy to avoid reloading
     PISA2012 = load_original()
 
-    # OUTPUT = initialize(test_groupings.PRESET1)
+    # OUTPUT = initialize(definitions.PRESET1)
     OUTPUT = initialize()
 
     show_all_output(OUTPUT)
