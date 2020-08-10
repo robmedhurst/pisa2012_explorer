@@ -1,4 +1,4 @@
-"""Graphic functions for exploratory analysis."""
+"""Graphic functions supporting exploratory pisa2012 analysis."""
 
 import io
 import pickle
@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 import category_definitions
-from main import get_longnames
+from main_ import get_longnames
 
 
 def binary_counts_singleplot(group_info, user_data):
