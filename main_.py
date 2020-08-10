@@ -18,7 +18,7 @@ from main_wrangle import wrangle
 import main_user_input as ui
 import main_definitions as definitions
 import graphics_pool_univariate as univariate_graphics_pool
-
+import graphics_pool_bivariate as bivariate_graphics_pool
 
 # Dataset can take a few minutes to load on some systems.
 # Load once and only work on copy.
@@ -360,18 +360,26 @@ def user_request_univariate_graphics(user_data):
     return user_data
 
 
-# %%% user_request_univariate_graphics
+# %%% user_request_bivariate_graphics
 def user_request_bivariate_graphics(user_data):
-    """."""
-    # whats the data structure as it stands?
-    # what questions are we asking the user?
-    # to what end? what are the deliverables?
-    # how should deliverables be stored?
-    # user_data[lane][vector]
+    """User request bivariate graphics functions."""
+    # 'dependent_groups': {},
+    # 'independent_groups': {},
+    # 'pisa_sample': pisa_sample,
+    # 'custom_dataframe': pisa_df,
+    # 'group_category_matches': group_category_matches,
 
-    # bivariate requires comparisons between groups
-    # some graphics may accept or require multiple indep or dep groups
+    # def get_bivariate_graphic(function_name, parameters):
+    #     return getattr(
+    #         univariate_graphics_pool,
+    #         (function_name))(group_info, user_data)
 
+    # for function in get_function_by_key(category, graphics_pool_bivariate):
+    #     get_bivariate_graphic(function_name, parameters)
+    # parameters = {
+    #     dependent: [],
+    #     independent: []
+    # }
     return user_data
 
 
