@@ -254,15 +254,18 @@ def user_initialize(user_data=None):
 
 
 # %%% user_request_univariate_graphics
-def user_request_univariate_graphics(user_data):
+def user_request_univariate_graphics(user_data, force_bypass=False):
     """User select plots."""
     known_categories = definitions.KNOWN_CATEGORIES
     group_category_matches = user_data['group_category_matches']
-    # pisa_df = user_data['custom_dataframe']
 
     # ====================================================================
     # private functions
     # ====================================================================
+
+    def do_bypass(bypass_type='all'):
+        pass
+
     def user_select_groups(list_of_groups):
         """User choose any number from list of groups."""
         if len(list_of_groups) > 1:
@@ -327,7 +330,12 @@ def user_request_univariate_graphics(user_data):
                     get_univariate_graphic(function_name, group_info))
         return graphics_by_group
 
-    # graphics_objects structure
+    # TODO: Bypass graphic selection
+    if force_bypass is not False:
+        do_bypass(force_bypass)
+    else:
+        pass
+
     univariate_graphic_objects = {
         'dependent_groups': {},
         'independent_groups': {}
@@ -361,25 +369,62 @@ def user_request_univariate_graphics(user_data):
 
 
 # %%% user_request_bivariate_graphics
-def user_request_bivariate_graphics(user_data):
+def user_request_bivariate_graphics(user_data, force_bypass=False):
     """User request bivariate graphics functions."""
-    # 'dependent_groups': {},
-    # 'independent_groups': {},
-    # 'pisa_sample': pisa_sample,
-    # 'custom_dataframe': pisa_df,
-    # 'group_category_matches': group_category_matches,
+    def get_bivariate_graphic(function_name, parameters):
+        return getattr(
+            univariate_graphics_pool,
+            (function_name))(user_data, parameters)
 
-    # def get_bivariate_graphic(function_name, parameters):
-    #     return getattr(
-    #         univariate_graphics_pool,
-    #         (function_name))(group_info, user_data)
+    def do_bypass(bypass_type='all'):
+        """."""
+        if bypass_type == 'all':
+            return {
+                # populate question responses that give All graphics
+                }
+        elif bypass_type in [None, 'None']:
+            return {
+                # populate question responses that give No graphics
+                }
+        else:
+            return None
 
-    # for function in get_function_by_key(category, graphics_pool_bivariate):
-    #     get_bivariate_graphic(function_name, parameters)
-    # parameters = {
-    #     dependent: [],
-    #     independent: []
-    # }
+    if force_bypass is not False:
+        response_tracker = do_bypass(force_bypass)
+    else:
+        # Throw away variable for tracking recent response allowing current
+        #    user interactions to reference recent user interactions.
+        response_tracker = {}
+
+    print("\n\n")
+    print("Choose Bivariate Graphics")
+
+    print("First select a dependent group or variable, then select",
+          "independent group(s) to plot it against.")
+
+    # user select dep group
+
+    print("Select an independent group to plot against.")
+
+    # user select dep group
+
+    # get functions matching groups
+
+    print("Select which functions you want plotted.")
+
+    # user select functions
+
+    # iterate
+    # call
+    # save results
+
+    # graphics objects to retain when finished
+    bivariate_graphic_objects = {
+        'dependent_groups': {},
+        'independent_groups': {}
+        }
+
+    user_data['bivariate_graphic_objects'] = bivariate_graphic_objects
     return user_data
 
 
