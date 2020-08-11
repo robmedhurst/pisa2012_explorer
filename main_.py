@@ -264,7 +264,14 @@ def user_request_univariate_graphics(user_data, force_bypass=False):
     # ====================================================================
 
     def do_bypass(bypass_type='all'):
-        pass
+        if bypass_type == 'all':
+            return {
+                # populate with responses
+                }
+        elif bypass_type in [None, "None"]:
+            return {}
+        else:
+            return None
 
     def user_select_groups(list_of_groups):
         """User choose any number from list of groups."""
