@@ -292,7 +292,7 @@ def user_request_univariate_graphics(user_data):
         if group_info['category'] in known_categories:
             # get binary functions
             list_of_functions.extend(
-                get_function_by_key('categorical', univariate_graphics_pool))
+                get_function_by_key('cat', univariate_graphics_pool))
         return list_of_functions
 
     def user_select_functions(group_info):
