@@ -91,6 +91,21 @@ def barplot_uni_single_binary(group_info, user_data):
     return buf
 
 
+def distplot_uni_row_float_nokde(group_info, user_data):
+    """."""
+    return float_horizontal_frequency(group_info, user_data, "float_no_kde")
+
+
+def distplot_uni_row_float_kde(group_info, user_data):
+    """."""
+    return float_horizontal_frequency(group_info, user_data, "float_yes_kde")
+
+
+def countplot_uni_row_cat(group_info, user_data):
+    """."""
+    return float_horizontal_frequency(group_info, user_data, "categorical")
+
+
 def float_horizontal_frequency(group_info, user_data, switcher):
     """Return a subplot of scatterplots of these float type varibles."""
     pisa_df = user_data['custom_dataframe']
