@@ -10,7 +10,7 @@ import main_definitions
 from main_ import get_longnames
 
 
-def horizontalcomparion_violin_catfloat(parameters, pisa_df, inputs):
+def violinplot_bi_row_float_cat(parameters, pisa_df, inputs):
     """Placeholer function."""
     (group_name, var_list, category, category_order, dep_var) = parameters
     max_ylim = 0
@@ -67,7 +67,7 @@ def horizontalcomparion_violin_catfloat(parameters, pisa_df, inputs):
     return buf
 
 
-def binary_counts_singleplot(group_info, user_data):
+def barplot_uni_single_binary(group_info, user_data):
     """Return binary group summary as counts bar chart."""
     pisa_df = user_data['custom_dataframe']
     var_list = group_info['variables']
@@ -89,6 +89,21 @@ def binary_counts_singleplot(group_info, user_data):
     pickle.dump(fig, output)
     plt.close(fig)
     return buf
+
+
+def distplot_uni_row_float_nokde(group_info, user_data):
+    """."""
+    return float_horizontal_frequency(group_info, user_data, "float_no_kde")
+
+
+def distplot_uni_row_float_kde(group_info, user_data):
+    """."""
+    return float_horizontal_frequency(group_info, user_data, "float_yes_kde")
+
+
+def countplot_uni_row_cat(group_info, user_data):
+    """."""
+    return float_horizontal_frequency(group_info, user_data, "categorical")
 
 
 def float_horizontal_frequency(group_info, user_data, switcher):
