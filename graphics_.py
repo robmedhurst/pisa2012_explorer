@@ -6,7 +6,7 @@ import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import category_definitions
+import main_definitions
 from main_ import get_longnames
 
 
@@ -50,7 +50,7 @@ def float_horizontal_frequency(group_info, user_data, switcher):
 
     elif switcher == "categorical":
         first_y_name = "Count"
-        switcher = category_definitions.PREFERRED_NAMING[category]
+        switcher = main_definitions.PREFERRED_NAMING[category]
 
     for first_pass in [True, False]:
         # initialize figure
