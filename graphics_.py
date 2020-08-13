@@ -10,7 +10,7 @@ import main_definitions
 from main_ import get_longnames
 
 
-def horizontalcomparion_violin_catfloat(parameters, pisa_df, inputs):
+def violinplot_bi_row_float_cat(parameters, pisa_df, inputs):
     """Placeholer function."""
     (group_name, var_list, category, category_order, dep_var) = parameters
     max_ylim = 0
@@ -67,7 +67,7 @@ def horizontalcomparion_violin_catfloat(parameters, pisa_df, inputs):
     return buf
 
 
-def binary_counts_singleplot(group_info, user_data):
+def barplot_uni_single_binary(group_info, user_data):
     """Return binary group summary as counts bar chart."""
     pisa_df = user_data['custom_dataframe']
     var_list = group_info['variables']
