@@ -32,7 +32,6 @@ def violinplot_bi_row_float_cat(parameters, pisa_df, inputs):
         else:
             # discard first draft
             plt.close(fig)
-            del fig
             fig = plt.figure(figsize=(5 * len(var_list), 5))
 
         for var_index, var_name in enumerate(var_list):
@@ -92,16 +91,6 @@ def barplot_uni_single_binary(group_info, user_data):
     return pickle_buffer(fig)
 
 
-def distplot_uni_row_float_nokde(group_info, user_data):
-    """."""
-    return float_horizontal_frequency(group_info, user_data, "float_no_kde")
-
-
-def distplot_uni_row_float_kde(group_info, user_data):
-    """."""
-    return float_horizontal_frequency(group_info, user_data, "float_yes_kde")
-
-
 def countplot_uni_row_cat(group_info, user_data):
     """."""
     pisa_df = user_data['custom_dataframe']
@@ -117,7 +106,6 @@ def countplot_uni_row_cat(group_info, user_data):
         else:
             # discard first draft
             plt.close(fig)
-            del fig
             fig = plt.figure(figsize=(5 * len(var_list), 5))
 
         # for each var create axis and titles
@@ -162,23 +150,18 @@ def countplot_uni_row_cat(group_info, user_data):
     return pickle_buffer(fig)
 
 
-def float_horizontal_frequency(group_info, user_data, switcher):
+def distplot_uni_row_float(group_info, user_data, kde):
     """Return a subplot of scatterplots of these float type varibles."""
     pisa_df = user_data['custom_dataframe']
     var_list = group_info['variables']
-    category = group_info['category']
     max_ylim = 0
 
-    if switcher == "float_yes_kde":
-        switcher = True
+    if kde == "float_yes_kde":
+        kde = True
         first_y_name = "Frequency"
-    elif switcher == "float_no_kde":
-        switcher = False
+    elif kde == "float_no_kde":
+        kde = False
         first_y_name = "Count"
-
-    elif switcher == "categorical":
-        first_y_name = "Count"
-        switcher = definitions.PREFERRED_NAMING[category]
 
     for first_pass in [True, False]:
         # initialize figure
@@ -188,7 +171,6 @@ def float_horizontal_frequency(group_info, user_data, switcher):
         else:
             # discard first draft
             plt.close(fig)
-            del fig
             fig = plt.figure(figsize=(5 * len(var_list), 5))
 
         # for each var create axis and titles
@@ -196,20 +178,10 @@ def float_horizontal_frequency(group_info, user_data, switcher):
             # add a subplot for each var_name in var_list
             axis = fig.add_subplot(1, len(var_list), var_index + 1)
 
-            if isinstance(switcher, list):
-                sns.countplot(
-                    pisa_df[var_name],
-                    order=switcher,
-                    color=sns.color_palette()[0]
-                    )
-
-            else:
-                # seaborn distribution plot
-                sns.distplot(
-                    pisa_df[var_name],
-                    kde=switcher, hist_kws={
-                        "rwidth": 0.75, 'edgecolor': 'black', 'alpha': 1.0}
-                    )
+            # seaborn distribution plot
+            sns.distplot(
+                pisa_df[var_name], kde=kde, hist_kws={
+                    "rwidth": 0.75, 'edgecolor': 'black', 'alpha': 1.0})
 
             # Customize axis properties:
             # Get max y limit on first pass
@@ -237,8 +209,6 @@ def float_horizontal_frequency(group_info, user_data, switcher):
                 # set axis limits and titles
                 axis.set(
                     ylim=(0, max_ylim),
-                    xlabel=xname,
-                    ylabel=yname
-                    )
+                    xlabel=xname, ylabel=yname)
 
     return pickle_buffer(fig)

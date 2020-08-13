@@ -10,12 +10,12 @@ import graphics_ as gs
 
 def distplot_uni_row_float_nokde(group_info, user_data):
     """Return a subplot of distributions for float type varibles."""
-    return gs.distplot_uni_row_float_nokde(group_info, user_data)
+    return gs.distplot_uni_row_float(group_info, user_data, "float_no_kde")
 
 
 def distplot_uni_row_float_kde(group_info, user_data):
     """Return a subplot of frequencies with kde for float type groups."""
-    return gs.distplot_uni_row_float_kde(group_info, user_data)
+    return gs.distplot_uni_row_float(group_info, user_data, "float_yes_kde")
 
 
 def countplot_uni_row_cat(group_info, user_data):
