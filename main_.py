@@ -20,6 +20,7 @@ import main_definitions as definitions
 import graphics_pool_univariate as univariate_graphics_pool
 import graphics_pool_bivariate as bivariate_graphics_pool
 
+
 # Dataset can take a few minutes to load on some systems.
 # Load once and only work on copy.
 # Try to laod from csv then from zip.
@@ -180,10 +181,12 @@ def user_initialize(user_data=None):
         try:
             sample_in = user_data_in['pisa_sample']
             if isinstance(sample_in, int):
+                user_data_in['sample_size'] = sample_in
                 user_data_in['pisa_sample'] = pisa2012.sample(sample_in)
+
         except KeyError:
             return "KeyError on user initialization 'preset'"
-        print("Skipped initialization input, loaded from parameter.\n")
+        print("Skipped input, loaded selection from parameter.\n")
         return user_data_in
 
     # ====================================================================
@@ -200,8 +203,7 @@ def user_initialize(user_data=None):
     print("Use preset? ('no' to choose sample size and groups)")
     if ui.single_response_from_list(['yes', 'no']) == 'yes':
         print("Using preset...")
-        preset = definitions.PRESET1
-        return do_preset(preset)
+        return do_preset(definitions.PRESET1)
 
     # ====================================================================
     # User sample/resample
@@ -220,7 +222,7 @@ def user_initialize(user_data=None):
         if current_input == "Other value":
             current_input = ui.input_integer(50, None)
         user_data['pisa_sample'] = pisa2012.sample(int(current_input))
-
+        user_data['sample_size'] = int(current_input)
     # ====================================================================
     # User input group information
     # ====================================================================
@@ -254,18 +256,15 @@ def user_initialize(user_data=None):
 
 
 # %%% user_request_univariate_graphics
-def user_request_univariate_graphics(user_data, force_bypass=False):
+def user_request_univariate_graphics(user_data):
     """User select plots."""
+    # globals=================================================================
+    #
     known_categories = definitions.KNOWN_CATEGORIES
     group_category_matches = user_data['group_category_matches']
 
-    # ====================================================================
-    # private functions
-    # ====================================================================
-
-    def do_bypass(bypass_type='all'):
-        pass
-
+    # private=================================================================
+    #
     def user_select_groups(list_of_groups):
         """User choose any number from list of groups."""
         if len(list_of_groups) > 1:
@@ -278,7 +277,10 @@ def user_request_univariate_graphics(user_data, force_bypass=False):
             return ui.multi_responses_from_list(list_of_groups)
         return list_of_groups
 
-    def user_select_functions(group_info, list_of_functions):
+    def get_univariate_group_functions(group_info):
+        # get functions matching category key from univatiate pool
+        list_of_functions = get_function_by_key(
+                    group_info['category'], univariate_graphics_pool)
         # if group is BINARY, add binary functions despite category name
         # (group_name, group_vars, category) = group_info
         if group_info['category'] in known_categories and len(
@@ -291,8 +293,17 @@ def user_request_univariate_graphics(user_data, force_bypass=False):
             # get binary functions
             list_of_functions.extend(
                 get_function_by_key('categorical', univariate_graphics_pool))
+        return list_of_functions
+
+    def user_select_functions(group_info):
+        list_of_functions = get_univariate_group_functions(group_info)
+        # bypass user input
+        if response_tracker['bypass'] == 'none':
+            return []
+        elif response_tracker['bypass'] == 'all':
+            return list_of_functions
         # different user prompts for different number of available functions
-        if len(list_of_functions) == 1:
+        elif len(list_of_functions) == 1:
             print("\n")
             print("Do you want to use function",
                   list_of_functions[0], "for group", group_info['name'], "?")
@@ -313,57 +324,123 @@ def user_request_univariate_graphics(user_data, force_bypass=False):
             univariate_graphics_pool,
             (function_name))(group_info, user_data)
 
-    def iterate_group_function_selection(function_selection, location):
+    def iterate_group_function_selection(location):
+        groups_to_check = response_tracker[location]
         graphics_by_group = {}
-        for group_name in function_selection:
+        for group_name in groups_to_check:
+            # define group
             graphics_by_group[group_name] = {}
             group_info = {
                 'name': group_name,
                 'variables': user_data[location][group_name],
-                'category': group_category_matches[location][group_name]
-                }
-            for function_name in user_select_functions(
-                    group_info,
-                    get_function_by_key(
-                        group_info['category'], univariate_graphics_pool)):
+                'category': group_category_matches[location][group_name]}
+            # interact with user
+            response_tracker['functions'][group_name] = (
+                user_select_functions(group_info))
+            # call selected functions
+            for function_name in response_tracker['functions'][group_name]:
                 graphics_by_group[group_name][function_name] = (
                     get_univariate_graphic(function_name, group_info))
         return graphics_by_group
 
-    # TODO: Bypass graphic selection
-    if force_bypass is not False:
-        do_bypass(force_bypass)
-    else:
-        pass
+    def init_response_tracker(bypass_type='all'):
+        if bypass_type == "Yes, with all plots.":
+            return {
+                # populate with responses indicating ALL options selected
+                'bypass': 'all',
+                'dependent_groups':
+                    list(group_category_matches['dependent_groups'].keys()),
+                'independent_groups':
+                    list(group_category_matches['independent_groups'].keys()),
+                'functions': {}}
+        elif bypass_type == "Yes, with no plots.":
+            return {
+                # populate with responses indicating NO options selected
+                'bypass': 'none',
+                'independent_groups': [],
+                'dependent_groups': []}
+        else:
+            return {'bypass': False}
 
+    def user_select_bypass():
+        # User Select Bypass
+        print("Bypass selection?")
+        return ui.single_response_from_list([
+            "Yes, with all plots.",
+            "Yes, with no plots.",
+            "No, manually select groups to explore."
+            ])
+
+    def get_next_unused_backup_name(location, name):
+        working_dictionary = user_data.copy()
+        # navigate location specified
+        for depth in range(len(location)):
+            working_dictionary = working_dictionary[location[depth]]
+        # find smallest integer such that new_name doesnt yet exist
+        back_up_num = 0
+        while name + "_old" + str(back_up_num) in working_dictionary.keys():
+            back_up_num += 1
+        return name + "_old" + str(back_up_num)
+
+    # bypass =================================================================
+    try:
+        response_tracker = user_data['response_trackers']['univariate']
+    except KeyError:
+        response_tracker = False
+
+    # ========================================================================
+    # interaction start ======================================================
+    #
+    print("\n\n")
+    print("Choose Univariate Graphics")
+    #
+    # response_tracker old
+    if response_tracker is not False:
+        print("Existing responses found, reuse them?")
+        if ui.single_response_from_list(["yes", "no"]) == 'no':
+            # move the old tracker
+            user_data['response_trackers'][
+                get_next_unused_backup_name(
+                    ['response_trackers'], 'univariate')] = response_tracker
+            response_tracker = False
+    # response_tracker new
+    if response_tracker is False:
+        response_tracker = init_response_tracker(user_select_bypass())
+    # storage
     univariate_graphic_objects = {
         'dependent_groups': {},
         'independent_groups': {}
         }
-    print("\n\n")
-    print("Choose Univariate Graphics")
-    # ====================================================================
-    # dependent groups
-    # ====================================================================
+    #
+    # Dependent Groups
     print("\n")
     print("Dependent Variables")
-    selection = user_select_groups(list(
-        group_category_matches['dependent_groups'].keys()))
-    # graphics_objects structure
+    # group selection
+    if not response_tracker['bypass']:  # user select groups if no bypass
+        response_tracker['dependent_groups'] = user_select_groups(list(
+            group_category_matches['dependent_groups'].keys()))
+    # function selection
     univariate_graphic_objects['dependent_groups'] = (
-        iterate_group_function_selection(selection, 'dependent_groups'))
-    # ====================================================================
-    # independent groups
-    # ====================================================================
+        iterate_group_function_selection('dependent_groups'))
+    #
+    # Independent Groups
     print("\n")
     print("Independent Variables")
-    selection = user_select_groups(list(
-        group_category_matches['independent_groups'].keys()))
-    # graphics_objects structure
+    # group selection
+    if not response_tracker['bypass']:  # user select groups if no bypass
+        response_tracker['independent_groups'] = user_select_groups(list(
+            group_category_matches['independent_groups'].keys()))
+    # function selection
     univariate_graphic_objects['independent_groups'] = (
-        iterate_group_function_selection(selection, 'independent_groups'))
-
-    # update and return user_data
+        iterate_group_function_selection('independent_groups'))
+    #
+    # interaction end ========================================================
+    # ========================================================================
+    #
+    # Update and Return user_data
+    if 'response_trackers' not in user_data.keys():
+        user_data['response_trackers'] = {}
+    user_data['response_trackers']['univariate'] = response_tracker
     user_data['univariate_graphic_objects'] = univariate_graphic_objects
     return user_data
 
