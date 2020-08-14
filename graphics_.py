@@ -19,9 +19,15 @@ def pickle_buffer(fig):
     return buf
 
 
-def violinplot_bi_row_float_cat(parameters, pisa_df, inputs):
+def violinplot_bi_row_cat(group_info, user_data):
     """Placeholer function."""
-    (group_name, var_list, category, category_order, dep_var) = parameters
+    pisa_df = user_data['custom_dataframe']
+    var_list = group_info['independent_group']['variables']
+    category_order = (
+        definitions.PREFERRED_NAMING[
+            group_info['independent_group']['category']])
+    dep_var = group_info['dependent_group']['name'] + "_mean"
+
     max_ylim = 0
 
     for first_pass in [True, False]:
@@ -53,7 +59,10 @@ def violinplot_bi_row_float_cat(parameters, pisa_df, inputs):
             else:
                 # only display y label on first subplot
                 if var_index == 0:
-                    yname = get_longnames([dep_var])[0]
+                    try:
+                        yname = get_longnames([dep_var])[0]
+                    except IndexError:
+                        yname = dep_var
                 else:
                     yname = None
                 # subbplot x label longnames if available
