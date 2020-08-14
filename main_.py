@@ -255,10 +255,23 @@ def user_initialize(user_data=None):
     return user_data
 
 
+def get_next_unused_name(user_data, location, name, appendage="_old"):
+    """."""
+    working_dictionary = user_data.copy()
+    # navigate location specified
+    for depth in range(len(location)):
+        working_dictionary = working_dictionary[location[depth]]
+    # find smallest integer such that new_name doesnt yet exist
+    back_up_num = 0
+    while name + appendage + str(back_up_num) in working_dictionary.keys():
+        back_up_num += 1
+    return name + appendage + str(back_up_num)
+
+
 # %%% user_request_univariate_graphics
 def user_request_univariate_graphics(user_data):
     """User select plots."""
-    # globals=================================================================
+    # ========================================================================
     #
     known_categories = definitions.KNOWN_CATEGORIES
     group_category_matches = user_data['group_category_matches']
@@ -281,14 +294,13 @@ def user_request_univariate_graphics(user_data):
         # get functions matching category key from univatiate pool
         list_of_functions = get_function_by_key(
                     group_info['category'], univariate_graphics_pool)
-        # if group is BINARY, add binary functions despite category name
-        # (group_name, group_vars, category) = group_info
+        # Detect BINARY
         if group_info['category'] in known_categories and len(
                 known_categories[group_info['category']]) == 2:
             # get binary functions
             list_of_functions.extend(
                 get_function_by_key('binary', univariate_graphics_pool))
-        # if group is CATEGORICAL, add binary functions despite category name
+        # Detect CATEGORICAL
         if group_info['category'] in known_categories:
             # get binary functions
             list_of_functions.extend(
@@ -371,17 +383,6 @@ def user_request_univariate_graphics(user_data):
             "No, manually select groups to explore."
             ])
 
-    def get_next_unused_backup_name(location, name):
-        working_dictionary = user_data.copy()
-        # navigate location specified
-        for depth in range(len(location)):
-            working_dictionary = working_dictionary[location[depth]]
-        # find smallest integer such that new_name doesnt yet exist
-        back_up_num = 0
-        while name + "_old" + str(back_up_num) in working_dictionary.keys():
-            back_up_num += 1
-        return name + "_old" + str(back_up_num)
-
     # bypass =================================================================
     try:
         response_tracker = user_data['response_trackers']['univariate']
@@ -400,8 +401,10 @@ def user_request_univariate_graphics(user_data):
         if ui.single_response_from_list(["yes", "no"]) == 'no':
             # move the old tracker
             user_data['response_trackers'][
-                get_next_unused_backup_name(
-                    ['response_trackers'], 'univariate')] = response_tracker
+                get_next_unused_name(
+                    user_data,
+                    ['response_trackers'], 'univariate'
+                    )] = response_tracker
             response_tracker = False
     # response_tracker new
     if response_tracker is False:
@@ -446,61 +449,116 @@ def user_request_univariate_graphics(user_data):
 
 
 # %%% user_request_bivariate_graphics
-def user_request_bivariate_graphics(user_data, force_bypass=False):
-    """User request bivariate graphics functions."""
-    def get_bivariate_graphic(function_name, parameters):
-        return getattr(
-            univariate_graphics_pool,
-            (function_name))(user_data, parameters)
+def user_request_bivariate_graphics(user_data):
+    """."""
+    known_categories = definitions.KNOWN_CATEGORIES
 
-    def do_bypass(bypass_type='all'):
-        """."""
-        if bypass_type == 'all':
-            return {
-                # populate question responses that give All graphics
-                }
-        elif bypass_type in [None, 'None']:
-            return {
-                # populate question responses that give No graphics
-                }
+    def select_group(expected_groups):
+        """
+        Return group properties of user selected group.
+
+        putting groups in order give the user the option to use dependent
+        and independent groups interchangably for bivariate plots, without
+        conflating the two when presenting the user with selection.
+        """
+        # placing independent or dependent groups at top of selection_list
+        unexpected_groups = 'dependent_groups'
+        if expected_groups == 'dependent_groups':
+            unexpected_groups = 'independent_groups'
+        selection_list = []
+        # indicate group types in selection_list
+        selection_list.append(expected_groups + ":")  # index is 0
+        selection_list.extend(user_data[expected_groups])
+        # indicate group types in selection_list
+        selection_list.append(  # index is len(user_data[expected_groups])
+            "Not originally entered as " + expected_groups + ":")
+        selection_list.extend(user_data[unexpected_groups])
+        # not_selectable_indices
+        group_name = ui.single_response_from_list(
+            selection_list, [0, len(user_data[expected_groups]) + 1])
+        # selection location
+        if selection_list.index(group_name) > len(user_data[expected_groups]):
+            location = unexpected_groups
         else:
-            return None
+            location = expected_groups
+        return {
+            'name': group_name,
+            'variables': user_data[location][group_name],
+            'category':
+                user_data['group_category_matches'][location][group_name]}
 
-    if force_bypass is not False:
-        response_tracker = do_bypass(force_bypass)
-    else:
-        # Throw away variable for tracking recent response allowing current
-        #    user interactions to reference recent user interactions.
-        response_tracker = {}
+    def get_functions(dependent_group, independent_group):
+        # Functions
+        list_of_functions = []
+        # get functions by known category
+        list_of_functions.extend(get_function_by_key(
+            independent_group['category'], bivariate_graphics_pool))
 
-    print("\n\n")
-    print("Choose Bivariate Graphics")
+        # check if indpendent is generic categorical
+        if independent_group['category'] in known_categories:
+            list_of_functions.extend(get_function_by_key(
+                'cat',
+                bivariate_graphics_pool))
+        # check if indpendent is generic binary
+        if independent_group['category'] in known_categories and len(
+                known_categories[independent_group['category']]) == 2:
+            list_of_functions.extend(get_function_by_key(
+                'binary',
+                bivariate_graphics_pool))
+        return list_of_functions
 
-    print("First select a dependent group or variable, then select",
-          "independent group(s) to plot it against.")
+    def create_response():
+        # Groups
+        print("Select a dependent group.")
+        dependent_group = select_group('dependent_groups')
+        print("Select an independent group.")
+        independent_group = select_group('independent_groups')
+        # Functions
+        available_functions = get_functions(
+            dependent_group, independent_group)
+        selected_functions = ui.multi_responses_from_list(
+            available_functions)
+        return {
+            'independent_group': independent_group,
+            'dependent_group': dependent_group,
+            'functions': selected_functions}
 
-    # user select dep group
-
-    print("Select an independent group to plot against.")
-
-    # user select dep group
-
-    # get functions matching groups
-
-    print("Select which functions you want plotted.")
-
-    # user select functions
-
-    # iterate
-    # call
-    # save results
-
-    # graphics objects to retain when finished
-    bivariate_graphic_objects = {
-        'dependent_groups': {},
-        'independent_groups': {}
-        }
-
+    bivariate_graphic_objects = {}
+    user_data['response_trackers']['bivariate'] = {}
+    # loop for multiple selections
+    while True:
+        # loop for user correct input error
+        while True:
+            response_tracker = create_response()
+            # Confirm Selection
+            print(response_tracker)
+            print("Is this selection correct?")
+            if ui.single_response_from_list([
+                    'Yes, continue.',
+                    'No, lets try again.']) == 'Yes, continue.':
+                break
+        # update response_tracker
+        tracker_name = get_next_unused_name(
+                    user_data, ['response_trackers', 'bivariate'],
+                    'bivariate', "_entry_")
+        user_data[
+            'response_trackers']['bivariate'][tracker_name] = response_tracker
+        # create and store graphics
+        graphics = {}
+        for function_name in response_tracker['functions']:
+            graphics['function_name'] = getattr(
+                bivariate_graphics_pool, (function_name))(
+                    response_tracker, user_data)
+        key = (response_tracker['dependent_group']['name'] + "_vs_" +
+               response_tracker['independent_group']['name'])
+        bivariate_graphic_objects[key] = graphics
+        # user choose to exit bivariate selection
+        print("Enter another selection?")
+        if ui.single_response_from_list([
+                    'Yes, enter another.', 'No, done for now.']
+                ) == 'No, done for now.':
+            break
+    # Update and Return user_data
     user_data['bivariate_graphic_objects'] = bivariate_graphic_objects
     return user_data
 
@@ -510,13 +568,21 @@ def user_request_bivariate_graphics(user_data, force_bypass=False):
 
 def show_all_output(result):
     """Display results."""
-    def rip_set(lane, sub_lane):
+    def rip_lane_subland(lane, sub_lane):
         for group_name in result[lane][sub_lane]:
             for graphic in result[lane][sub_lane][group_name].values():
                 graphic.seek(0)
                 pickle.load(graphic)
-    rip_set('univariate_graphic_objects', 'dependent_groups')
-    rip_set('univariate_graphic_objects', 'independent_groups')
+
+    def rip_lane(lane):
+        for group_name in result[lane]:
+            for graphic in result[lane][group_name].values():
+                graphic.seek(0)
+                pickle.load(graphic)
+
+    rip_lane_subland('univariate_graphic_objects', 'dependent_groups')
+    rip_lane_subland('univariate_graphic_objects', 'independent_groups')
+    rip_lane('bivariate_graphic_objects')
 
 
 if __name__ == '__main__':
