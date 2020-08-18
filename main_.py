@@ -100,13 +100,40 @@ def get_longnames(names):
     return list(pisadict2012.query("varname in @names")['description'])
 
 
-def get_function_by_key(name_key, local_py_file):
+def get_function_by_key(name_key, local_py_file, key_location=None):
     """Return function names from local_py_file.py that contain name_key."""
     matching_functions = []
     for function_name in dir(local_py_file)[8:]:
         if name_key in function_name:
             matching_functions.append(function_name)
     return matching_functions
+
+
+def get_functions_by_group(independent_input_groups, graphics_pool):
+    """."""
+    # independent_input_groups are in order of plot primacy
+    # two entries implies a bivariate plot, where the second is
+    # the more specific visualization
+    known_categories = definitions.KNOWN_CATEGORIES
+    list_of_functions = []
+    for index, group in enumerate(independent_input_groups):
+        # known category
+        search_key = str(index + 1) + group['category']
+        list_of_functions.extend(
+            get_function_by_key(
+                search_key, graphics_pool))
+        # generic categorical
+        search_key = str(index + 1) + 'cat'
+        if group['category'] in known_categories:
+            list_of_functions.extend(get_function_by_key(
+                search_key, graphics_pool))
+        # generic binary
+        if group['category'] in known_categories and len(
+                known_categories[group['category']]) == 2:
+            search_key = str(index + 1) + 'binary'
+            list_of_functions.extend(get_function_by_key(
+                search_key, graphics_pool))
+    return list_of_functions
 
 
 def initialize(user_data=None):
@@ -449,24 +476,6 @@ def user_request_univariate_graphics(user_data):
     known_categories = definitions.KNOWN_CATEGORIES
 
     def create_response():
-        def get_functions_by_group(dependent_group, independent_group):
-            # Functions
-            list_of_functions = []
-            # get functions by known category
-            list_of_functions.extend(get_function_by_key(
-                independent_group['category'], univariate_graphics_pool))
-            # check if indpendent is generic categorical
-            if independent_group['category'] in known_categories:
-                list_of_functions.extend(get_function_by_key(
-                    'cat',
-                    univariate_graphics_pool))
-            # check if indpendent is generic binary
-            if independent_group['category'] in known_categories and len(
-                    known_categories[independent_group['category']]) == 2:
-                list_of_functions.extend(get_function_by_key(
-                    'binary',
-                    univariate_graphics_pool))
-            return list_of_functions
         # loop for user correct input error
         while True:
             print("Select a dependent group.")
@@ -476,7 +485,8 @@ def user_request_univariate_graphics(user_data):
             independent_group = ui.select_group(
                 user_data, 'independent_groups')
             user_selected_functions = ui.multi_responses_from_list(
-                get_functions_by_group(dependent_group, independent_group))
+                get_functions_by_group(
+                    [independent_group], univariate_graphics_pool))
             user_responses = {
                 'independent_group': independent_group,
                 'dependent_group': dependent_group,
@@ -574,6 +584,15 @@ def user_request_univariate_graphics(user_data):
     user_data['response_trackers']['univariate'] = response_tracker
     user_data['univariate_graphic_objects'] = graphic_buffer_objects
     return user_data
+
+
+# %%% user_request_univariate_graphics
+def user_request_bivariate_graphics(user_data):
+    """."""
+    known_categories = definitions.KNOWN_CATEGORIES
+
+    pass
+
 
 
 # %% Main
