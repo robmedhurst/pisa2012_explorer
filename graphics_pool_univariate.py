@@ -8,11 +8,11 @@ caught by keyword.
 import graphics_ as gs
 
 
-def violinplot_bi_row_cat(response_info, user_data):
+def violinplot_uni_row_1cat(response_info, user_data):
     """."""
-    return gs.violinplot_bi_row_cat(response_info, user_data)
+    return gs.violinplot_uni_row_1cat(response_info, user_data)
 
 
-def boxplot_bi_row_cat(response_info, user_data):
+def boxplot_uni_row_1cat(response_info, user_data):
     """."""
-    return gs.boxplot_bi_row_cat(response_info, user_data)
+    return gs.boxplot_uni_row_1cat(response_info, user_data)

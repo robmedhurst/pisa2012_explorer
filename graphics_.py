@@ -19,7 +19,7 @@ def pickle_buffer(fig):
     return buf
 
 
-def violinplot_bi_row_cat(response_info, user_data):
+def violinplot_uni_row_1cat(response_info, user_data):
     """Placeholer function."""
     # gather readable varaibles
     pisa_df = user_data['custom_dataframe']
@@ -83,7 +83,7 @@ def violinplot_bi_row_cat(response_info, user_data):
     return pickle_buffer(fig)
 
 
-def boxplot_bi_row_cat(response_info, user_data):
+def boxplot_uni_row_1cat(response_info, user_data):
     """."""
     # gather readable varaibles
     pisa_df = user_data['custom_dataframe']
@@ -152,7 +152,7 @@ def boxplot_bi_row_cat(response_info, user_data):
     return pickle_buffer(fig)
 
 
-def barplot_uni_single_binary(group_info, user_data):
+def barplot_single_single_binary(group_info, user_data):
     """Return binary group summary as counts bar chart."""
     pisa_df = user_data['custom_dataframe']
     var_list = group_info['variables']
@@ -172,7 +172,7 @@ def barplot_uni_single_binary(group_info, user_data):
     return pickle_buffer(fig)
 
 
-def countplot_uni_row_cat(group_info, user_data):
+def countplot_single_row_cat(group_info, user_data):
     """."""
     pisa_df = user_data['custom_dataframe']
     var_list = group_info['variables']
@@ -231,7 +231,7 @@ def countplot_uni_row_cat(group_info, user_data):
     return pickle_buffer(fig)
 
 
-def distplot_uni_row_float(group_info, user_data, kde):
+def distplot_single_row_float(group_info, user_data, kde):
     """Return a subplot of scatterplots of these float type varibles."""
     pisa_df = user_data['custom_dataframe']
     var_list = group_info['variables']
