@@ -189,7 +189,7 @@ def create_response(user_data, graphics_pool):
             get_functions_by_group(
                 independent_groups, graphics_pool))
         user_response = {
-            'independent_group': independent_groups,
+            'independent_groups': independent_groups,
             'dependent_group': dependent_group,
             'functions': user_selected_functions}
         # User Confirm Selection
@@ -209,7 +209,7 @@ def create_multiple_responses(user_data, graphics_pool, response_tracker={}):
         response = create_response(user_data, graphics_pool)
         # build group selection key
         group_selection_key = response['dependent_group']['name']
-        for indep_group in response['independent_group']:
+        for indep_group in response['independent_groups']:
             group_selection_key += "_vs_"
             group_selection_key += indep_group['name']
         # merge list of functions if appending to an existing tracker

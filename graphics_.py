@@ -23,10 +23,10 @@ def violinplot_uni_row_1cat(response_info, user_data):
     """Placeholer function."""
     # gather readable varaibles
     pisa_df = user_data['custom_dataframe']
-    var_list = response_info['independent_group']['variables']
+    var_list = response_info['independent_groups'][0]['variables']
     category_order = (
         definitions.PREFERRED_NAMING[
-            response_info['independent_group']['category']])
+            response_info['independent_groups'][0]['category']])
     dep_var = response_info['dependent_group']['name'] + "_mean"
     max_ylim, min_ylim = 0, 0
     # first generate subplots and extract max y limit,then apply y limit
@@ -87,10 +87,10 @@ def boxplot_uni_row_1cat(response_info, user_data):
     """."""
     # gather readable varaibles
     pisa_df = user_data['custom_dataframe']
-    var_list = response_info['independent_group']['variables']
+    var_list = response_info['independent_groups'][0]['variables']
     category_order = (
         definitions.PREFERRED_NAMING[
-            response_info['independent_group']['category']])
+            response_info['independent_groups'][0]['category']])
     dep_var = response_info['dependent_group']['name'] + "_mean"
     # first generate subplots and extract max y limit,then apply y limit
     for first_pass in [True, False]:
