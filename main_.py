@@ -448,40 +448,6 @@ def user_request_univariate_graphics(user_data):
     """."""
     known_categories = definitions.KNOWN_CATEGORIES
 
-    def select_group(expected_groups):
-        """
-        Return group properties of user selected group.
-
-        putting groups in order give the user the option to use dependent
-        and independent groups interchangably for univariate plots, without
-        conflating the two when presenting the user with selection.
-        """
-        # placing independent or dependent groups at top of selection_list
-        unexpected_groups = 'dependent_groups'
-        if expected_groups == 'dependent_groups':
-            unexpected_groups = 'independent_groups'
-        selection_list = []
-        # indicate group types in selection_list
-        selection_list.append(expected_groups + ":")  # index is 0
-        selection_list.extend(user_data[expected_groups])
-        # indicate group types in selection_list
-        selection_list.append(  # index is len(user_data[expected_groups])
-            "Not originally entered as " + expected_groups + ":")
-        selection_list.extend(user_data[unexpected_groups])
-        # not_selectable_indices
-        group_name = ui.single_response_from_list(
-            selection_list, [0, len(user_data[expected_groups]) + 1])
-        # selection location
-        if selection_list.index(group_name) > len(user_data[expected_groups]):
-            location = unexpected_groups
-        else:
-            location = expected_groups
-        return {
-            'name': group_name,
-            'variables': user_data[location][group_name],
-            'category':
-                user_data['group_category_matches'][location][group_name]}
-
     def create_response():
         def get_functions_by_group(dependent_group, independent_group):
             # Functions
@@ -504,9 +470,11 @@ def user_request_univariate_graphics(user_data):
         # loop for user correct input error
         while True:
             print("Select a dependent group.")
-            dependent_group = select_group('dependent_groups')
+            dependent_group = ui.select_group(
+                user_data, 'dependent_groups')
             print("Select an independent group.")
-            independent_group = select_group('independent_groups')
+            independent_group = ui.select_group(
+                user_data, 'independent_groups')
             user_selected_functions = ui.multi_responses_from_list(
                 get_functions_by_group(dependent_group, independent_group))
             user_responses = {
