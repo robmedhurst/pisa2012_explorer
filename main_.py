@@ -587,7 +587,7 @@ def user_request_bivariate_graphics(user_data):
         def graphics_by_function(response):
             graphics_by_function = {}
             for function_name in response['functions']:
-                graphics_by_function['function_name'] = getattr(
+                graphics_by_function[function_name] = getattr(
                     bivariate_graphics_pool, (function_name))(
                         response, user_data)
             return graphics_by_function
