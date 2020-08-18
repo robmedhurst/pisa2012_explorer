@@ -213,6 +213,33 @@ def create_multiple_responses(user_data, graphics_pool, response_tracker={}):
             return response_tracker
 
 
+def do_existing_tracker(existing_trackers, user_data, graphics_pool):
+    """."""
+    def save_old_trackers():
+        tracker_name = get_next_unused_name(
+            user_data, ['response_trackers'], 'univariate')
+        user_data['response_trackers'][tracker_name] = existing_trackers
+    # ask user what to do
+    print("Previous selections found.")
+    current_response = ui.single_response_from_list([
+        "Reuse selection", "Create new selection", "Add to selection"])
+    if current_response == "Reuse selection":
+        # No need to get more trackers or save the old ones
+        return existing_trackers
+    elif current_response == "Create new selection":
+        new_trackers = create_multiple_responses(
+            user_data, graphics_pool)
+        if existing_trackers != new_trackers:
+            save_old_trackers()
+        return new_trackers
+    elif current_response == "Add to selection":
+        new_trackers = create_multiple_responses(
+            user_data, graphics_pool, existing_trackers.copy())
+        if existing_trackers != new_trackers:
+            save_old_trackers()
+        return new_trackers
+
+
 def get_next_unused_name(user_data, location, name, appendage="_old_"):
     """Get next free integer for a name in a dictionary."""
     working_dictionary = user_data.copy()
@@ -547,34 +574,10 @@ def user_single_variable_graphics(user_data):
     return user_data
 
 
+
 # %%% user_request_univariate_graphics
 def user_request_univariate_graphics(user_data):
     """."""
-    def user_select_bypass(existing_trackers):
-        def save_old_trackers():
-            tracker_name = get_next_unused_name(
-                user_data, ['response_trackers'], 'univariate')
-            user_data['response_trackers'][tracker_name] = existing_trackers
-        # ask user what to do
-        print("Previous selections found.")
-        current_response = ui.single_response_from_list([
-            "Reuse selection", "Create new selection", "Add to selection"])
-        if current_response == "Reuse selection":
-            # No need to get more trackers or save the old ones
-            return existing_trackers
-        elif current_response == "Create new selection":
-            new_trackers = create_multiple_responses(
-                user_data, univariate_graphics_pool)
-            if existing_trackers != new_trackers:
-                save_old_trackers()
-            return new_trackers
-        elif current_response == "Add to selection":
-            new_trackers = create_multiple_responses(
-                user_data, univariate_graphics_pool, existing_trackers.copy())
-            if existing_trackers != new_trackers:
-                save_old_trackers()
-            return new_trackers
-
     def initialize_tracker():
         # check for existing tracker
         try:
@@ -588,7 +591,8 @@ def user_request_univariate_graphics(user_data):
                 user_data, univariate_graphics_pool)
         else:
             # user choose how to use existing tracker
-            return user_select_bypass(existing_tracker)
+            return do_existing_tracker(
+                existing_tracker, user_data, univariate_graphics_pool)
 
     print("\n\n")
     print("Choose Univariate Graphics")
