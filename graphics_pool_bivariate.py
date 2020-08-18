@@ -18,6 +18,6 @@ def boxplot_bi_row_cat(response_info, user_data):
     return gs.boxplot_bi_row_cat(response_info, user_data)
 
 
-def countplot_bi_hue_cat(response_info, user_data):
+def countplot_bi_row_cat(response_info, user_data):
     """."""
-    return gs.countplot_bi_hue_cat(response_info, user_data)
+    return gs.countplot_bi_row_cat(response_info, user_data)

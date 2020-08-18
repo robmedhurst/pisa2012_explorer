@@ -152,6 +152,14 @@ def boxplot_bi_row_cat(response_info, user_data):
     return pickle_buffer(fig)
 
 
+def countplot_bi_row_cat(response_info, user_data):
+    """."""
+    pass
+
+# # sb.countplot(data = diamonds, x = 'clarity', hue = 'cut', palette = 'Blues')
+# # ax.legend(ncol = 2) # re-arrange legend to reduce overlapping
+
+
 def barplot_uni_single_binary(group_info, user_data):
     """Return binary group summary as counts bar chart."""
     pisa_df = user_data['custom_dataframe']

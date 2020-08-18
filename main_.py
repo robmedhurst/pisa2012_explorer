@@ -616,14 +616,16 @@ def show_all_output(result):
     def rip_lane_subland(lane, sub_lane):
         for group_name in result[lane][sub_lane]:
             for graphic in result[lane][sub_lane][group_name].values():
-                graphic.seek(0)
-                pickle.load(graphic)
+                if graphic is not None:
+                    graphic.seek(0)
+                    pickle.load(graphic)
 
     def rip_lane(lane):
         for group_name in result[lane]:
             for graphic in result[lane][group_name].values():
-                graphic.seek(0)
-                pickle.load(graphic)
+                if graphic is not None:
+                    graphic.seek(0)
+                    pickle.load(graphic)
 
     rip_lane_subland('univariate_graphic_objects', 'dependent_groups')
     rip_lane_subland('univariate_graphic_objects', 'independent_groups')
