@@ -17,8 +17,8 @@ from main_wrangle import wrangle
 
 import main_user_input as ui
 import main_definitions as definitions
+import graphics_pool_singlevar as singlevar_graphics_pool
 import graphics_pool_univariate as univariate_graphics_pool
-import graphics_pool_bivariate as bivariate_graphics_pool
 
 
 # Dataset can take a few minutes to load on some systems.
@@ -113,8 +113,8 @@ def initialize(user_data=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
     return (
-        user_request_bivariate_graphics(
-            user_request_univariate_graphics(
+        user_request_univariate_graphics(
+            user_single_variable_graphics(
                 post_wrangle(
                     wrangle(
                         user_initialize(user_data))))))
@@ -268,8 +268,8 @@ def get_next_unused_name(user_data, location, name, appendage="_old_"):
     return name + appendage + str(back_up_num)
 
 
-# %%% user_request_univariate_graphics
-def user_request_univariate_graphics(user_data):
+# %%% user_request_singlevar_graphics
+def user_single_variable_graphics(user_data):
     """User select plots."""
     # ========================================================================
     #
@@ -290,25 +290,25 @@ def user_request_univariate_graphics(user_data):
             return ui.multi_responses_from_list(list_of_groups)
         return list_of_groups
 
-    def get_univariate_group_functions(group_info):
+    def get_singlevar_group_functions(group_info):
         # get functions matching category key from univatiate pool
         list_of_functions = get_function_by_key(
-                    group_info['category'], univariate_graphics_pool)
+                    group_info['category'], singlevar_graphics_pool)
         # Detect BINARY
         if group_info['category'] in known_categories and len(
                 known_categories[group_info['category']]) == 2:
             # get binary functions
             list_of_functions.extend(
-                get_function_by_key('binary', univariate_graphics_pool))
+                get_function_by_key('binary', singlevar_graphics_pool))
         # Detect CATEGORICAL
         if group_info['category'] in known_categories:
             # get binary functions
             list_of_functions.extend(
-                get_function_by_key('cat', univariate_graphics_pool))
+                get_function_by_key('cat', singlevar_graphics_pool))
         return list_of_functions
 
     def user_select_functions(group_info):
-        list_of_functions = get_univariate_group_functions(group_info)
+        list_of_functions = get_singlevar_group_functions(group_info)
         # bypass user input
         if response_tracker['bypass'] == 'none':
             return []
@@ -331,9 +331,9 @@ def user_request_univariate_graphics(user_data):
                 return ui.multi_responses_from_list(list_of_functions)
         return list_of_functions
 
-    def get_univariate_graphic(function_name, group_info):
+    def get_singlevar_graphic(function_name, group_info):
         return getattr(
-            univariate_graphics_pool,
+            singlevar_graphics_pool,
             (function_name))(group_info, user_data)
 
     def iterate_group_function_selection(location):
@@ -352,7 +352,7 @@ def user_request_univariate_graphics(user_data):
             # call selected functions
             for function_name in response_tracker['functions'][group_name]:
                 graphics_by_group[group_name][function_name] = (
-                    get_univariate_graphic(function_name, group_info))
+                    get_singlevar_graphic(function_name, group_info))
         return graphics_by_group
 
     def init_response_tracker(bypass_type='all'):
@@ -384,9 +384,9 @@ def user_request_univariate_graphics(user_data):
             ])
 
     print("\n\n")
-    print("Choose Univariate Graphics")
+    print("Choose Single Variable Graphics")
     try:
-        response_tracker = user_data['response_trackers']['univariate']
+        response_tracker = user_data['response_trackers']['singlevar']
     except KeyError:
         response_tracker = False
     #
@@ -398,14 +398,14 @@ def user_request_univariate_graphics(user_data):
             user_data['response_trackers'][
                 get_next_unused_name(
                     user_data,
-                    ['response_trackers'], 'univariate'
+                    ['response_trackers'], 'singlevar'
                     )] = response_tracker
             response_tracker = False
     # response_tracker new
     if response_tracker is False:
         response_tracker = init_response_tracker(user_select_bypass())
     # storage
-    univariate_graphic_objects = {
+    singlevar_graphic_objects = {
         'dependent_groups': {},
         'independent_groups': {}
         }
@@ -418,7 +418,7 @@ def user_request_univariate_graphics(user_data):
         response_tracker['dependent_groups'] = user_select_groups(list(
             group_category_matches['dependent_groups'].keys()))
     # function selection
-    univariate_graphic_objects['dependent_groups'] = (
+    singlevar_graphic_objects['dependent_groups'] = (
         iterate_group_function_selection('dependent_groups'))
     #
     # Independent Groups
@@ -429,7 +429,7 @@ def user_request_univariate_graphics(user_data):
         response_tracker['independent_groups'] = user_select_groups(list(
             group_category_matches['independent_groups'].keys()))
     # function selection
-    univariate_graphic_objects['independent_groups'] = (
+    singlevar_graphic_objects['independent_groups'] = (
         iterate_group_function_selection('independent_groups'))
     #
     # interaction end ========================================================
@@ -438,13 +438,13 @@ def user_request_univariate_graphics(user_data):
     # Update and Return user_data
     if 'response_trackers' not in user_data.keys():
         user_data['response_trackers'] = {}
-    user_data['response_trackers']['univariate'] = response_tracker
-    user_data['univariate_graphic_objects'] = univariate_graphic_objects
+    user_data['response_trackers']['singlevar'] = response_tracker
+    user_data['singlevar_graphic_objects'] = singlevar_graphic_objects
     return user_data
 
 
-# %%% user_request_bivariate_graphics
-def user_request_bivariate_graphics(user_data):
+# %%% user_request_univariate_graphics
+def user_request_univariate_graphics(user_data):
     """."""
     known_categories = definitions.KNOWN_CATEGORIES
 
@@ -453,7 +453,7 @@ def user_request_bivariate_graphics(user_data):
         Return group properties of user selected group.
 
         putting groups in order give the user the option to use dependent
-        and independent groups interchangably for bivariate plots, without
+        and independent groups interchangably for univariate plots, without
         conflating the two when presenting the user with selection.
         """
         # placing independent or dependent groups at top of selection_list
@@ -488,18 +488,18 @@ def user_request_bivariate_graphics(user_data):
             list_of_functions = []
             # get functions by known category
             list_of_functions.extend(get_function_by_key(
-                independent_group['category'], bivariate_graphics_pool))
+                independent_group['category'], univariate_graphics_pool))
             # check if indpendent is generic categorical
             if independent_group['category'] in known_categories:
                 list_of_functions.extend(get_function_by_key(
                     'cat',
-                    bivariate_graphics_pool))
+                    univariate_graphics_pool))
             # check if indpendent is generic binary
             if independent_group['category'] in known_categories and len(
                     known_categories[independent_group['category']]) == 2:
                 list_of_functions.extend(get_function_by_key(
                     'binary',
-                    bivariate_graphics_pool))
+                    univariate_graphics_pool))
             return list_of_functions
         # loop for user correct input error
         while True:
@@ -539,7 +539,7 @@ def user_request_bivariate_graphics(user_data):
             response_tracker[group_selection_key]['functions'] = list(
                 dict.fromkeys(
                     response_tracker[group_selection_key]['functions']))
-            # user choose to exit bivariate selection
+            # user choose to exit univariate selection
             print("Enter another selection?")
             if ui.single_response_from_list([
                         'Yes, enter another.', 'No, done for now.']
@@ -549,7 +549,7 @@ def user_request_bivariate_graphics(user_data):
     def user_select_bypass(existing_trackers):
         def save_old_trackers():
             tracker_name = get_next_unused_name(
-                user_data, ['response_trackers'], 'bivariate')
+                user_data, ['response_trackers'], 'univariate')
             user_data['response_trackers'][tracker_name] = existing_trackers
         # ask user what to do
         print("Previous selections found.")
@@ -573,7 +573,7 @@ def user_request_bivariate_graphics(user_data):
         # check for existing tracker
         try:
             existing_tracker = user_data[
-                'response_trackers']['bivariate']
+                'response_trackers']['univariate']
         except KeyError:
             existing_tracker = False
         # user interactions
@@ -588,7 +588,7 @@ def user_request_bivariate_graphics(user_data):
             graphics_by_function = {}
             for function_name in response['functions']:
                 graphics_by_function[function_name] = getattr(
-                    bivariate_graphics_pool, (function_name))(
+                    univariate_graphics_pool, (function_name))(
                         response, user_data)
             return graphics_by_function
         graphics_by_group = {}
@@ -597,14 +597,14 @@ def user_request_bivariate_graphics(user_data):
         return graphics_by_group
 
     print("\n\n")
-    print("Choose Bivariate Graphics")
+    print("Choose Univariate Graphics")
     # INPUTS
     response_tracker = initialize_tracker()
     # GRAPHICS
     graphic_buffer_objects = graphics_from_responses(response_tracker)
     # UPDATES
-    user_data['response_trackers']['bivariate'] = response_tracker
-    user_data['bivariate_graphic_objects'] = graphic_buffer_objects
+    user_data['response_trackers']['univariate'] = response_tracker
+    user_data['univariate_graphic_objects'] = graphic_buffer_objects
     return user_data
 
 
@@ -625,9 +625,9 @@ def show_all_output(result):
                 graphic.seek(0)
                 pickle.load(graphic)
 
-    rip_lane_subland('univariate_graphic_objects', 'dependent_groups')
-    rip_lane_subland('univariate_graphic_objects', 'independent_groups')
-    rip_lane('bivariate_graphic_objects')
+    rip_lane_subland('singlevar_graphic_objects', 'dependent_groups')
+    rip_lane_subland('singlevar_graphic_objects', 'independent_groups')
+    rip_lane('univariate_graphic_objects')
 
 
 if __name__ == '__main__':
