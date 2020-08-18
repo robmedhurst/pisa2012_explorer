@@ -19,6 +19,8 @@ import main_user_input as ui
 import main_definitions as definitions
 import graphics_pool_singlevar as singlevar_graphics_pool
 import graphics_pool_univariate as univariate_graphics_pool
+import graphics_pool_bivariate as bivariate_graphics_pool
+import graphics_pool_multivariate as multivariate_graphics_pool
 
 
 # Dataset can take a few minutes to load on some systems.
@@ -137,6 +139,7 @@ def get_functions_by_group(independent_input_groups, graphics_pool):
 
 
 def graphics_from_responses(response_tracker, user_data, graphics_pool):
+    """Generate graphics according to given responses."""
     def graphics_by_function(response):
         graphics_by_function = {}
         for function_name in response['functions']:
@@ -150,8 +153,85 @@ def graphics_from_responses(response_tracker, user_data, graphics_pool):
     return graphics_by_groupkey
 
 
-def get_next_unused_name(user_data, location, name, appendage="_old_"):
+def create_response(user_data, graphics_pool):
     """."""
+    independent_groups = []
+
+    def add_independent():
+        if len(independent_groups) < 1:
+            print("Select an independent group.")
+        else:
+            print("Select another independent group.")
+        independent_groups.append(ui.select_group(
+            user_data, 'independent_groups'))
+
+    # loop for user correct input error
+    while True:
+        print("Select a dependent group.")
+        dependent_group = ui.select_group(
+            user_data, 'dependent_groups')
+        # at least one independent
+        add_independent()
+        # two for bivariate
+        if graphics_pool == bivariate_graphics_pool:
+            add_independent()
+        # N for multivariate
+        elif graphics_pool == multivariate_graphics_pool:
+            independent_var_count = 2
+            while True:
+                independent_var_count += 1
+                add_independent()
+                print(independent_var_count, " independent groups selected.")
+                print("Select another?")
+                if ui.ingle_response_from_list(['Yes', 'No']) == 'No':
+                    break
+        user_selected_functions = ui.multi_responses_from_list(
+            get_functions_by_group(
+                independent_groups, graphics_pool))
+        user_response = {
+            'independent_group': independent_groups,
+            'dependent_group': dependent_group,
+            'functions': user_selected_functions}
+        # User Confirm Selection
+        print(user_response)
+        print("Is this selection correct?")
+        if ui.single_response_from_list([
+                'Yes, continue.',
+                'No, lets try again.']) == 'Yes, continue.':
+            return user_response
+
+
+def create_multiple_responses(user_data, graphics_pool, response_tracker={}):
+    """."""
+    # loop for multiple selections
+    while True:
+        # create new tracker and key
+        response = create_response(user_data, graphics_pool)
+        # build group selection key
+        group_selection_key = response['dependent_group']['name']
+        for indep_group in response['independent_group']:
+            group_selection_key += "_vs_"
+            group_selection_key += indep_group['name']
+        # merge list of functions if appending to an existing tracker
+        if group_selection_key in list(response_tracker.keys()):
+            response_tracker[group_selection_key]['functions'] += (
+                response['functions'])
+        else:
+            response_tracker[group_selection_key] = response
+        # quick hack to remove duplicates
+        response_tracker[group_selection_key]['functions'] = list(
+            dict.fromkeys(
+                response_tracker[group_selection_key]['functions']))
+        # user choose to exit univariate selection
+        print("Enter another selection?")
+        if ui.single_response_from_list([
+                    'Yes, enter another.', 'No, done for now.']
+                ) == 'No, done for now.':
+            return response_tracker
+
+
+def get_next_unused_name(user_data, location, name, appendage="_old_"):
+    """Get next free integer for a name in a dictionary."""
     working_dictionary = user_data.copy()
     # navigate location specified
     for depth in range(len(location)):
@@ -487,57 +567,6 @@ def user_single_variable_graphics(user_data):
 # %%% user_request_univariate_graphics
 def user_request_univariate_graphics(user_data):
     """."""
-    known_categories = definitions.KNOWN_CATEGORIES
-
-    def create_response():
-        # loop for user correct input error
-        while True:
-            print("Select a dependent group.")
-            dependent_group = ui.select_group(
-                user_data, 'dependent_groups')
-            print("Select an independent group.")
-            independent_group = ui.select_group(
-                user_data, 'independent_groups')
-            user_selected_functions = ui.multi_responses_from_list(
-                get_functions_by_group(
-                    [independent_group], univariate_graphics_pool))
-            user_responses = {
-                'independent_group': independent_group,
-                'dependent_group': dependent_group,
-                'functions': user_selected_functions}
-            # User Confirm Selection
-            print(user_responses)
-            print("Is this selection correct?")
-            if ui.single_response_from_list([
-                    'Yes, continue.',
-                    'No, lets try again.']) == 'Yes, continue.':
-                return user_responses
-
-    def create_multiple_responses(response_tracker={}):
-        # loop for multiple selections
-        while True:
-            # create new tracker and key
-            response = create_response()
-            group_selection_key = (
-                response['dependent_group']['name'] + "_vs_" +
-                response['independent_group']['name'])
-            # merge list of functions if appending to an existing tracker
-            if group_selection_key in list(response_tracker.keys()):
-                response_tracker[group_selection_key]['functions'] += (
-                    response['functions'])
-            else:
-                response_tracker[group_selection_key] = response
-            # quick hack to remove duplicates
-            response_tracker[group_selection_key]['functions'] = list(
-                dict.fromkeys(
-                    response_tracker[group_selection_key]['functions']))
-            # user choose to exit univariate selection
-            print("Enter another selection?")
-            if ui.single_response_from_list([
-                        'Yes, enter another.', 'No, done for now.']
-                    ) == 'No, done for now.':
-                return response_tracker
-
     def user_select_bypass(existing_trackers):
         def save_old_trackers():
             tracker_name = get_next_unused_name(
@@ -551,12 +580,14 @@ def user_request_univariate_graphics(user_data):
             # No need to get more trackers or save the old ones
             return existing_trackers
         elif current_response == "Create new selection":
-            new_trackers = create_multiple_responses()
+            new_trackers = create_multiple_responses(
+                user_data, univariate_graphics_pool)
             if existing_trackers != new_trackers:
                 save_old_trackers()
             return new_trackers
         elif current_response == "Add to selection":
-            new_trackers = create_multiple_responses(existing_trackers.copy())
+            new_trackers = create_multiple_responses(
+                user_data, univariate_graphics_pool, existing_trackers.copy())
             if existing_trackers != new_trackers:
                 save_old_trackers()
             return new_trackers
@@ -570,7 +601,8 @@ def user_request_univariate_graphics(user_data):
             existing_tracker = False
         # user interactions
         if existing_tracker is False:
-            return create_multiple_responses()
+            return create_multiple_responses(
+                user_data, univariate_graphics_pool)
         else:
             # user choose how to use existing tracker
             return user_select_bypass(existing_tracker)
