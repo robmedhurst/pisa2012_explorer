@@ -8,6 +8,11 @@ caught by keyword.
 import graphics_ as gs
 
 
-def violinplot_bi_row_cat(group_info, user_data):
-    """Return a subplot of distributions for float type varibles."""
-    return gs.violinplot_bi_row_cat(group_info, user_data)
+def violinplot_bi_row_cat(response_info, user_data):
+    """."""
+    return gs.violinplot_bi_row_cat(response_info, user_data)
+
+
+def boxplot_bi_row_cat(response_info, user_data):
+    """."""
+    return gs.boxplot_bi_row_cat(response_info, user_data)
