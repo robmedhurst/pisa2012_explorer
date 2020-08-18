@@ -136,6 +136,33 @@ def get_functions_by_group(independent_input_groups, graphics_pool):
     return list_of_functions
 
 
+def graphics_from_responses(response_tracker, user_data, graphics_pool):
+    def graphics_by_function(response):
+        graphics_by_function = {}
+        for function_name in response['functions']:
+            graphics_by_function[function_name] = getattr(
+                univariate_graphics_pool, (function_name))(
+                    response, user_data)
+        return graphics_by_function
+    graphics_by_groupkey = {}
+    for groupkey, response in response_tracker.items():
+        graphics_by_groupkey[groupkey] = graphics_by_function(response)
+    return graphics_by_groupkey
+
+
+def get_next_unused_name(user_data, location, name, appendage="_old_"):
+    """."""
+    working_dictionary = user_data.copy()
+    # navigate location specified
+    for depth in range(len(location)):
+        working_dictionary = working_dictionary[location[depth]]
+    # find smallest integer such that new_name doesnt yet exist
+    back_up_num = 0
+    while name + appendage + str(back_up_num) in working_dictionary.keys():
+        back_up_num += 1
+    return name + appendage + str(back_up_num)
+
+
 def initialize(user_data=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
@@ -280,19 +307,6 @@ def user_initialize(user_data=None):
     user_data['independent_groups'] = independent_groups
 
     return user_data
-
-
-def get_next_unused_name(user_data, location, name, appendage="_old_"):
-    """."""
-    working_dictionary = user_data.copy()
-    # navigate location specified
-    for depth in range(len(location)):
-        working_dictionary = working_dictionary[location[depth]]
-    # find smallest integer such that new_name doesnt yet exist
-    back_up_num = 0
-    while name + appendage + str(back_up_num) in working_dictionary.keys():
-        back_up_num += 1
-    return name + appendage + str(back_up_num)
 
 
 # %%% user_request_singlevar_graphics
@@ -561,32 +575,20 @@ def user_request_univariate_graphics(user_data):
             # user choose how to use existing tracker
             return user_select_bypass(existing_tracker)
 
-    def graphics_from_responses(response_tracker):
-        def graphics_by_function(response):
-            graphics_by_function = {}
-            for function_name in response['functions']:
-                graphics_by_function[function_name] = getattr(
-                    univariate_graphics_pool, (function_name))(
-                        response, user_data)
-            return graphics_by_function
-        graphics_by_group = {}
-        for group_key, response in response_tracker.items():
-            graphics_by_group[group_key] = graphics_by_function(response)
-        return graphics_by_group
-
     print("\n\n")
     print("Choose Univariate Graphics")
     # INPUTS
     response_tracker = initialize_tracker()
     # GRAPHICS
-    graphic_buffer_objects = graphics_from_responses(response_tracker)
+    graphic_buffer_objects = graphics_from_responses(
+        response_tracker, user_data, univariate_graphics_pool)
     # UPDATES
     user_data['response_trackers']['univariate'] = response_tracker
     user_data['univariate_graphic_objects'] = graphic_buffer_objects
     return user_data
 
 
-# %%% user_request_univariate_graphics
+# %%% user_request_bivariate_graphics
 def user_request_bivariate_graphics(user_data):
     """."""
     known_categories = definitions.KNOWN_CATEGORIES
