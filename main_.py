@@ -85,23 +85,6 @@ def confirm_pisa_df(df_through, integrity_check):
     return df_through
 
 
-def get_longnames(names):
-    """
-    Return PISA 2012 long names given short names.
-
-    Return list of PISA variable descriptions corresponding to variable
-    shortnames given by list name.
-    Resource is read from local copy of pisadict2012.csv
-    """
-    pisadict2012 = pd.read_csv(
-        'pisadict2012.csv',
-        sep=',', encoding='latin-1', error_bad_lines=False,
-        dtype='unicode', index_col=False).rename(
-            columns={'Unnamed: 0': 'varname', 'x': 'description'})
-    names = list(names)
-    return list(pisadict2012.query("varname in @names")['description'])
-
-
 def get_function_by_key(name_key, local_py_file, key_location=None):
     """Return function names from local_py_file.py that contain name_key."""
     matching_functions = []

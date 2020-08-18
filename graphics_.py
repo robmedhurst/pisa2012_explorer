@@ -3,11 +3,13 @@
 import io
 import pickle
 
+import pandas as pd
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 import main_definitions as definitions
-from main_ import get_longnames
+# from main_ import get_longnames
 
 
 def pickle_buffer(fig):
@@ -17,6 +19,23 @@ def pickle_buffer(fig):
     pickle.dump(fig, output)
     plt.close(fig)
     return buf
+
+
+def get_longnames(names):
+    """
+    Return PISA 2012 long names given short names.
+
+    Return list of PISA variable descriptions corresponding to variable
+    shortnames given by list name.
+    Resource is read from local copy of pisadict2012.csv
+    """
+    pisadict2012 = pd.read_csv(
+        'pisadict2012.csv',
+        sep=',', encoding='latin-1', error_bad_lines=False,
+        dtype='unicode', index_col=False).rename(
+            columns={'Unnamed: 0': 'varname', 'x': 'description'})
+    names = list(names)
+    return list(pisadict2012.query("varname in @names")['description'])
 
 
 def violinplot_uni_row_1cat(response_info, user_data):
