@@ -3,6 +3,7 @@
 import pandas as pd
 
 import main_definitions as definitions
+import graphics_pool_singlevar as singlevar_graphics_pool
 import graphics_pool_univariate as univariate_graphics_pool
 import graphics_pool_bivariate as bivariate_graphics_pool
 import graphics_pool_multivariate as multivariate_graphics_pool
@@ -300,6 +301,22 @@ def user_set_sample_size():
 # %% User Data Build Helper Functions
 # =============================================================================
 
+def get_single_graphic(graphics_pool, function_name, function_input):
+    """."""
+    if isinstance(graphics_pool, str):
+        graphics_pool = pool_string_to_loc(graphics_pool)
+    return getattr(graphics_pool, (function_name))(*function_input)
+
+
+def pool_string_to_loc(string_indicator):
+    """."""
+    pool_names = ['singlevariable', 'univariate',
+                  'bivariate', 'multivariate']
+    pools = [singlevar_graphics_pool, univariate_graphics_pool,
+             bivariate_graphics_pool, multivariate_graphics_pool]
+    return pools[pool_names.index(string_indicator)]
+
+
 def user_select_dependent_group(variable_list):
     """."""
     # User input dependent group
@@ -363,6 +380,8 @@ def select_group(user_data, expected_groups='independent_groups'):
 
 def get_function_by_key(name_key, local_py_file):
     """Return function names from local_py_file.py that contain name_key."""
+    if isinstance(local_py_file, str):
+        local_py_file = pool_string_to_loc(local_py_file)
     matching_functions = []
     for function_name in dir(local_py_file)[8:]:
         if name_key in function_name:
@@ -399,11 +418,14 @@ def get_functions_by_group(independent_input_groups, graphics_pool):
 
 def graphics_from_responses(response_tracker, user_data, graphics_pool):
     """Generate graphics according to given responses."""
+    graphics_pool = pool_string_to_loc(graphics_pool)
+
     def graphics_by_function(response):
         graphics_by_function = {}
         for function_name in response['functions']:
-            graphics_by_function[function_name] = getattr(
-                graphics_pool, (function_name))(response, user_data)
+            graphics_by_function[function_name] = get_single_graphic(
+                graphics_pool, function_name, (response, user_data))
+
         return graphics_by_function
     graphics_by_groupkey = {}
     for groupkey, response in response_tracker.items():
@@ -490,8 +512,9 @@ def create_multiple_responses(user_data, graphics_pool, response_tracker=None):
             return response_tracker
 
 
-def initialize_tracker(user_data, graphics_pool, target='univariate'):
+def initialize_tracker(user_data, target='univariate'):
     """."""
+    graphics_pool = pool_string_to_loc(target)
     def do_existing_tracker(existing_trackers, user_data, graphics_pool):
         """."""
         def save_old_trackers():
