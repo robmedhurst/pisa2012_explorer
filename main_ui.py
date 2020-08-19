@@ -64,7 +64,7 @@ def input_integer(min_int=None, max_int=None):
             if max_int is None and min_int is None:
                 return response
 
-            elif max_int is not None and min_int is not None:
+            if max_int is not None and min_int is not None:
                 if min_int <= response <= max_int:
                     return response
                 else:
@@ -199,9 +199,8 @@ def user_batch_questioning(question_set=None):
     """
     # dumbie question set, delete once function is wrapped
     if question_set is None:
-        # this is never called so keeping import local
-        import test_groupings
-        question_set = test_groupings.PLACEHOLDER_QUESTIONS
+        # this is never called
+        question_set = definitions.PLACEHOLDER_QUESTIONS
 
     # parse each question
     for question in question_set:
@@ -301,7 +300,7 @@ def select_group(user_data, expected_groups='independent_groups'):
             user_data['group_category_matches'][location][group_name]}
 
 
-def get_function_by_key(name_key, local_py_file, key_location=None):
+def get_function_by_key(name_key, local_py_file):
     """Return function names from local_py_file.py that contain name_key."""
     matching_functions = []
     for function_name in dir(local_py_file)[8:]:
@@ -343,8 +342,7 @@ def graphics_from_responses(response_tracker, user_data, graphics_pool):
         graphics_by_function = {}
         for function_name in response['functions']:
             graphics_by_function[function_name] = getattr(
-                univariate_graphics_pool, (function_name))(
-                    response, user_data)
+                graphics_pool, (function_name))(response, user_data)
         return graphics_by_function
     graphics_by_groupkey = {}
     for groupkey, response in response_tracker.items():
@@ -400,8 +398,10 @@ def create_response(user_data, graphics_pool):
             return user_response
 
 
-def create_multiple_responses(user_data, graphics_pool, response_tracker={}):
+def create_multiple_responses(user_data, graphics_pool, response_tracker=None):
     """."""
+    if response_tracker is None:
+        response_tracker = {}
     # loop for multiple selections
     while True:
         # create new tracker and key
@@ -423,8 +423,8 @@ def create_multiple_responses(user_data, graphics_pool, response_tracker={}):
                 response_tracker[group_selection_key]['functions']))
         # user choose to exit univariate selection
         print("Enter another selection?")
-        if single_response_from_list([
-                    'Yes, enter another.', 'No, done for now.']
+        if single_response_from_list(
+                ['Yes, enter another.', 'No, done for now.']
                 ) == 'No, done for now.':
             return response_tracker
 
@@ -465,18 +465,18 @@ def initialize_tracker(user_data, graphics_pool, target='univariate'):
     # user interactions
     if existing_tracker is False:
         return create_multiple_responses(user_data, graphics_pool)
-    else:
-        # user choose how to use existing tracker
-        return do_existing_tracker(
-            existing_tracker, user_data, univariate_graphics_pool)
+    # user choose how to use existing tracker
+    return do_existing_tracker(
+        existing_tracker, user_data, univariate_graphics_pool)
 
 
 def get_next_unused_name(user_data, location, name, appendage="_old_"):
     """Get next free integer for a name in a dictionary."""
     working_dictionary = user_data.copy()
     # navigate location specified
-    for depth in range(len(location)):
-        working_dictionary = working_dictionary[location[depth]]
+    # for depth in range(len(location)):
+    for depth, key in enumerate(location):
+        working_dictionary = working_dictionary[location]
     # find smallest integer such that new_name doesnt yet exist
     back_up_num = 0
     while name + appendage + str(back_up_num) in working_dictionary.keys():

@@ -257,7 +257,7 @@ def user_single_variable_graphics(user_data):
     def get_singlevar_group_functions(group_info):
         # get functions matching category key from univatiate pool
         list_of_functions = ui.get_function_by_key(
-                    group_info['category'], singlevar_graphics_pool)
+            group_info['category'], singlevar_graphics_pool)
         # Detect BINARY
         if group_info['category'] in known_categories and len(
                 known_categories[group_info['category']]) == 2:
