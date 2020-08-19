@@ -128,27 +128,30 @@ def input_pisa_var_name(valid_names):
         response = input(prompt_string)
         if response in valid_names:
             return response
+
+
 # =============================================================================
 # %% Input Extension
 # =============================================================================
-    def user_input_group(pisa_var_list, group_size=None, group_name=None):
-        """Return user defined group of pisa variables."""
-        group = []
-        if not group_name:
-            print("\n")
-            print("Enter short name for this group...")
-            # user input group name
-            group_name = input_simple_string(1, 20)
-        if not group_size:
-            print("\n")
-            print("How many variables will this group contain?")
-            # user input group size
-            group_size = input_integer(1, 5)
-        while len(group) < group_size:
-            # user input variable names
-            print("\n")
-            group.append(input_pisa_var_name(pisa_var_list))
-        return group, group_name
+
+def user_input_group(pisa_var_list, group_size=None, group_name=None):
+    """Return user defined group of pisa variables."""
+    group = []
+    if not group_name:
+        print("\n")
+        print("Enter short name for this group...")
+        # user input group name
+        group_name = input_simple_string(1, 20)
+    if not group_size:
+        print("\n")
+        print("How many variables will this group contain?")
+        # user input group size
+        group_size = input_integer(1, 5)
+    while len(group) < group_size:
+        # user input variable names
+        print("\n")
+        group.append(input_pisa_var_name(pisa_var_list))
+    return group, group_name
 
 
 def multi_responses_from_list(list_input, not_selectable_indices=None,
@@ -204,84 +207,124 @@ def multi_responses_from_list(list_input, not_selectable_indices=None,
             returning_strings.append(current_selection)
 
 
-def user_batch_questioning(question_set=None):
-    """
-    Return user selections from set of selections options.
+def user_set_sample_size():
+    """."""
+    # User sample/resample
+    print("Select a sample size.")
+    sample_size = multi_responses_from_list([
+        "500",
+        "5000",
+        "50000",
+        "Other value"])
+    if sample_size == "Other value":
+        sample_size = input_integer(50, None)
+    return int(sample_size)
 
-    Each key identifies a question.
-    Values are dictionaries containting at least "type" and "selections"
 
-    question_set is a dictionary, entries are questions to ask the user.
-    Each entry is a dictionary whose keys represent the elements of a
-    question.
-    """
-    # dumbie question set, delete once function is wrapped
-    if question_set is None:
-        # this is never called
-        question_set = definitions.PLACEHOLDER_QUESTIONS
+# def user_batch_questioning(question_set=None):
+#     """
+#     Return user selections from set of selections options.
 
-    # parse each question
-    for question in question_set:
-        # print("\n\n")
-        try:
-            print(question_set[question]['preface'])
-        except KeyError:
-            pass
+#     Each key identifies a question.
+#     Values are dictionaries containting at least "type" and "selections"
 
-        # default to single response if none specified
-        try:
-            question_type = question_set[question]['question_type']
-        except KeyError:
-            question_type = 'single'
+#     question_set is a dictionary, entries are questions to ask the user.
+#     Each entry is a dictionary whose keys represent the elements of a
+#     question.
+#     """
+#     # dumbie question set, delete once function is wrapped
+#     if question_set is None:
+#         # this is never called
+#         question_set = definitions.PLACEHOLDER_QUESTIONS
 
-        # default to y/n if no selection
-        try:
-            selection_options = question_set[question]['selection_options']
-        except KeyError:
-            selection_options = ['yes', 'no']
+#     # parse each question
+#     for question in question_set:
+#         # print("\n\n")
+#         try:
+#             print(question_set[question]['preface'])
+#         except KeyError:
+#             pass
 
-        # default to no maximum numer of selections
-        try:
-            max_selectable = question_set[question]['max_selectable']
-        except KeyError:
-            max_selectable = None
+#         # default to single response if none specified
+#         try:
+#             question_type = question_set[question]['question_type']
+#         except KeyError:
+#             question_type = 'single'
 
-        # default to no excluded selections
-        try:
-            not_selectable = question_set[question]['not_selectable']
-        except KeyError:
-            not_selectable = None
+#         # default to y/n if no selection
+#         try:
+#             selection_options = question_set[question]['selection_options']
+#         except KeyError:
+#             selection_options = ['yes', 'no']
 
-        # default to no max or min
-        try:
-            max_min_vals = question_set[question]['max_min_vals']
-        except KeyError:
-            max_min_vals = (None, None)
+#         # default to no maximum numer of selections
+#         try:
+#             max_selectable = question_set[question]['max_selectable']
+#         except KeyError:
+#             max_selectable = None
 
-        # user to select one or multiple
-        if question_type in ['single']:
-            question_set[question]['response'] = single_response_from_list(
-                selection_options, not_selectable
-                )
+#         # default to no excluded selections
+#         try:
+#             not_selectable = question_set[question]['not_selectable']
+#         except KeyError:
+#             not_selectable = None
 
-        elif question_type in ['multi']:
-            question_set[question]['response'] = multi_responses_from_list(
-                selection_options, not_selectable, max_selectable
-                )
+#         # default to no max or min
+#         try:
+#             max_min_vals = question_set[question]['max_min_vals']
+#         except KeyError:
+#             max_min_vals = (None, None)
 
-        elif question_type in ['integer']:
-            question_set[question]['response'] = input_integer(*max_min_vals)
+#         # user to select one or multiple
+#         if question_type in ['single']:
+#             question_set[question]['response'] = single_response_from_list(
+#                 selection_options, not_selectable
+#                 )
 
-        elif question_type in ['string']:
-            question_set[question]['response'] = input_simple_string(
-                *max_min_vals)
+#         elif question_type in ['multi']:
+#             question_set[question]['response'] = multi_responses_from_list(
+#                 selection_options, not_selectable, max_selectable
+#                 )
 
-    return question_set
+#         elif question_type in ['integer']:
+#             question_set[question]['response'] = input_integer(*max_min_vals)
+
+#         elif question_type in ['string']:
+#             question_set[question]['response'] = input_simple_string(
+#                 *max_min_vals)
+
+#     return question_set
 
 
 # =============================================================================
 # %% User Data Build Helper Functions
 # =============================================================================
+
+def user_select_dependent_group(variable_list):
+    """."""
+    # User input dependent group
+    print("\nDependent Variable Input")
+    print("Input a group of dependent variables (numeric).")
+    current_input = user_input_group(variable_list)
+    return {current_input[1]: current_input[0]}
+
+
+def user_select_independent_groups(variable_list):
+    """."""
+    # User input independent groups
+    independent_groups = {}
+    print("\nIndependent Variable Input")
+    print("Input groups of independent variables.")
+    print("\n")
+    while True:
+        print("Enter an independent group?")
+        if single_response_from_list(['yes', 'no']) == 'no':
+            break
+        current_input = user_input_group(variable_list)
+        independent_groups[current_input[1]] = current_input[0]
+        print("Group entered.")
+    return independent_groups
+
 
 def select_group(user_data, expected_groups='independent_groups'):
     """

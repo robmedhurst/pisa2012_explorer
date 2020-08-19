@@ -23,66 +23,23 @@ import graphics_pool_bivariate as bivariate_graphics_pool
 import graphics_pool_multivariate as multivariate_graphics_pool
 
 
-# Dataset can take a few minutes to load on some systems.
-# Load once and only work on copy.
-# Try to laod from csv then from zip.
-def load_original(reload=False, integrity_check=False):
-    """
-    Load original pisa2012 dataset from file and return it as an DataFrame.
-
-    Does not load if already in memory.
-    Forces reload on parameter 'reload=True'.
-    Checks datastructure if parameter 'integrety_check=True'.
-    """
-    if 'PISA2012' not in globals():
-        print("PISA2012 original not in locals, attempting to load",
-              "(this may take a few minutes)...\n")
-    elif reload:
-        print("PISA2012 original exists, attempting to reload",
-              "(this may take a few minutes)...\n")
-    else:
-        print("Variable with name PISA2012 already in memory.\n")
-
-    # load, check, raise error if needed
-    if ('PISA2012' not in globals()) or (reload):
-        # global PISA2012
-        try:    # loading directly from csv
-            pisa_df = pd.read_csv(
-                'pisa2012.csv', sep=',', encoding='latin-1',
-                error_bad_lines=False, dtype='unicode', index_col=False)
-            print("Loaded from csv.\n")
-            return confirm_pisa_df(pisa_df, integrity_check)
-        except FileNotFoundError:
-            try:    # loading directly from zip
-                pisa_df = pd.read_csv(
-                    zipfile.ZipFile(
-                        'pisa2012.csv.zip', 'r').open('pisa2012.csv'),
-                    sep=',', encoding='latin-1', error_bad_lines=False,
-                    dtype='unicode', index_col=False)
-                print("Loaded from zip.\n")
-                return confirm_pisa_df(pisa_df, integrity_check)
-            except FileNotFoundError:    # loading failed
-                raise FileNotFoundError("pisa2012 not in local directory.")
-    pisa_df = PISA2012.copy()
-    return confirm_pisa_df(pisa_df, integrity_check)
-
-
-def confirm_pisa_df(df_through, integrity_check):
-    """Verify pisa csv and/or zip files."""
-    if integrity_check:
-        print("Checking file integrity(this may take a few minutes)...\n")
-        # TODO: implement integrity check
-        #
-        # do the check here
-        #
-        #
-        passed = True    # result of check
-        # return if test passed, raise error if failed
-        if passed:
-            print("Dataframe passed integrity check.\n")
-            return df_through
-        raise FileExistsError("Datafrane failed integrity check!")
-    return df_through
+def load_original_from_file():
+    """."""
+    def attempt_zip_load():
+        try:    # loading directly from zip
+            return pd.read_csv(
+                zipfile.ZipFile(
+                    'pisa2012.csv.zip', 'r').open('pisa2012.csv'),
+                sep=',', encoding='latin-1', error_bad_lines=False,
+                dtype='unicode', index_col=False)
+        except FileNotFoundError:    # loading failed
+            raise FileNotFoundError("pisa2012 not in local directory.")
+    try:    # loading directly from csv
+        return pd.read_csv(
+            'pisa2012.csv', sep=',', encoding='latin-1',
+            error_bad_lines=False, dtype='unicode', index_col=False)
+    except FileNotFoundError:
+        return attempt_zip_load()
 
 
 def initialize(user_data=None):
@@ -120,13 +77,9 @@ def post_wrangle(user_data):
     return user_data
 
 
-# =============================================================================
-# %% user interaction
-# =============================================================================
-
 # %%% user_initialize
 
-def user_initialize(user_data=None):
+def user_initialize(parameter_input=None):
     """
     User inputs to initialize.
 
@@ -134,81 +87,55 @@ def user_initialize(user_data=None):
 
     Returns pisa_sample, inputs
     """
-    def do_preset(user_data_in):
+    def do_preset(preset):
         try:
-            sample_in = user_data_in['pisa_sample']
+            sample_in = preset['pisa_sample']
             if isinstance(sample_in, int):
-                user_data_in['sample_size'] = sample_in
-                user_data_in['pisa_sample'] = pisa2012.sample(sample_in)
-
+                preset['sample_size'] = sample_in
+                preset['pisa_sample'] = pisa2012.sample(sample_in)
         except KeyError:
-            return "KeyError on user initialization 'preset'"
-        print("Skipped input, loaded selection from parameter.\n")
-        return user_data_in
+            return "KeyError on user_initialize 'preset'"
+        return preset
 
-    # ====================================================================
-    # Bypass user initialize interactions via 'preset'
-    # ====================================================================
-    pisa2012 = load_original()
-    if user_data is not None:
-        return do_preset(user_data)
+    def bypass_select():
+        # bypass via parameter
+        if parameter_input is not None:
+            print("Skipping initialize, loaded selection from parameter.\n")
+            return parameter_input
+        # bypass via existing OUTPUT
+        try:
+            if 'OUTPUT 'in gobals():
+                print("Would you like to reuse existing OUTPUT?")
+                if ui.single_response_from_list(['yes', 'no']) == 'yes':
+                    return OUTPUT
+        except NameError:
+            pass
+        # bypass via preset (demo)
+        print("\n")
+        print("Use preset? ('no' to input sample size and groups)")
+        if ui.single_response_from_list(['yes', 'no']) == 'yes':
+            print("Using preset...")
+            return definitions.PRESET1
 
-    # ====================================================================
-    # User option to use quick preset var groups (demo)
-    # ====================================================================
-    print("\n")
-    print("Use preset? ('no' to choose sample size and groups)")
-    if ui.single_response_from_list(['yes', 'no']) == 'yes':
-        print("Using preset...")
-        return do_preset(definitions.PRESET1)
+    # attempt copy from globals
+    try:
+        pisa2012 = PISA2012.copy()
+    # fall back to reload from csv, then zip
+    except NameError:
+        pisa2012 = load_original_from_file()
 
-    # ====================================================================
-    # User sample/resample
-    # ====================================================================
-    question = {'q': {
-        'preface': "Select a sample size.",
-        'selection_options': [
-            "500",
-            "5000",
-            "50000",
-            "Other value"
-            ]}}
-    if user_data is None:
-        user_data = {}
-        current_input = ui.user_batch_questioning(question)['q']['response']
-        if current_input == "Other value":
-            current_input = ui.input_integer(50, None)
-        user_data['pisa_sample'] = pisa2012.sample(int(current_input))
-        user_data['sample_size'] = int(current_input)
-    # ====================================================================
-    # User input group information
-    # ====================================================================
+    # options to bypass group selection
+    if bypass_select() is not None:
+        return do_preset(bypass_select())
 
-    # dependend variables
-    print("\n")
-    print("Dependent Variable Input")
-    print("Input a group of dependent variables (numeric).")
-    current_input = ui.user_input_group(list(PISA2012.columns))
-    dependent_groups = {current_input[1]: current_input[0]}
-    user_data['dependent_groups'] = dependent_groups
-
-    # independent variables
-    print("\n")
-    print("Independent Variable Input")
-    print("Input groups of independent variables.")
-    # print("\n")
-    print("How many groups of independent variables?")
-    num_groups = ui.input_integer(1, 5)
-    print("\n")
-    print("Groups each need a name and list of variables.")
-    independent_groups = {}
-    for index in range(num_groups):
-        print("Describe group number", index+1, "of", num_groups)
-        current_input = ui.user_input_group(list(PISA2012.columns))
-        independent_groups[current_input[1]] = current_input[0]
-        print("Group entered.")
-    user_data['independent_groups'] = independent_groups
-
+    # Build user_data
+    user_data = {}
+    user_data['dependent_groups'] = (
+        ui.user_select_dependent_group(list(pisa2012.columns)))
+    user_data['independent_groups'] = (
+        ui.user_select_independent_groups(list(pisa2012.columns)))
+    user_data['sample_size'] = ui.user_set_sample_size()
+    user_data['pisa_sample'] = pisa2012.sample(user_data['sample_size'])
     return user_data
 
 
@@ -299,7 +226,7 @@ def user_single_variable_graphics(user_data):
                     get_singlevar_graphic(function_name, group_info))
         return graphics_by_group
 
-    def init_response_tracker(bypass_type='all'):
+    def init_response_tracker(bypass_type):
         if bypass_type == "Yes, with all plots.":
             return {
                 # populate with responses indicating ALL options selected
@@ -331,8 +258,10 @@ def user_single_variable_graphics(user_data):
     print("Choose Single Variable Graphics")
     try:
         response_tracker = user_data['response_trackers']['singlevar']
+        print(user_data['response_trackers'].keys())
     except KeyError:
         response_tracker = False
+        print("GOOD NO EXISTING TRACKER")
     #
     # response_tracker old
     if response_tracker is not False:
@@ -426,30 +355,23 @@ def user_request_bivariate_graphics(user_data):
 
 def show_all_output(result):
     """Display results."""
-    def rip_lane_subland(lane, sub_lane):
-        for group_name in result[lane][sub_lane]:
-            for graphic in result[lane][sub_lane][group_name].values():
+    def rip_lanes(lanes):
+        target = result.copy()
+        for lane_name in lanes:
+            target = target[lane_name]
+        for group in target.values():
+            for graphic in group.values():
                 if graphic is not None:
                     graphic.seek(0)
                     pickle.load(graphic)
-
-    def rip_lane(lane):
-        for group_name in result[lane]:
-            for graphic in result[lane][group_name].values():
-                if graphic is not None:
-                    graphic.seek(0)
-                    pickle.load(graphic)
-
-    rip_lane_subland('singlevar_graphic_objects', 'dependent_groups')
-    rip_lane_subland('singlevar_graphic_objects', 'independent_groups')
-    rip_lane('univariate_graphic_objects')
+    rip_lanes(['singlevar_graphic_objects', 'dependent_groups'])
+    rip_lanes(['singlevar_graphic_objects', 'independent_groups'])
+    rip_lanes(['univariate_graphic_objects'])
 
 
 if __name__ == '__main__':
     # load a global copy to avoid reloading
-    PISA2012 = load_original()
-
-    # OUTPUT = initialize(definitions.PRESET1)
+    if 'PISA2012' not in globals():
+        PISA2012 = load_original_from_file()
     OUTPUT = initialize()
-
     show_all_output(OUTPUT)
