@@ -3,11 +3,13 @@
 import io
 import pickle
 
+import pandas as pd
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 import main_definitions as definitions
-from main_ import get_longnames
+# from main_ import get_longnames
 
 
 def pickle_buffer(fig):
@@ -19,14 +21,31 @@ def pickle_buffer(fig):
     return buf
 
 
-def violinplot_bi_row_cat(response_info, user_data):
+def get_longnames(names):
+    """
+    Return PISA 2012 long names given short names.
+
+    Return list of PISA variable descriptions corresponding to variable
+    shortnames given by list name.
+    Resource is read from local copy of pisadict2012.csv
+    """
+    pisadict2012 = pd.read_csv(
+        'pisadict2012.csv',
+        sep=',', encoding='latin-1', error_bad_lines=False,
+        dtype='unicode', index_col=False).rename(
+            columns={'Unnamed: 0': 'varname', 'x': 'description'})
+    names = list(names)
+    return list(pisadict2012.query("varname in @names")['description'])
+
+
+def violinplot_uni_row_1cat(response_info, user_data):
     """Placeholer function."""
     # gather readable varaibles
     pisa_df = user_data['custom_dataframe']
-    var_list = response_info['independent_group']['variables']
+    var_list = response_info['independent_groups'][0]['variables']
     category_order = (
         definitions.PREFERRED_NAMING[
-            response_info['independent_group']['category']])
+            response_info['independent_groups'][0]['category']])
     dep_var = response_info['dependent_group']['name'] + "_mean"
     max_ylim, min_ylim = 0, 0
     # first generate subplots and extract max y limit,then apply y limit
@@ -83,14 +102,14 @@ def violinplot_bi_row_cat(response_info, user_data):
     return pickle_buffer(fig)
 
 
-def boxplot_bi_row_cat(response_info, user_data):
+def boxplot_uni_row_1cat(response_info, user_data):
     """."""
     # gather readable varaibles
     pisa_df = user_data['custom_dataframe']
-    var_list = response_info['independent_group']['variables']
+    var_list = response_info['independent_groups'][0]['variables']
     category_order = (
         definitions.PREFERRED_NAMING[
-            response_info['independent_group']['category']])
+            response_info['independent_groups'][0]['category']])
     dep_var = response_info['dependent_group']['name'] + "_mean"
     # first generate subplots and extract max y limit,then apply y limit
     for first_pass in [True, False]:
@@ -152,7 +171,7 @@ def boxplot_bi_row_cat(response_info, user_data):
     return pickle_buffer(fig)
 
 
-def barplot_uni_single_binary(group_info, user_data):
+def barplot_single_single_binary(group_info, user_data):
     """Return binary group summary as counts bar chart."""
     pisa_df = user_data['custom_dataframe']
     var_list = group_info['variables']
@@ -172,7 +191,7 @@ def barplot_uni_single_binary(group_info, user_data):
     return pickle_buffer(fig)
 
 
-def countplot_uni_row_cat(group_info, user_data):
+def countplot_single_row_cat(group_info, user_data):
     """."""
     pisa_df = user_data['custom_dataframe']
     var_list = group_info['variables']
@@ -231,7 +250,7 @@ def countplot_uni_row_cat(group_info, user_data):
     return pickle_buffer(fig)
 
 
-def distplot_uni_row_float(group_info, user_data, kde):
+def distplot_single_row_float(group_info, user_data, kde):
     """Return a subplot of scatterplots of these float type varibles."""
     pisa_df = user_data['custom_dataframe']
     var_list = group_info['variables']
