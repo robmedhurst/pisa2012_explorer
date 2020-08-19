@@ -87,7 +87,7 @@ def user_initialize(parameter_input=None):
 
     Returns pisa_sample, inputs
     """
-    def do_preset(preset):
+    def apply_preset(preset):
         try:
             sample_in = preset['pisa_sample']
             if isinstance(sample_in, int):
@@ -97,49 +97,47 @@ def user_initialize(parameter_input=None):
             return "KeyError on user_initialize 'preset'"
         return preset
 
-    def bypass_select():
-        # bypass via parameter
+    def build_new_user_data():
+        built_data = {}
+        built_data['dependent_groups'] = (
+            ui.user_select_dependent_group(list(pisa2012.columns)))
+        built_data['independent_groups'] = (
+            ui.user_select_independent_groups(list(pisa2012.columns)))
+        built_data['sample_size'] = ui.user_set_sample_size()
+        built_data['pisa_sample'] = pisa2012.sample(built_data['sample_size'])
+        return built_data
+
+    def do_build_user_data():
+        # check for paramater input and existing gloabl OUTPUT
         if parameter_input is not None:
             print("Skipping initialize, loaded selection from parameter.\n")
-            return parameter_input
-        # bypass via existing OUTPUT
-        try:
-            if 'OUTPUT 'in gobals():
-                print("Would you like to reuse existing OUTPUT?")
-                if ui.single_response_from_list(['yes', 'no']) == 'yes':
-                    return OUTPUT
-        except NameError:
-            pass
-        # bypass via preset (demo)
+            return apply_preset(parameter_input)
+        if 'OUTPUT' in globals():
+            print("Would you like to reuse existing OUTPUT?")
+            if ui.single_response_from_list(['yes', 'no']) == 'yes':
+                return apply_preset(OUTPUT)
+        # user initiated preset
         print("\n")
         print("Use preset? ('no' to input sample size and groups)")
         if ui.single_response_from_list(['yes', 'no']) == 'yes':
             print("Using preset...")
-            return definitions.PRESET1
+            return apply_preset(definitions.PRESET1)
+        # user create new user_data
+        return build_new_user_data()
 
-    # attempt copy from globals
+    # load original data
     try:
         pisa2012 = PISA2012.copy()
     # fall back to reload from csv, then zip
     except NameError:
         pisa2012 = load_original_from_file()
-
-    # options to bypass group selection
-    if bypass_select() is not None:
-        return do_preset(bypass_select())
-
-    # Build user_data
-    user_data = {}
-    user_data['dependent_groups'] = (
-        ui.user_select_dependent_group(list(pisa2012.columns)))
-    user_data['independent_groups'] = (
-        ui.user_select_independent_groups(list(pisa2012.columns)))
-    user_data['sample_size'] = ui.user_set_sample_size()
-    user_data['pisa_sample'] = pisa2012.sample(user_data['sample_size'])
+    user_data = do_build_user_data()
+    print(user_data)
     return user_data
 
 
 # %%% user_request_singlevar_graphics
+
 def user_single_variable_graphics(user_data):
     """User select plots."""
     # ========================================================================
