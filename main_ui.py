@@ -128,11 +128,29 @@ def input_pisa_var_name(valid_names):
         response = input(prompt_string)
         if response in valid_names:
             return response
-
-
 # =============================================================================
 # %% Input Extension
 # =============================================================================
+    def user_input_group(pisa_var_list, group_size=None, group_name=None):
+        """Return user defined group of pisa variables."""
+        group = []
+        if not group_name:
+            print("\n")
+            print("Enter short name for this group...")
+            # user input group name
+            group_name = input_simple_string(1, 20)
+        if not group_size:
+            print("\n")
+            print("How many variables will this group contain?")
+            # user input group size
+            group_size = input_integer(1, 5)
+        while len(group) < group_size:
+            # user input variable names
+            print("\n")
+            group.append(input_pisa_var_name(pisa_var_list))
+        return group, group_name
+
+
 def multi_responses_from_list(list_input, not_selectable_indices=None,
                               max_selected=None):
     """Return selections made by user from given list of strings."""

@@ -134,26 +134,6 @@ def user_initialize(user_data=None):
 
     Returns pisa_sample, inputs
     """
-    def user_input_group(group_size=None, group_name=None):
-        """Return user defined group of pisa variables."""
-        group = []
-        if not group_name:
-            print("\n")
-            print("Enter short name for this group...")
-            # user input group name
-            group_name = ui.input_simple_string(1, 20)
-        if not group_size:
-            print("\n")
-            print("How many variables will this group contain?")
-            # user input group size
-            group_size = ui.input_integer(1, 5)
-        while len(group) < group_size:
-            # user input variable names
-            print("\n")
-            group.append(
-                ui.input_pisa_var_name(list(PISA2012.columns)))
-        return group, group_name
-
     def do_preset(user_data_in):
         try:
             sample_in = user_data_in['pisa_sample']
@@ -208,7 +188,7 @@ def user_initialize(user_data=None):
     print("\n")
     print("Dependent Variable Input")
     print("Input a group of dependent variables (numeric).")
-    current_input = user_input_group()
+    current_input = ui.user_input_group(list(PISA2012.columns))
     dependent_groups = {current_input[1]: current_input[0]}
     user_data['dependent_groups'] = dependent_groups
 
@@ -224,7 +204,7 @@ def user_initialize(user_data=None):
     independent_groups = {}
     for index in range(num_groups):
         print("Describe group number", index+1, "of", num_groups)
-        current_input = user_input_group()
+        current_input = ui.user_input_group(list(PISA2012.columns))
         independent_groups[current_input[1]] = current_input[0]
         print("Group entered.")
     user_data['independent_groups'] = independent_groups
