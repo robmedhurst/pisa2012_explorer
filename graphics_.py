@@ -12,6 +12,10 @@ import main_definitions as definitions
 # from main_ import get_longnames
 
 
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+
 def pickle_buffer(fig):
     """Given an object, return pickled version as io.BytesIO object."""
     buf = io.BytesIO()
@@ -37,6 +41,57 @@ def get_longnames(names):
     names = list(names)
     return list(pisadict2012.query("varname in @names")['description'])
 
+
+# =============================================================================
+# BIVARIATE
+# =============================================================================
+
+def countplot_bi_column_1cat_2cat(response_info, user_data):
+    """Placeholer function."""
+    pisa_df = user_data['custom_dataframe']
+    if len(response_info['dependent_group']['variables']) > 1:
+        dep_name = response_info['dependent_group']['name'] + "_mean"
+    else:
+        dep_name = response_info['dependent_group']['name']
+    # TODO: utilize group members (0, 1 are arbitrary)
+    indep1 = response_info['independent_groups'][0]['variables'][0]
+    indep2 = response_info['independent_groups'][1]['variables'][1]
+    # fig = plt.figure(figsize=(5 * len(var_list), 5))
+    fig = plt.figure()
+    sns.countplot(
+        data = pisa_df, x = indep1, hue = indep2, palette = 'Blues')
+    return pickle_buffer(fig)
+
+    # var_list = response_info['independent_groups'][0]['variables']
+    # category_order = (
+    #     definitions.PREFERRED_NAMING[
+    #         response_info['independent_groups'][0]['category']])
+    # dep_var = response_info['dependent_group']['name'] + "_mean"
+    # max_ylim, min_ylim = 0, 0
+
+    # will loop and create column , for now use first indep of primary
+    # expect secondary indep group to be of length one (perhaps ignore the rest?)
+
+    # # since there's only three subplots to create, using the full data should be fine.
+    # plt.figure(figsize = [8, 8])
+    # # subplot 1: color vs cut
+    # plt.subplot(3, 1, 1)
+    # sb.countplot(data = diamonds, x = 'color', hue = 'cut', palette = 'Blues')
+    # # subplot 2: clarity vs. cut
+    # ax = plt.subplot(3, 1, 2)
+    # sb.countplot(data = diamonds, x = 'clarity', hue = 'cut', palette = 'Blues')
+    # ax.legend(ncol = 2) # re-arrange legend to reduce overlapping
+    # # subplot 3: clarity vs. color, use different color palette
+    # ax = plt.subplot(3, 1, 3)
+    # sb.countplot(data = diamonds, x = 'clarity', hue = 'color', palette = 'Greens')
+    # ax.legend(loc = 1, ncol = 2) # re-arrange legend to remove overlapping
+    # plt.show()
+
+
+
+# =============================================================================
+# UNIVARIATE
+# =============================================================================
 
 def violinplot_uni_row_1cat(response_info, user_data):
     """Placeholer function."""
@@ -171,13 +226,16 @@ def boxplot_uni_row_1cat(response_info, user_data):
     return pickle_buffer(fig)
 
 
+# =============================================================================
+# SINGLE VARIBLE
+# =============================================================================
+
 def barplot_single_single_binary(group_info, user_data):
     """Return binary group summary as counts bar chart."""
     pisa_df = user_data['custom_dataframe']
     var_list = group_info['variables']
 
     base_color = sns.color_palette()[0]
-    # fig = plt.figure()
     fig = plt.figure()
     sns.barplot(
         y=pisa_df[var_list].sum().values,
