@@ -494,7 +494,7 @@ def get_next_unused_name(user_data, location, name, appendage="_old_"):
     # navigate location specified
     # for depth in range(len(location)):
     for depth, key in enumerate(location):
-        working_dictionary = working_dictionary[location]
+        working_dictionary = working_dictionary[key]
     # find smallest integer such that new_name doesnt yet exist
     back_up_num = 0
     while name + appendage + str(back_up_num) in working_dictionary.keys():
