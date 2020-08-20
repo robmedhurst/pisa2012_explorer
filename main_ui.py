@@ -485,6 +485,11 @@ def create_multiple_responses(user_data, graphics_pool, response_tracker=None):
     """."""
     if response_tracker is None:
         response_tracker = {}
+
+    print("Would you like to make selections? (no to bypass)")
+    if single_response_from_list(['yes', 'no']) == 'no':
+        return response_tracker
+
     # loop for multiple selections
     while True:
         # create new tracker and key
@@ -514,14 +519,16 @@ def create_multiple_responses(user_data, graphics_pool, response_tracker=None):
 
 def initialize_tracker(user_data, target='univariate'):
     """."""
-    graphics_pool = pool_string_to_loc(target)
-    def do_existing_tracker(existing_trackers, user_data, graphics_pool):
-        """."""
+    def do_tracker(existing_trackers, user_data, graphics_pool):
         def save_old_trackers():
             tracker_name = get_next_unused_name(
                 user_data, ['response_trackers'], 'univariate')
             user_data['response_trackers'][tracker_name] = existing_trackers
-        # ask user what to do
+        graphics_pool = pool_string_to_loc(target)
+        # no existing tracker
+        if existing_trackers is False:
+            return create_multiple_responses(user_data, graphics_pool)
+        # existing tracker, ask user what to do
         print("Previous selections found.")
         current_response = single_response_from_list([
             "Reuse selection", "Create new selection", "Add to selection"])
@@ -540,17 +547,15 @@ def initialize_tracker(user_data, target='univariate'):
             if existing_trackers != new_trackers:
                 save_old_trackers()
             return new_trackers
+
     # check for existing tracker
     try:
-        existing_tracker = user_data[
-            'response_trackers'][target]
+        existing_tracker = user_data['response_trackers'][target]
     except KeyError:
         existing_tracker = False
+
     # user interactions
-    if existing_tracker is False:
-        return create_multiple_responses(user_data, graphics_pool)
-    # user choose how to use existing tracker
-    return do_existing_tracker(
+    return do_tracker(
         existing_tracker, user_data, univariate_graphics_pool)
 
 
