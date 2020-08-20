@@ -301,13 +301,6 @@ def user_set_sample_size():
 # %% User Data Build Helper Functions
 # =============================================================================
 
-def get_single_graphic(graphics_pool, function_name, function_input):
-    """."""
-    if isinstance(graphics_pool, str):
-        graphics_pool = pool_string_to_loc(graphics_pool)
-    return getattr(graphics_pool, (function_name))(*function_input)
-
-
 def pool_string_to_loc(string_indicator):
     """."""
     pool_names = ['singlevariable', 'univariate',
@@ -315,6 +308,13 @@ def pool_string_to_loc(string_indicator):
     pools = [singlevar_graphics_pool, univariate_graphics_pool,
              bivariate_graphics_pool, multivariate_graphics_pool]
     return pools[pool_names.index(string_indicator)]
+
+
+def get_single_graphic(graphics_pool, function_name, function_input):
+    """."""
+    if isinstance(graphics_pool, str):
+        graphics_pool = pool_string_to_loc(graphics_pool)
+    return getattr(graphics_pool, (function_name))(*function_input)
 
 
 def user_select_dependent_group(variable_list):
@@ -378,18 +378,16 @@ def select_group(user_data, expected_groups='independent_groups'):
             user_data['group_category_matches'][location][group_name]}
 
 
-def get_function_by_key(name_key, local_py_file):
+def get_function_by_key(name_key, target):
     """Return function names from local_py_file.py that contain name_key."""
-    if isinstance(local_py_file, str):
-        local_py_file = pool_string_to_loc(local_py_file)
     matching_functions = []
-    for function_name in dir(local_py_file)[8:]:
+    for function_name in dir(pool_string_to_loc(target))[8:]:
         if name_key in function_name:
             matching_functions.append(function_name)
     return matching_functions
 
 
-def get_functions_by_group(independent_input_groups, graphics_pool):
+def get_functions_by_group(independent_input_groups, target):
     """."""
     # independent_input_groups are in order of plot primacy
     # two entries implies a bivariate plot, where the second is
@@ -401,62 +399,78 @@ def get_functions_by_group(independent_input_groups, graphics_pool):
         search_key = str(index + 1) + group['category']
         list_of_functions.extend(
             get_function_by_key(
-                search_key, graphics_pool))
+                search_key, target))
         # generic categorical
         search_key = str(index + 1) + 'cat'
         if group['category'] in known_categories:
             list_of_functions.extend(get_function_by_key(
-                search_key, graphics_pool))
+                search_key, target))
         # generic binary
         if group['category'] in known_categories and len(
                 known_categories[group['category']]) == 2:
             search_key = str(index + 1) + 'binary'
             list_of_functions.extend(get_function_by_key(
-                search_key, graphics_pool))
+                search_key, target))
     return list_of_functions
 
 
-def graphics_from_responses(response_tracker, user_data, graphics_pool):
+def graphics_from_responses(response_tracker, user_data, target):
     """Generate graphics according to given responses."""
-    graphics_pool = pool_string_to_loc(graphics_pool)
+    graphics_pool = pool_string_to_loc(target)
 
     def graphics_by_function(response):
         graphics_by_function = {}
         for function_name in response['functions']:
             graphics_by_function[function_name] = get_single_graphic(
                 graphics_pool, function_name, (response, user_data))
-
         return graphics_by_function
+
     graphics_by_groupkey = {}
     for groupkey, response in response_tracker.items():
         graphics_by_groupkey[groupkey] = graphics_by_function(response)
     return graphics_by_groupkey
 
 
-def create_response(user_data, graphics_pool):
+def create_response(user_data, target):
     """."""
-    independent_groups = []
+    def user_accept_selection(user_response):
+        print(user_response)
+        print("Is this selection correct?")
+        return single_response_from_list([
+                'Yes, continue.',
+                'No, lets try again.']) == 'Yes, continue.'
 
-    def add_independent():
-        if len(independent_groups) < 1:
-            print("Select an independent group.")
+    def get_dependent_groups():
+        # single variable dont need a dependent
+        if target == 'singlevariable':
+            return None
         else:
-            print("Select another independent group.")
-        independent_groups.append(select_group(
-            user_data, 'independent_groups'))
+            print("Select a dependent group.")
+            return select_group(user_data, 'dependent_groups')
 
-    # loop for user correct input error
-    while True:
-        print("Select a dependent group.")
-        dependent_group = select_group(
-            user_data, 'dependent_groups')
+    def get_independent_groups():
+        def add_independent():
+            if len(independent_groups) < 1:
+                print("Select an independent group.")
+            else:
+                print("Select another independent group.")
+            if target == 'singlevariable':
+                independent_groups.append(single_response_from_list(
+                    list(user_data['dependent_groups'].keys())
+                    + list(user_data['independent_groups'].keys())
+                    ))
+            else:
+                independent_groups.append(select_group(
+                    user_data, 'independent_groups'))
+
+        independent_groups = []
         # at least one independent
         add_independent()
         # two for bivariate
-        if graphics_pool == bivariate_graphics_pool:
+        if target == 'bivariate':
             add_independent()
         # N for multivariate
-        elif graphics_pool == multivariate_graphics_pool:
+        elif target == 'multivariate':
             independent_var_count = 2
             while True:
                 independent_var_count += 1
@@ -465,50 +479,50 @@ def create_response(user_data, graphics_pool):
                 print("Select another?")
                 if single_response_from_list(['Yes', 'No']) == 'No':
                     break
-        user_selected_functions = multi_responses_from_list(
-            get_functions_by_group(
-                independent_groups, graphics_pool))
+        return independent_groups
+
+    # loop for user correct input error
+    while True:
+        independent_groups = get_independent_groups()
         user_response = {
             'independent_groups': independent_groups,
-            'dependent_group': dependent_group,
-            'functions': user_selected_functions}
-        # User Confirm Selection
-        print(user_response)
-        print("Is this selection correct?")
-        if single_response_from_list([
-                'Yes, continue.',
-                'No, lets try again.']) == 'Yes, continue.':
+            'dependent_group': get_dependent_groups(),
+            'functions': multi_responses_from_list(
+                get_functions_by_group(
+                    independent_groups, target))}
+        if user_accept_selection(user_response):
             return user_response
 
 
-def create_multiple_responses(user_data, graphics_pool, response_tracker=None):
+def create_multiple_responses(user_data, target, response_tracker=None):
     """."""
-    if response_tracker is None:
-        response_tracker = {}
-
-    print("Would you like to make selections? (no to bypass)")
-    if single_response_from_list(['yes', 'no']) == 'no':
-        return response_tracker
-
-    # loop for multiple selections
-    while True:
-        # create new tracker and key
-        response = create_response(user_data, graphics_pool)
-        # build group selection key
-        group_selection_key = response['dependent_group']['name']
-        for indep_group in response['independent_groups']:
-            group_selection_key += "_vs_"
-            group_selection_key += indep_group['name']
+    def do_update_response_tracker(response):
+        def build_group_selection_key():
+            if target == 'singlevariable':
+                return response['independent_groups'][0]['name']
+            group_selection_key = response['dependent_group']['name']
+            for indep_group in response['independent_groups']:
+                group_selection_key += "_vs_"
+                group_selection_key += indep_group['name']
+            return group_selection_key
+        group_selection_key = build_group_selection_key()
         # merge list of functions if appending to an existing tracker
         if group_selection_key in list(response_tracker.keys()):
             response_tracker[group_selection_key]['functions'] += (
                 response['functions'])
         else:
             response_tracker[group_selection_key] = response
-        # quick hack to remove duplicates
+        # crude hack to remove duplicates
         response_tracker[group_selection_key]['functions'] = list(
             dict.fromkeys(
                 response_tracker[group_selection_key]['functions']))
+
+    if response_tracker is None:
+        response_tracker = {}
+    # loop for multiple selections
+    while True:
+        # create new response and update response_trackers with it
+        do_update_response_tracker(create_response(user_data, target))
         # user choose to exit univariate selection
         print("Enter another selection?")
         if single_response_from_list(
@@ -517,46 +531,56 @@ def create_multiple_responses(user_data, graphics_pool, response_tracker=None):
             return response_tracker
 
 
-def initialize_tracker(user_data, target='univariate'):
+def initialize_tracker(user_data, target):
     """."""
-    def do_tracker(existing_trackers, user_data, graphics_pool):
-        def save_old_trackers():
+    def fresh_trackers(existing_trackers):
+        new_trackers = create_multiple_responses(
+            user_data, target)
+        save_old_trackers(existing_trackers, new_trackers)
+        return new_trackers
+
+    def expand_trackers(existing_trackers):
+        new_trackers = create_multiple_responses(
+            user_data, target,
+            existing_trackers.copy())
+        save_old_trackers(existing_trackers, new_trackers)
+        return new_trackers
+
+    def save_old_trackers(existing_trackers, new_trackers):
+        if existing_trackers != new_trackers:
             tracker_name = get_next_unused_name(
-                user_data, ['response_trackers'], 'univariate')
+                user_data, ['response_trackers'], target)
             user_data['response_trackers'][tracker_name] = existing_trackers
-        graphics_pool = pool_string_to_loc(target)
-        # no existing tracker
-        if existing_trackers is False:
-            return create_multiple_responses(user_data, graphics_pool)
-        # existing tracker, ask user what to do
+
+    def do_no_existing_trackers():
+        def user_select_bypass():
+            print(str("Bypass " + target + " graphics?"))
+            return single_response_from_list(['yes', 'no']) == 'yes'
+        if user_select_bypass():
+            return {}
+        else:
+            return fresh_trackers(None)
+
+    def do_existing_trackers(existing_trackers):
         print("Previous selections found.")
-        current_response = single_response_from_list([
-            "Reuse selection", "Create new selection", "Add to selection"])
-        if current_response == "Reuse selection":
-            # No need to get more trackers or save the old ones
+        user_choice = single_response_from_list([
+            "Reuse selections", "Add to selections", "Create new selections",
+            str("Bypass " + target + "_graphics")])
+        if user_choice == "Reuse selection":
             return existing_trackers
-        elif current_response == "Create new selection":
-            new_trackers = create_multiple_responses(
-                user_data, graphics_pool)
-            if existing_trackers != new_trackers:
-                save_old_trackers()
-            return new_trackers
-        elif current_response == "Add to selection":
-            new_trackers = create_multiple_responses(
-                user_data, graphics_pool, existing_trackers.copy())
-            if existing_trackers != new_trackers:
-                save_old_trackers()
-            return new_trackers
+        elif user_choice == "Create new selection":
+            return fresh_trackers(existing_trackers)
+        elif user_choice == "Add to selection":
+            return expand_trackers(existing_trackers)
+        elif user_choice == "Bypass this section":
+            save_old_trackers(existing_trackers, {})
+            return {}
 
-    # check for existing tracker
+    # Try existing tracker
     try:
-        existing_tracker = user_data['response_trackers'][target]
+        return do_existing_trackers(user_data['response_trackers'][target])
     except KeyError:
-        existing_tracker = False
-
-    # user interactions
-    return do_tracker(
-        existing_tracker, user_data, univariate_graphics_pool)
+        return do_no_existing_trackers()
 
 
 def get_next_unused_name(user_data, location, name, appendage="_old_"):
