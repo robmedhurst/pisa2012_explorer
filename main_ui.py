@@ -595,3 +595,59 @@ def get_next_unused_name(user_data, location, name, appendage="_old_"):
     while name + appendage + str(back_up_num) in working_dictionary.keys():
         back_up_num += 1
     return name + appendage + str(back_up_num)
+
+
+def create_multiple_responses(user_data, target, response_tracker=None):
+    overgrown_response_tracker = {}
+    for dependent_variable in user_data['dependent_variables']:
+        if target == 'singlevariable':
+            overgrown_response_tracker.update(
+                generate_all_univariate_responses(
+                    dependent_variable, user_data))
+        elif target == 'bivariate':
+            overgrown_response_tracker.update(
+                generate_all_bivariate_responses(
+                    dependent_variable, user_data))
+        elif target == 'multivariate':
+            overgrown_response_tracker.update(
+                generate_all_multivariate_responses(
+                    dependent_variable, user_data))
+    return overgrown_response_tracker
+
+
+def generate_all_univariate_responses(dependent_variable, user_data):
+    responses = {}
+    # for variable in (
+    #                 list(user_data['dependent_groups'].keys())
+    #                 + list(user_data['independent_groups'].keys())):
+
+
+def generate_all_univariate_responses(dependent_variable, user_data):
+    responses = {}
+
+
+def generate_all_multivariate_responses(dependent_variable, user_data):
+    var_pool = (
+        list(user_data['dependent_groups'].keys())
+        + list(user_data['independent_groups'].keys()))
+
+
+def combination_generator(iterable, r):
+    # combinations('ABCD', 2) --> AB AC AD BC BD CD
+    # combinations(range(4), 3) --> 012 013 023 123
+    pool = tuple(iterable)
+    n = len(pool)
+    if r > n:
+        return
+    indices = list(range(r))
+    yield tuple(pool[i] for i in indices)
+    while True:
+        for i in reversed(range(r)):
+            if indices[i] != i + n - r:
+                break
+        else:
+            return
+        indices[i] += 1
+        for j in range(i+1, r):
+            indices[j] = indices[j-1] + 1
+        yield tuple(pool[i] for i in indices)
