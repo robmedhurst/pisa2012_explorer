@@ -14,17 +14,10 @@ import pandas as pd
 import main_category_actions
 
 from main_wrangle import wrangle
-from main_ui import (
-    user_select_dependent_group, user_select_independent_groups,
-    single_response_from_list, multi_responses_from_list, get_function_by_key,
-    get_single_graphic, get_next_unused_name, initialize_tracker,
-    graphics_from_responses, user_set_sample_size)
+
+import main_ui as ui
 
 from main_definitions import PRESET1, KNOWN_CATEGORIES
-# import graphics_pool_singlevar as singlevar_graphics_pool
-# import graphics_pool_univariate as univariate_graphics_pool
-# import graphics_pool_bivariate as bivariate_graphics_pool
-# import graphics_pool_multivariate as multivariate_graphics_pool
 
 
 def load_original_from_file():
@@ -115,10 +108,10 @@ def user_initialize(parameter_input=None):
     def build_new_user_data():
         built_data = {}
         built_data['dependent_groups'] = (
-            user_select_dependent_group(list(pisa2012.columns)))
+            ui.user_select_dependent_group(list(pisa2012.columns)))
         built_data['independent_groups'] = (
-            user_select_independent_groups(list(pisa2012.columns)))
-        built_data['sample_size'] = user_set_sample_size()
+            ui.user_select_independent_groups(list(pisa2012.columns)))
+        built_data['sample_size'] = ui.user_set_sample_size()
         built_data['pisa_sample'] = pisa2012.sample(built_data['sample_size'])
         return built_data
 
@@ -129,12 +122,12 @@ def user_initialize(parameter_input=None):
             return apply_preset(parameter_input)
         if 'OUTPUT' in globals():
             print("Would you like to reuse existing OUTPUT?")
-            if single_response_from_list(['yes', 'no']) == 'yes':
+            if ui.single_response_from_list(['yes', 'no']) == 'yes':
                 return apply_preset(OUTPUT.copy())
         # user initiated preset
         print("\n")
         print("Use preset? ('no' to input sample size and groups)")
-        if single_response_from_list(['yes', 'no']) == 'yes':
+        if ui.single_response_from_list(['yes', 'no']) == 'yes':
             print("Using preset...")
             return apply_preset(PRESET1.copy())
         # user create new user_data
@@ -168,27 +161,27 @@ def user_single_variable_graphics(user_data):
             print("\n")
             print("Which groups to use...")
             print("Use all groups?")
-            if single_response_from_list(['yes', 'no']) == 'yes':
+            if ui.single_response_from_list(['yes', 'no']) == 'yes':
                 return list_of_groups
             print("Which groups to use...")
-            return multi_responses_from_list(list_of_groups)
+            return ui.multi_responses_from_list(list_of_groups)
         return list_of_groups
 
     def get_singlevar_group_functions(group_info):
         # get functions matching category key from univatiate pool
-        list_of_functions = get_function_by_key(
+        list_of_functions = ui.get_function_by_key(
             group_info['category'], 'singlevariable')
         # Detect BINARY
         if group_info['category'] in KNOWN_CATEGORIES and len(
                 KNOWN_CATEGORIES[group_info['category']]) == 2:
             # get binary functions
             list_of_functions.extend(
-                get_function_by_key('binary', 'singlevariable'))
+                ui.get_function_by_key('binary', 'singlevariable'))
         # Detect CATEGORICAL
         if group_info['category'] in KNOWN_CATEGORIES:
             # get binary functions
             list_of_functions.extend(
-                get_function_by_key('cat', 'singlevariable'))
+                ui.get_function_by_key('cat', 'singlevariable'))
         return list_of_functions
 
     def user_select_functions(group_info):
@@ -203,20 +196,20 @@ def user_single_variable_graphics(user_data):
             print("\n")
             print("Do you want to use function",
                   list_of_functions[0], "for group", group_info['name'], "?")
-            if single_response_from_list(['yes', 'no']) == 'no':
+            if ui.single_response_from_list(['yes', 'no']) == 'no':
                 return []
         elif len(list_of_functions) > 1:
             print("\n")
             print("Use all functions for group", group_info['name'], "?")
-            if single_response_from_list(['yes', 'no']) == 'no':
+            if ui.single_response_from_list(['yes', 'no']) == 'no':
                 print("\n")
                 print("Which functions to use for group",
                       group_info['name'], "?")
-                return multi_responses_from_list(list_of_functions)
+                return ui.multi_responses_from_list(list_of_functions)
         return list_of_functions
 
     def get_singlevar_graphic(function_name, group_info):
-        return get_single_graphic(
+        return ui.get_single_graphic(
             'singlevariable', function_name, (group_info, user_data))
 
     def iterate_group_function_selection(location):
@@ -260,7 +253,7 @@ def user_single_variable_graphics(user_data):
     def user_select_bypass():
         # User Select Bypass
         print("Bypass selection?")
-        return single_response_from_list([
+        return ui.single_response_from_list([
             "Yes, with all plots.",
             "Yes, with no plots.",
             "No, manually select groups to explore."
@@ -276,10 +269,10 @@ def user_single_variable_graphics(user_data):
     # response_tracker old
     if response_tracker is not False:
         print("Existing responses found, reuse them?")
-        if single_response_from_list(["yes", "no"]) == 'no':
+        if ui.single_response_from_list(["yes", "no"]) == 'no':
             # move the old tracker
             user_data['response_trackers'][
-                get_next_unused_name(
+                ui.get_next_unused_name(
                     user_data,
                     ['response_trackers'], 'singlevariable'
                     )] = response_tracker
@@ -332,10 +325,10 @@ def user_request_univariate_graphics(user_data):
     print("\n\n")
     print("Choose Univariate Graphics")
     # INPUTS
-    response_tracker = initialize_tracker(
+    response_tracker = ui.initialize_tracker(
         user_data, 'univariate')
     # GRAPHICS
-    graphic_buffer_objects = graphics_from_responses(
+    graphic_buffer_objects = ui.graphics_from_responses(
         response_tracker, user_data, 'univariate')
     # UPDATES
     user_data['response_trackers']['univariate'] = response_tracker
@@ -349,10 +342,10 @@ def user_request_bivariate_graphics(user_data):
     print("\n\n")
     print("Choose Bivariate Graphics")
     # INPUTS
-    response_tracker = initialize_tracker(
+    response_tracker = ui.initialize_tracker(
         user_data, 'bivariate')
     # GRAPHICS
-    graphic_buffer_objects = graphics_from_responses(
+    graphic_buffer_objects = ui.graphics_from_responses(
         response_tracker, user_data, 'bivariate')
     # UPDATES
     user_data['response_trackers']['bivariate'] = response_tracker
