@@ -14,10 +14,13 @@ import pandas as pd
 import main_category_actions
 
 from main_wrangle import wrangle
+from main_ui import (
+    user_select_dependent_group, user_select_independent_groups,
+    single_response_from_list, multi_responses_from_list, get_function_by_key,
+    get_single_graphic, get_next_unused_name, initialize_tracker,
+    graphics_from_responses, user_set_sample_size)
 
-import main_ui as ui
-
-import main_definitions as definitions
+from main_definitions import PRESET1, KNOWN_CATEGORIES
 # import graphics_pool_singlevar as singlevar_graphics_pool
 # import graphics_pool_univariate as univariate_graphics_pool
 # import graphics_pool_bivariate as bivariate_graphics_pool
@@ -26,21 +29,32 @@ import main_definitions as definitions
 
 def load_original_from_file():
     """."""
-    def attempt_zip_load():
-        try:    # loading directly from zip
-            return pd.read_csv(
-                zipfile.ZipFile(
-                    'pisa2012.csv.zip', 'r').open('pisa2012.csv'),
-                sep=',', encoding='latin-1', error_bad_lines=False,
-                dtype='unicode', index_col=False)
-        except FileNotFoundError:    # loading failed
-            raise FileNotFoundError("pisa2012 not in local directory.")
-    try:    # loading directly from csv
+    def load_pisa_csv():
         return pd.read_csv(
-            'pisa2012.csv', sep=',', encoding='latin-1',
-            error_bad_lines=False, dtype='unicode', index_col=False)
-    except FileNotFoundError:
-        return attempt_zip_load()
+            'pisa2012.csv',
+            sep=',', encoding='latin-1', error_bad_lines=False,
+            dtype='unicode', index_col=False)
+
+    def pisa_csv_from_zip():
+        return zipfile.ZipFile('pisa2012.csv.zip', 'r').open('pisa2012.csv')
+
+    def load_pisa_zip():
+        return pd.read_csv(
+            pisa_csv_from_zip(),
+            sep=',', encoding='latin-1', error_bad_lines=False,
+            dtype='unicode', index_col=False)
+
+    print("Attempting to load original PISA 2012 data from file",
+          "(this may take a few minutes)...\n")
+    for loader_name in ['load_pisa_csv', 'load_pisa_zip']:
+        try:
+            print("Attempting", loader_name, "...")
+            pisa = locals()[loader_name]()
+            print("Finished loading from", loader_name[-3:], "file.")
+            return pisa
+        except FileNotFoundError:
+            print("Failed loading from", loader_name[-3:], "file.")
+    print("Could not load from local csv or zip file.")
 
 
 def initialize(user_data=None):
@@ -101,10 +115,10 @@ def user_initialize(parameter_input=None):
     def build_new_user_data():
         built_data = {}
         built_data['dependent_groups'] = (
-            ui.user_select_dependent_group(list(pisa2012.columns)))
+            user_select_dependent_group(list(pisa2012.columns)))
         built_data['independent_groups'] = (
-            ui.user_select_independent_groups(list(pisa2012.columns)))
-        built_data['sample_size'] = ui.user_set_sample_size()
+            user_select_independent_groups(list(pisa2012.columns)))
+        built_data['sample_size'] = user_set_sample_size()
         built_data['pisa_sample'] = pisa2012.sample(built_data['sample_size'])
         return built_data
 
@@ -115,14 +129,14 @@ def user_initialize(parameter_input=None):
             return apply_preset(parameter_input)
         if 'OUTPUT' in globals():
             print("Would you like to reuse existing OUTPUT?")
-            if ui.single_response_from_list(['yes', 'no']) == 'yes':
-                return apply_preset(OUTPUT)
+            if single_response_from_list(['yes', 'no']) == 'yes':
+                return apply_preset(OUTPUT.copy())
         # user initiated preset
         print("\n")
         print("Use preset? ('no' to input sample size and groups)")
-        if ui.single_response_from_list(['yes', 'no']) == 'yes':
+        if single_response_from_list(['yes', 'no']) == 'yes':
             print("Using preset...")
-            return apply_preset(definitions.PRESET1)
+            return apply_preset(PRESET1.copy())
         # user create new user_data
         return build_new_user_data()
 
@@ -132,6 +146,7 @@ def user_initialize(parameter_input=None):
     # fall back to reload from csv, then zip
     except NameError:
         pisa2012 = load_original_from_file()
+
     user_data = do_build_user_data()
     print(user_data)
     return user_data
@@ -143,7 +158,6 @@ def user_single_variable_graphics(user_data):
     """User select plots."""
     # ========================================================================
     #
-    known_categories = definitions.KNOWN_CATEGORIES
     group_category_matches = user_data['group_category_matches']
 
     # private=================================================================
@@ -154,27 +168,27 @@ def user_single_variable_graphics(user_data):
             print("\n")
             print("Which groups to use...")
             print("Use all groups?")
-            if ui.single_response_from_list(['yes', 'no']) == 'yes':
+            if single_response_from_list(['yes', 'no']) == 'yes':
                 return list_of_groups
             print("Which groups to use...")
-            return ui.multi_responses_from_list(list_of_groups)
+            return multi_responses_from_list(list_of_groups)
         return list_of_groups
 
     def get_singlevar_group_functions(group_info):
         # get functions matching category key from univatiate pool
-        list_of_functions = ui.get_function_by_key(
+        list_of_functions = get_function_by_key(
             group_info['category'], 'singlevariable')
         # Detect BINARY
-        if group_info['category'] in known_categories and len(
-                known_categories[group_info['category']]) == 2:
+        if group_info['category'] in KNOWN_CATEGORIES and len(
+                KNOWN_CATEGORIES[group_info['category']]) == 2:
             # get binary functions
             list_of_functions.extend(
-                ui.get_function_by_key('binary', 'singlevariable'))
+                get_function_by_key('binary', 'singlevariable'))
         # Detect CATEGORICAL
-        if group_info['category'] in known_categories:
+        if group_info['category'] in KNOWN_CATEGORIES:
             # get binary functions
             list_of_functions.extend(
-                ui.get_function_by_key('cat', 'singlevariable'))
+                get_function_by_key('cat', 'singlevariable'))
         return list_of_functions
 
     def user_select_functions(group_info):
@@ -189,20 +203,20 @@ def user_single_variable_graphics(user_data):
             print("\n")
             print("Do you want to use function",
                   list_of_functions[0], "for group", group_info['name'], "?")
-            if ui.single_response_from_list(['yes', 'no']) == 'no':
+            if single_response_from_list(['yes', 'no']) == 'no':
                 return []
         elif len(list_of_functions) > 1:
             print("\n")
             print("Use all functions for group", group_info['name'], "?")
-            if ui.single_response_from_list(['yes', 'no']) == 'no':
+            if single_response_from_list(['yes', 'no']) == 'no':
                 print("\n")
                 print("Which functions to use for group",
                       group_info['name'], "?")
-                return ui.multi_responses_from_list(list_of_functions)
+                return multi_responses_from_list(list_of_functions)
         return list_of_functions
 
     def get_singlevar_graphic(function_name, group_info):
-        return ui.get_single_graphic(
+        return get_single_graphic(
             'singlevariable', function_name, (group_info, user_data))
 
     def iterate_group_function_selection(location):
@@ -246,7 +260,7 @@ def user_single_variable_graphics(user_data):
     def user_select_bypass():
         # User Select Bypass
         print("Bypass selection?")
-        return ui.single_response_from_list([
+        return single_response_from_list([
             "Yes, with all plots.",
             "Yes, with no plots.",
             "No, manually select groups to explore."
@@ -262,10 +276,10 @@ def user_single_variable_graphics(user_data):
     # response_tracker old
     if response_tracker is not False:
         print("Existing responses found, reuse them?")
-        if ui.single_response_from_list(["yes", "no"]) == 'no':
+        if single_response_from_list(["yes", "no"]) == 'no':
             # move the old tracker
             user_data['response_trackers'][
-                ui.get_next_unused_name(
+                get_next_unused_name(
                     user_data,
                     ['response_trackers'], 'singlevariable'
                     )] = response_tracker
@@ -318,10 +332,10 @@ def user_request_univariate_graphics(user_data):
     print("\n\n")
     print("Choose Univariate Graphics")
     # INPUTS
-    response_tracker = ui.initialize_tracker(
+    response_tracker = initialize_tracker(
         user_data, 'univariate')
     # GRAPHICS
-    graphic_buffer_objects = ui.graphics_from_responses(
+    graphic_buffer_objects = graphics_from_responses(
         response_tracker, user_data, 'univariate')
     # UPDATES
     user_data['response_trackers']['univariate'] = response_tracker
@@ -335,10 +349,10 @@ def user_request_bivariate_graphics(user_data):
     print("\n\n")
     print("Choose Bivariate Graphics")
     # INPUTS
-    response_tracker = ui.initialize_tracker(
+    response_tracker = initialize_tracker(
         user_data, 'bivariate')
     # GRAPHICS
-    graphic_buffer_objects = ui.graphics_from_responses(
+    graphic_buffer_objects = graphics_from_responses(
         response_tracker, user_data, 'bivariate')
     # UPDATES
     user_data['response_trackers']['bivariate'] = response_tracker
