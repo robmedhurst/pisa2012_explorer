@@ -557,6 +557,9 @@ def initialize_tracker(user_data, target):
         save_old_trackers(existing_trackers, new_trackers)
         return new_trackers
 
+    def all_trackers():
+        return get_all_reponses(user_data, target)
+
     def save_old_trackers(existing_trackers, new_trackers):
         if existing_trackers != new_trackers:
             tracker_name = get_next_unused_name(
@@ -564,26 +567,40 @@ def initialize_tracker(user_data, target):
             user_data['response_trackers'][tracker_name] = existing_trackers
 
     def do_no_existing_trackers():
-        def user_select_bypass():
-            print(str("Bypass " + target + " graphics?"))
-            return single_response_from_list(['yes', 'no']) == 'yes'
-        if user_select_bypass():
+        user_options = [
+            str("Bypass " + target + " graphics?"),
+            "Select graphics by group",
+            str("Generate all possible " + target + " graphics")]
+        user_choice = single_response_from_list(user_options)
+        if user_choice == user_options[0]:
             return {}
-        else:
+        elif user_choice == user_options[1]:
             return fresh_trackers(None)
+        elif user_choice == user_options[2]:
+            return all_trackers()
 
     def do_existing_trackers(existing_trackers):
         print("Previous selections found.")
-        user_choice = single_response_from_list([
-            "Reuse selections", "Add to selections", "Create new selections",
-            str("Bypass " + target + "_graphics")])
-        if user_choice == "Reuse selection":
+        user_options = [
+            "Reuse selections", "Create new selections", "Add to selections",
+            str("Generate all possible " + target + " graphics"),
+            str("Bypass " + target + "_graphics")]
+        user_choice = single_response_from_list(user_options)
+
+        if user_choice == user_options[0]:  # resuse
             return existing_trackers
-        elif user_choice == "Create new selection":
+
+        elif user_choice == user_options[1]:  # new
             return fresh_trackers(existing_trackers)
-        elif user_choice == "Add to selection":
+
+        elif user_choice == user_options[2]:  # append
             return expand_trackers(existing_trackers)
-        elif user_choice == "Bypass this section":
+
+        elif user_choice == user_options[3]:  # all
+            save_old_trackers(existing_trackers, {})
+            return all_trackers()
+
+        elif user_choice == user_options[4]:  # None
             save_old_trackers(existing_trackers, {})
             return {}
 
