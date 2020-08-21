@@ -130,7 +130,7 @@ def user_initialize(parameter_input=None):
     def initialize_using_user_input():
         built_data = {}
         built_data['dependent_groups'] = (
-            ui.user_select_dependent_group(list(pisa2012.columns)))
+            ui.user_select_dependent_groups(list(pisa2012.columns)))
         built_data['independent_groups'] = (
             ui.user_select_independent_groups(list(pisa2012.columns)))
         built_data['sample_size'] = ui.user_set_sample_size()
