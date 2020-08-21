@@ -49,10 +49,10 @@ def get_longnames(names):
 def countplot_bi_column_1cat_2cat(response_info, user_data):
     """Placeholer function."""
     pisa_df = user_data['custom_dataframe']
-    if len(response_info['dependent_group']['variables']) > 1:
-        dep_name = response_info['dependent_group']['name'] + "_mean"
+    if len(response_info['dependent_groups']['variables']) > 1:
+        dep_name = response_info['dependent_groups']['name'] + "_mean"
     else:
-        dep_name = response_info['dependent_group']['name']
+        dep_name = response_info['dependent_groups']['name']
     # TODO: utilize group members (0, 1 are arbitrary)
     indep1 = response_info['independent_groups'][0]['variables'][0]
     indep2 = response_info['independent_groups'][1]['variables'][1]
@@ -66,7 +66,7 @@ def countplot_bi_column_1cat_2cat(response_info, user_data):
     # category_order = (
     #     definitions.PREFERRED_NAMING[
     #         response_info['independent_groups'][0]['category']])
-    # dep_var = response_info['dependent_group']['name'] + "_mean"
+    # dep_var = response_info['dependent_groups']['name'] + "_mean"
     # max_ylim, min_ylim = 0, 0
 
     # will loop and create column , for now use first indep of primary
@@ -101,7 +101,7 @@ def violinplot_uni_row_1cat(response_info, user_data):
     category_order = (
         definitions.PREFERRED_NAMING[
             response_info['independent_groups'][0]['category']])
-    dep_var = response_info['dependent_group']['name'] + "_mean"
+    dep_var = response_info['dependent_groups']['name'] + "_mean"
     max_ylim, min_ylim = 0, 0
     # first generate subplots and extract max y limit,then apply y limit
     for first_pass in [True, False]:
@@ -165,7 +165,7 @@ def boxplot_uni_row_1cat(response_info, user_data):
     category_order = (
         definitions.PREFERRED_NAMING[
             response_info['independent_groups'][0]['category']])
-    dep_var = response_info['dependent_group']['name'] + "_mean"
+    dep_var = response_info['dependent_groups']['name'] + "_mean"
     # first generate subplots and extract max y limit,then apply y limit
     for first_pass in [True, False]:
         # initialize figure
@@ -230,10 +230,10 @@ def boxplot_uni_row_1cat(response_info, user_data):
 # SINGLE VARIBLE
 # =============================================================================
 
-def barplot_single_single_binary(group_info, user_data):
+def barplot_single_single_1binary(response, user_data):
     """Return binary group summary as counts bar chart."""
     pisa_df = user_data['custom_dataframe']
-    var_list = group_info['variables']
+    var_list = response['independent_groups'][0]['variables']
 
     base_color = sns.color_palette()[0]
     fig = plt.figure()
@@ -249,11 +249,11 @@ def barplot_single_single_binary(group_info, user_data):
     return pickle_buffer(fig)
 
 
-def countplot_single_row_cat(group_info, user_data):
+def countplot_single_row_1cat(response, user_data):
     """."""
     pisa_df = user_data['custom_dataframe']
-    var_list = group_info['variables']
-    category = group_info['category']
+    var_list = response['independent_groups'][0]['variables']
+    category = response['independent_groups'][0]['category']
     max_ylim = 0
 
     for first_pass in [True, False]:
@@ -308,10 +308,10 @@ def countplot_single_row_cat(group_info, user_data):
     return pickle_buffer(fig)
 
 
-def distplot_single_row_float(group_info, user_data, kde):
+def distplot_single_row_1float(response, user_data, kde):
     """Return a subplot of scatterplots of these float type varibles."""
     pisa_df = user_data['custom_dataframe']
-    var_list = group_info['variables']
+    var_list = response['independent_groups'][0]['variables']
     max_ylim = 0
 
     if kde == "float_yes_kde":
