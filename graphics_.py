@@ -49,10 +49,10 @@ def get_longnames(names):
 def countplot_bi_column_1cat_2cat(response_info, user_data):
     """Placeholer function."""
     pisa_df = user_data['custom_dataframe']
-    if len(response_info['dependent_group']['variables']) > 1:
-        dep_name = response_info['dependent_group']['name'] + "_mean"
+    if len(response_info['dependent_groups']['variables']) > 1:
+        dep_name = response_info['dependent_groups']['name'] + "_mean"
     else:
-        dep_name = response_info['dependent_group']['name']
+        dep_name = response_info['dependent_groups']['name']
     # TODO: utilize group members (0, 1 are arbitrary)
     indep1 = response_info['independent_groups'][0]['variables'][0]
     indep2 = response_info['independent_groups'][1]['variables'][1]
@@ -66,7 +66,7 @@ def countplot_bi_column_1cat_2cat(response_info, user_data):
     # category_order = (
     #     definitions.PREFERRED_NAMING[
     #         response_info['independent_groups'][0]['category']])
-    # dep_var = response_info['dependent_group']['name'] + "_mean"
+    # dep_var = response_info['dependent_groups']['name'] + "_mean"
     # max_ylim, min_ylim = 0, 0
 
     # will loop and create column , for now use first indep of primary
@@ -101,7 +101,7 @@ def violinplot_uni_row_1cat(response_info, user_data):
     category_order = (
         definitions.PREFERRED_NAMING[
             response_info['independent_groups'][0]['category']])
-    dep_var = response_info['dependent_group']['name'] + "_mean"
+    dep_var = response_info['dependent_groups']['name'] + "_mean"
     max_ylim, min_ylim = 0, 0
     # first generate subplots and extract max y limit,then apply y limit
     for first_pass in [True, False]:
@@ -165,7 +165,7 @@ def boxplot_uni_row_1cat(response_info, user_data):
     category_order = (
         definitions.PREFERRED_NAMING[
             response_info['independent_groups'][0]['category']])
-    dep_var = response_info['dependent_group']['name'] + "_mean"
+    dep_var = response_info['dependent_groups']['name'] + "_mean"
     # first generate subplots and extract max y limit,then apply y limit
     for first_pass in [True, False]:
         # initialize figure

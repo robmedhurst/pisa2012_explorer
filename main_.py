@@ -17,7 +17,7 @@ from main_wrangle import wrangle
 
 import main_ui as ui
 
-from main_definitions import PRESET1, KNOWN_CATEGORIES
+from main_definitions import PRESET1
 
 
 def load_original_from_file():
@@ -130,7 +130,7 @@ def user_initialize(parameter_input=None):
     def initialize_using_user_input():
         built_data = {}
         built_data['dependent_groups'] = (
-            ui.user_select_dependent_group(list(pisa2012.columns)))
+            ui.user_select_dependent_groups(list(pisa2012.columns)))
         built_data['independent_groups'] = (
             ui.user_select_independent_groups(list(pisa2012.columns)))
         built_data['sample_size'] = ui.user_set_sample_size()
@@ -218,8 +218,9 @@ def show_all_output(result):
                     graphic.seek(0)
                     pickle.load(graphic)
     rip_lanes(['singlevariable_graphic_objects'])
-    rip_lanes(['singlevariable_graphic_objects'])
     rip_lanes(['univariate_graphic_objects'])
+    rip_lanes(['bivariate_graphic_objects'])
+    # rip_lanes(['multivariate_graphic_objects'])
 
 
 if __name__ == '__main__':

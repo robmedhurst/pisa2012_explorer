@@ -317,7 +317,7 @@ def get_single_graphic(graphics_pool, function_name, function_input):
     return getattr(graphics_pool, (function_name))(*function_input)
 
 
-def user_select_dependent_group(variable_list):
+def user_select_dependent_groups(variable_list):
     """."""
     # User input dependent group
     print("\nDependent Variable Input")
@@ -343,7 +343,7 @@ def user_select_independent_groups(variable_list):
     return independent_groups
 
 
-def select_group(user_data, expected_groups='independent_groups'):
+def select_group(user_data, expected_groups):
     """
     Return group properties of user selected group.
 
@@ -351,26 +351,28 @@ def select_group(user_data, expected_groups='independent_groups'):
     and independent groups interchangably for univariate plots, without
     conflating the two when presenting the user with selection.
     """
-    # placing independent or dependent groups at top of selection_list
+    messages = [str("Entered as dependent_groups:"),
+                str("Entered as independent_groups:")]
+    if expected_groups:
+        messages = [str(expected_groups + ":"),
+                    str("Not entered as " + expected_groups + ":")]
+    else:
+        expected_groups = 'dependent_groups'
     unexpected_groups = 'dependent_groups'
     if expected_groups == 'dependent_groups':
         unexpected_groups = 'independent_groups'
+    # place expected groups at top of selection_list
     selection_list = []
-    # indicate group types in selection_list
-    selection_list.append(expected_groups + ":")  # index is 0
+    selection_list.append(messages[0])  # index is 0
     selection_list.extend(user_data[expected_groups])
-    # indicate group types in selection_list
-    selection_list.append(  # index is len(user_data[expected_groups])
-        "Not originally entered as " + expected_groups + ":")
+    selection_list.append(messages[1])
     selection_list.extend(user_data[unexpected_groups])
-    # not_selectable_indices
+    # user makes selection (messages can not be selected)
     group_name = single_response_from_list(
         selection_list, [0, len(user_data[expected_groups]) + 1])
-    # selection location
+    location = expected_groups  # location of selection
     if selection_list.index(group_name) > len(user_data[expected_groups]):
         location = unexpected_groups
-    else:
-        location = expected_groups
     return {
         'name': group_name,
         'variables': user_data[location][group_name],
@@ -449,63 +451,74 @@ def create_response(user_data, target):
             return select_group(user_data, 'dependent_groups')
 
     def get_independent_groups():
-        def add_independent():
-            if len(independent_groups) < 1:
-                print("Select an independent group.")
-            else:
-                print("Select another independent group.")
-            if target == 'singlevariable':
-                independent_groups.append(single_response_from_list(
-                    list(user_data['dependent_groups'].keys())
-                    + list(user_data['independent_groups'].keys())
-                    ))
-            else:
-                independent_groups.append(select_group(
-                    user_data, 'independent_groups'))
 
-        independent_groups = []
-        # at least one independent
-        add_independent()
-        # two for bivariate
-        if target == 'bivariate':
+        def singlevarselection():
+            return[
+                select_group(user_data, False)]
+
+        def multivarselection():
+            independent_groups_list = []
+
+            def add_independent():
+                if len(independent_groups_list) < 1:
+                    print("Select an independent group.")
+                else:
+                    print("Select another independent group.")
+                independent_groups_list.append(
+                    select_group(user_data, 'independent_groups'))
+
             add_independent()
-        # N for multivariate
-        elif target == 'multivariate':
-            independent_var_count = 2
-            while True:
-                independent_var_count += 1
+            if target == 'bivariate':
                 add_independent()
-                print(independent_var_count, " independent groups selected.")
-                print("Select another?")
-                if single_response_from_list(['Yes', 'No']) == 'No':
-                    break
-        return independent_groups
+            elif target == 'multivariate':
+                independent_var_count = 2
+                while True:
+                    independent_var_count += 1
+                    independent_groups_list.append(add_independent())
+                    print(independent_var_count,
+                          " independent groups selected.")
+                    print("Select another?")
+                    if single_response_from_list(['Yes', 'No']) == 'No':
+                        break
+            return independent_groups_list
 
-    # loop for user correct input error
-    while True:
+        if target == 'singlevariable':
+            return singlevarselection()
+        else:
+            return multivarselection()
+
+    def build_response():
         independent_groups = get_independent_groups()
         user_response = {
             'independent_groups': independent_groups,
-            'dependent_group': get_dependent_groups(),
+            'dependent_groups': get_dependent_groups(),
             'functions': multi_responses_from_list(
                 get_functions_by_group(
                     independent_groups, target))}
+        return user_response
+
+    # loop for user correct input error
+    while True:
+        user_response = build_response()
         if user_accept_selection(user_response):
             return user_response
+
+
+def build_group_selection_key(target, response, delimeter='_vs_'):
+    """."""
+    if target == 'singlevariable':
+        return response['independent_groups'][0]['name']
+    group_selection_key = response['dependent_groups']['name']
+    for indep_group in response['independent_groups']:
+        group_selection_key += delimeter
+        group_selection_key += indep_group['name']
+    return group_selection_key
 
 
 def create_multiple_responses(user_data, target, response_tracker=None):
     """."""
     def do_update_response_tracker(response):
-        def build_group_selection_key():
-            if target == 'singlevariable':
-                return response['independent_groups'][0]['name']
-            group_selection_key = response['dependent_group']['name']
-            for indep_group in response['independent_groups']:
-                group_selection_key += "_vs_"
-                group_selection_key += indep_group['name']
-            return group_selection_key
-        group_selection_key = build_group_selection_key()
+        group_selection_key = build_group_selection_key(target, response)
         # merge list of functions if appending to an existing tracker
         if group_selection_key in list(response_tracker.keys()):
             response_tracker[group_selection_key]['functions'] += (
@@ -546,6 +559,9 @@ def initialize_tracker(user_data, target):
         save_old_trackers(existing_trackers, new_trackers)
         return new_trackers
 
+    def all_trackers():
+        return get_all_reponses(user_data, target)
+
     def save_old_trackers(existing_trackers, new_trackers):
         if existing_trackers != new_trackers:
             tracker_name = get_next_unused_name(
@@ -553,26 +569,40 @@ def initialize_tracker(user_data, target):
             user_data['response_trackers'][tracker_name] = existing_trackers
 
     def do_no_existing_trackers():
-        def user_select_bypass():
-            print(str("Bypass " + target + " graphics?"))
-            return single_response_from_list(['yes', 'no']) == 'yes'
-        if user_select_bypass():
+        user_options = [
+            str("Bypass " + target + " graphics?"),
+            "Select graphics by group",
+            str("Generate all possible " + target + " graphics")]
+        user_choice = single_response_from_list(user_options)
+        if user_choice == user_options[0]:
             return {}
-        else:
+        elif user_choice == user_options[1]:
             return fresh_trackers(None)
+        elif user_choice == user_options[2]:
+            return all_trackers()
 
     def do_existing_trackers(existing_trackers):
         print("Previous selections found.")
-        user_choice = single_response_from_list([
-            "Reuse selections", "Add to selections", "Create new selections",
-            str("Bypass " + target + "_graphics")])
-        if user_choice == "Reuse selection":
+        user_options = [
+            "Reuse selections", "Create new selections", "Add to selections",
+            str("Generate all possible " + target + " graphics"),
+            str("Bypass " + target + "_graphics")]
+        user_choice = single_response_from_list(user_options)
+
+        if user_choice == user_options[0]:  # resuse
             return existing_trackers
-        elif user_choice == "Create new selection":
+
+        elif user_choice == user_options[1]:  # new
             return fresh_trackers(existing_trackers)
-        elif user_choice == "Add to selection":
+
+        elif user_choice == user_options[2]:  # append
             return expand_trackers(existing_trackers)
-        elif user_choice == "Bypass this section":
+
+        elif user_choice == user_options[3]:  # all
+            save_old_trackers(existing_trackers, {})
+            return all_trackers()
+
+        elif user_choice == user_options[4]:  # None
             save_old_trackers(existing_trackers, {})
             return {}
 
@@ -595,3 +625,101 @@ def get_next_unused_name(user_data, location, name, appendage="_old_"):
     while name + appendage + str(back_up_num) in working_dictionary.keys():
         back_up_num += 1
     return name + appendage + str(back_up_num)
+
+
+def get_all_reponses(user_data, target):
+    """Return all group combinations as response_tracker."""
+    overgrown_response_tracker = {}
+
+    def combination_generator(iterable, r):
+        # combinations('ABCD', 2) --> AB AC AD BC BD CD
+        # combinations(range(4), 3) --> 012 013 023 123
+        pool = tuple(iterable)
+        n = len(pool)
+        if r > n:
+            return
+        indices = list(range(r))
+        yield tuple(pool[i] for i in indices)
+        while True:
+            for i in reversed(range(r)):
+                if indices[i] != i + n - r:
+                    break
+            else:
+                return
+            indices[i] += 1
+            for j in range(i+1, r):
+                indices[j] = indices[j-1] + 1
+            yield tuple(pool[i] for i in indices)
+
+    def all_responses(dependent_selection, num_independent_needed):
+        """."""
+        responses = {}
+        for indep_selections in combination_generator(
+                list(user_data['independent_groups'].keys()),
+                num_independent_needed):
+            independent_groups = []
+            for group_name in indep_selections:
+                independent_groups.append(
+                    {'name': group_name,
+                     'variables':
+                         user_data['independent_groups'][group_name],
+                     'category':
+                         user_data['group_category_matches'
+                                   ]['independent_groups'][group_name]})
+            response = {
+                'dependent_groups': dependent_selection,
+                'independent_groups': independent_groups,
+                'functions':
+                    get_functions_by_group(independent_groups, target)}
+            group_selection_key = build_group_selection_key(target, response)
+            if len(response['functions']) > 0:
+                responses[group_selection_key] = response
+        return responses
+
+    def single_independent_groups():
+        response_tracker = {}
+        for group_name, variables in user_data['independent_groups'].items():
+            group_info = {
+                'name': group_name,
+                'variables': variables,
+                'category': user_data['group_category_matches'
+                                      ]['independent_groups'][group_name]}
+            response = {
+                'dependent_groups': None,
+                'independent_groups': [group_info],
+                'functions': get_functions_by_group([group_info], target)}
+            if len(response['functions']) > 0:
+                response_tracker[group_name] = response
+        return response_tracker
+
+    if target == 'singlevariable':
+        overgrown_response_tracker.update(single_independent_groups())
+
+    for group_name, variables in user_data['dependent_groups'].items():
+        dependent_group = {
+            'name': group_name,
+            'variables': variables,
+            'category': user_data[
+                'group_category_matches']['dependent_groups'][group_name]}
+
+        if target == 'singlevariable':  # depth = 0
+            overgrown_response_tracker[group_name] = {
+                'dependent_groups': None,
+                'independent_groups': [dependent_group],
+                'functions': get_functions_by_group([dependent_group], target)}
+
+        elif target == 'univariate':  # depth = 1
+            overgrown_response_tracker.update(
+                all_responses(dependent_group, 1))
+
+        elif target == 'bivariate':  # depth = 2
+            overgrown_response_tracker.update(
+                all_responses(dependent_group, 2))
+
+        elif target == 'multivariate':  # infinite depth
+            max_num_indep = len(user_data['independent_groups'].keys())
+            for num_indep in range(max_num_indep):
+                overgrown_response_tracker.update(
+                    all_responses(dependent_group, num_indep))
+
+    return overgrown_response_tracker
