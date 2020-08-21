@@ -218,8 +218,9 @@ def show_all_output(result):
                     graphic.seek(0)
                     pickle.load(graphic)
     rip_lanes(['singlevariable_graphic_objects'])
-    rip_lanes(['singlevariable_graphic_objects'])
     rip_lanes(['univariate_graphic_objects'])
+    rip_lanes(['bivariate_graphic_objects'])
+    # rip_lanes(['multivariate_graphic_objects'])
 
 
 if __name__ == '__main__':
