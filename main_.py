@@ -17,7 +17,7 @@ from main_wrangle import wrangle
 
 import main_ui as ui
 
-from main_definitions import PRESET1, KNOWN_CATEGORIES
+from main_definitions import PRESET1
 
 
 def load_original_from_file():

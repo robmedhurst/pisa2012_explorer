@@ -343,7 +343,7 @@ def user_select_independent_groups(variable_list):
     return independent_groups
 
 
-def select_group(user_data, expected_groups='independent_groups'):
+def select_group(user_data, expected_groups):
     """
     Return group properties of user selected group.
 
@@ -351,26 +351,28 @@ def select_group(user_data, expected_groups='independent_groups'):
     and independent groups interchangably for univariate plots, without
     conflating the two when presenting the user with selection.
     """
-    # placing independent or dependent groups at top of selection_list
+    messages = [str("Entered as dependent_groups:"),
+                str("Entered as independent_groups:")]
+    if expected_groups:
+        messages = [str(expected_groups + ":"),
+                    str("Not entered as " + expected_groups + ":")]
+    else:
+        expected_groups = 'dependent_groups'
     unexpected_groups = 'dependent_groups'
     if expected_groups == 'dependent_groups':
         unexpected_groups = 'independent_groups'
+    # place expected groups at top of selection_list
     selection_list = []
-    # indicate group types in selection_list
-    selection_list.append(expected_groups + ":")  # index is 0
+    selection_list.append(messages[0])  # index is 0
     selection_list.extend(user_data[expected_groups])
-    # indicate group types in selection_list
-    selection_list.append(  # index is len(user_data[expected_groups])
-        "Not entered as " + expected_groups + ":")
+    selection_list.append(messages[1])
     selection_list.extend(user_data[unexpected_groups])
-    # not_selectable_indices
+    # user makes selection (messages can not be selected)
     group_name = single_response_from_list(
         selection_list, [0, len(user_data[expected_groups]) + 1])
-    # selection location
+    location = expected_groups  # location of selection
     if selection_list.index(group_name) > len(user_data[expected_groups]):
         location = unexpected_groups
-    else:
-        location = expected_groups
     return {
         'name': group_name,
         'variables': user_data[location][group_name],
@@ -452,7 +454,7 @@ def create_response(user_data, target):
 
         def singlevarselection():
             return[
-                select_group(user_data, 'independent_groups', 'indifferent')]
+                select_group(user_data, False)]
 
         def multivarselection():
             independent_groups_list = []
@@ -670,8 +672,28 @@ def get_all_reponses(user_data, target):
                 'functions':
                     get_functions_by_group(independent_groups, target)}
             group_selection_key = build_group_selection_key(target, response)
-            responses[group_selection_key] = response
+            if len(response['functions']) > 0:
+                responses[group_selection_key] = response
         return responses
+
+    def single_independent_groups():
+        response_tracker = {}
+        for group_name, variables in user_data['independent_groups'].items():
+            group_info = {
+                'name': group_name,
+                'variables': variables,
+                'category': user_data['group_category_matches'
+                                      ]['independent_groups'][group_name]}
+            response = {
+                'dependent_groups': None,
+                'independent_groups': [group_info],
+                'functions': get_functions_by_group([group_info], target)}
+            if len(response['functions']) > 0:
+                response_tracker[group_name] = response
+        return response_tracker
+
+    if target == 'singlevariable':
+        overgrown_response_tracker.update(single_independent_groups())
 
     for group_name, variables in user_data['dependent_groups'].items():
         dependent_group = {
@@ -680,23 +702,24 @@ def get_all_reponses(user_data, target):
             'category': user_data[
                 'group_category_matches']['dependent_groups'][group_name]}
 
-        if target == 'singlevariable':
+        if target == 'singlevariable':  # depth = 0
             overgrown_response_tracker[group_name] = {
                 'dependent_groups': None,
                 'independent_groups': [dependent_group],
-                'functions':
-                    get_functions_by_group([dependent_group], target)}
+                'functions': get_functions_by_group([dependent_group], target)}
+
+        elif target == 'univariate':  # depth = 1
+            overgrown_response_tracker.update(
+                all_responses(dependent_group, 1))
 
         elif target == 'bivariate':  # depth = 2
-            response_tracker = all_responses(
-                dependent_group, target, 2)
-            overgrown_response_tracker.update(response_tracker)
+            overgrown_response_tracker.update(
+                all_responses(dependent_group, 2))
 
         elif target == 'multivariate':  # infinite depth
             max_num_indep = len(user_data['independent_groups'].keys())
             for num_indep in range(max_num_indep):
-                response_tracker = all_responses(
-                    dependent_group, target, num_indep)
-                overgrown_response_tracker.update(response_tracker)
+                overgrown_response_tracker.update(
+                    all_responses(dependent_group, num_indep))
 
     return overgrown_response_tracker
