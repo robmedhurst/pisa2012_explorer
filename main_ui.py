@@ -494,18 +494,21 @@ def create_response(user_data, target):
             return user_response
 
 
+def build_group_selection_key(target, response, delimeter='_vs_'):
+    """."""
+    if target == 'singlevariable':
+        return response['independent_groups'][0]['name']
+    group_selection_key = response['dependent_group']['name']
+    for indep_group in response['independent_groups']:
+        group_selection_key += delimeter
+        group_selection_key += indep_group['name']
+    return group_selection_key
+
+
 def create_multiple_responses(user_data, target, response_tracker=None):
     """."""
     def do_update_response_tracker(response):
-        def build_group_selection_key():
-            if target == 'singlevariable':
-                return response['independent_groups'][0]['name']
-            group_selection_key = response['dependent_group']['name']
-            for indep_group in response['independent_groups']:
-                group_selection_key += "_vs_"
-                group_selection_key += indep_group['name']
-            return group_selection_key
-        group_selection_key = build_group_selection_key()
+        group_selection_key = build_group_selection_key(target, response)
         # merge list of functions if appending to an existing tracker
         if group_selection_key in list(response_tracker.keys()):
             response_tracker[group_selection_key]['functions'] += (
@@ -597,18 +600,22 @@ def get_next_unused_name(user_data, location, name, appendage="_old_"):
     return name + appendage + str(back_up_num)
 
 
-def create_multiple_responses(user_data, target, response_tracker=None):
+def get_all_reponses(user_data, target, response_tracker=None):
+    """Get all group combinations. Return as response_tracker."""
     overgrown_response_tracker = {}
     for dependent_variable in user_data['dependent_variables']:
         if target == 'singlevariable':
+            # depth = 1
             overgrown_response_tracker.update(
                 generate_all_univariate_responses(
                     dependent_variable, user_data))
         elif target == 'bivariate':
+            # depth = 2
             overgrown_response_tracker.update(
                 generate_all_bivariate_responses(
                     dependent_variable, user_data))
         elif target == 'multivariate':
+            # depth = n
             overgrown_response_tracker.update(
                 generate_all_multivariate_responses(
                     dependent_variable, user_data))
@@ -622,7 +629,7 @@ def generate_all_univariate_responses(dependent_variable, user_data):
     #                 + list(user_data['independent_groups'].keys())):
 
 
-def generate_all_univariate_responses(dependent_variable, user_data):
+def generate_all_bivariate_responses(dependent_variable, user_data):
     responses = {}
 
 
