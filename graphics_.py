@@ -24,6 +24,22 @@ def pickle_buffer(fig):
     return buf
 
 
+def load_longnames():
+    """."""
+    return pd.read_csv(
+        'pisadict2012.csv',
+        sep=',', encoding='latin-1', error_bad_lines=False,
+        dtype='unicode', index_col=False).rename(
+            columns={'Unnamed: 0': 'varname', 'x': 'description'})
+
+
+LOADED_LONGNAMES = pd.read_csv(
+        'pisadict2012.csv',
+        sep=',', encoding='latin-1', error_bad_lines=False,
+        dtype='unicode', index_col=False).rename(
+            columns={'Unnamed: 0': 'varname', 'x': 'description'})
+
+
 def get_longnames(names):
     """
     Return PISA 2012 long names given short names.
@@ -32,13 +48,8 @@ def get_longnames(names):
     shortnames given by list name.
     Resource is read from local copy of pisadict2012.csv
     """
-    pisadict2012 = pd.read_csv(
-        'pisadict2012.csv',
-        sep=',', encoding='latin-1', error_bad_lines=False,
-        dtype='unicode', index_col=False).rename(
-            columns={'Unnamed: 0': 'varname', 'x': 'description'})
     names = list(names)
-    return list(pisadict2012.query("varname in @names")['description'])
+    return list(LOADED_LONGNAMES.query("varname in @names")['description'])
 
 
 # =============================================================================
@@ -61,27 +72,84 @@ def countplot_bi_grid_1cat_2cat(response_info, user_data):
     # size of secondary group
     total_cols = len(secondary_var_names)
 
-    # allow a 5x5 space for each supplot
-    fig = plt.figure(figsize=(5 * total_rows, 5 * total_cols))
+    # two passes: one to get information about the plots, another to use it
+    y_limits = {}
+    for first_pass in [True, False]:
+        # allow a 5x5 space for each supplot
+        if first_pass:
+            fig = plt.figure(figsize=(5 * total_rows, 5 * total_cols))
+        else:
+            # discard first draft
+            plt.close(fig)
+            fig = plt.figure(figsize=(5 * total_rows, 5 * total_cols))
 
-    # iterate
-    for index1, primary_var in enumerate(primary_var_names):
-        for index2, secondary_var in enumerate(secondary_var_names):
-            # set subfigure
-            subfig_position = (index1 * total_cols) + index2 + 1
-            axis = fig.add_subplot(total_rows, total_cols, subfig_position)
-            # do subfigure
-            sns.countplot(data=pisa_df,
-                          x=primary_var,
-                          hue=secondary_var,
-                          palette='Blues')
+        # iterate over primary and secondary independent variables
+        for index1, primary_var in enumerate(primary_var_names):
+            for index2, secondary_var in enumerate(secondary_var_names):
 
-    return pickle_buffer(fig)
+                # set subfigure
+                subfig_position = (index1 * total_cols) + index2 + 1
+                fig.add_subplot(
+                    total_rows, total_cols, subfig_position)
+                # do subfigure
+                sns.countplot(data=pisa_df,
+                              x=primary_var,
+                              hue=secondary_var,
+                              palette='Blues')
+
+                # Get y limits on first pass
+                if first_pass:
+                    new_ymin, new_ymax = plt.gca().get_ylim()[0:2]
+                    if index2 == 0:
+                        y_limits['min'], y_limits['max'] = new_ymin, new_ymax
+                    else:
+                        if new_ymax > y_limits['max']:
+                            y_limits['max'] = new_ymax
+                        if new_ymin < y_limits['min']:
+                            y_limits['min'] = new_ymin
+
+                # Apply subplot formatting on second pass
+                if not first_pass:
+                    x_lab, y_lab = None, None
+                    # use x and y-axis labels only in first column
+                    if index2 == 0:
+                        y_lab = "Count"
+                        x_lab = primary_var
+                        # use longnames if available
+                        if get_longnames([primary_var]):
+                            x_lab = (primary_var + ': ' +
+                                     get_longnames([primary_var])[0])
+
+                    # use legend only in first row
+                    if index1 == 0:
+                        # use longnames if available
+                        if get_longnames([secondary_var]):
+                            legend_label = (
+                                get_longnames([secondary_var])[0] +
+                                "\n" + secondary_var
+                                )
+                        plt.gca().legend(title=legend_label)
+                    else:
+                        plt.gca().legend_.remove()
+
+                    # set axis limits and titles
+                    plt.gca().set(
+                        ylim=(y_limits['min'], y_limits['max']),
+                        xlabel=x_lab,
+                        ylabel=y_lab
+                        )
+
+    figure_title = str(response_info['independent_groups'][1]['name'] +
+                       " vs " +
+                       response_info['independent_groups'][0]['name'])
+    fig.suptitle(figure_title, fontsize=16)
 
     # if len(response_info['dependent_groups']['variables']) > 1:
     #     dep_name = response_info['dependent_groups']['name'] + "_mean"
     # else:
     #     dep_name = response_info['dependent_groups']['name']
+
+    return pickle_buffer(fig)
 
 
 # ============================================================================
