@@ -712,7 +712,6 @@ def get_all_reponses(user_data, target):
                 'dependent_groups': None,
                 'independent_groups': [group_info],
                 'functions': get_functions_by_group([group_info], target)}
-            print(response['functions'])
             if len(response['functions']) > 0:
                 response_tracker[group_name] = response
         return response_tracker

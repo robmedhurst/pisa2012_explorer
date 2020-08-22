@@ -8,6 +8,6 @@ caught by keyword.
 import graphics_ as gs
 
 
-def countplot_bi_column_1cat_2cat(response_info, user_data):
+def countplot_bi_grid_1cat_2cat(response_info, user_data):
     """."""
-    return gs.countplot_bi_column_1cat_2cat(response_info, user_data)
+    return gs.countplot_bi_grid_1cat_2cat(response_info, user_data)
