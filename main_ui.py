@@ -495,10 +495,10 @@ def create_response(user_data, target):
             if target == 'bivariate':
                 add_independent()
             elif target == 'multivariate':
-                independent_var_count = 2
+                independent_var_count = 1
                 while True:
                     independent_var_count += 1
-                    independent_groups_list.append(add_independent())
+                    add_independent()
                     print(independent_var_count,
                           " independent groups selected.")
                     print("Select another?")
@@ -634,7 +634,8 @@ def initialize_tracker(user_data, target):
     try:
         return do_existing_trackers(user_data['response_trackers'][target])
     except KeyError:
-        return do_no_existing_trackers()
+        pass
+    return do_no_existing_trackers()
 
 
 def get_next_unused_name(user_data, location, name, appendage="_old_"):
