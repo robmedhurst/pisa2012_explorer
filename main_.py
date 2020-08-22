@@ -38,7 +38,7 @@ def load_original_from_file():
             dtype='unicode', index_col=False)
 
     print("Attempting to load original PISA 2012 data from file",
-          "(this may take a few minutes)...\n")
+          "(this may take a few minutes)...")
     for loader_name in ['load_pisa_csv', 'load_pisa_zip']:
         try:
             print("Attempting", loader_name, "...")
