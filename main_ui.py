@@ -395,25 +395,49 @@ def get_functions_by_group(independent_input_groups, target):
     # two entries implies a bivariate plot, where the second is
     # the more specific visualization
     known_categories = definitions.KNOWN_CATEGORIES
-    list_of_functions = []
-    for index, group in enumerate(independent_input_groups):
-        # known category
-        search_key = str(index + 1) + group['category']
-        list_of_functions.extend(
-            get_function_by_key(
-                search_key, target))
-        # generic categorical
-        search_key = str(index + 1) + 'cat'
-        if group['category'] in known_categories:
-            list_of_functions.extend(get_function_by_key(
-                search_key, target))
-        # generic binary
-        if group['category'] in known_categories and len(
-                known_categories[group['category']]) == 2:
-            search_key = str(index + 1) + 'binary'
-            list_of_functions.extend(get_function_by_key(
-                search_key, target))
-    return list_of_functions
+
+    def gather_accepted_functions():
+        def list_common(a, b):
+            c = [value for value in a if value in b]
+            return c
+        for index in range(len(independent_input_groups)):
+            if index > 0:
+                potential_functions['accepted'].extend(list_common(
+                    potential_functions[index],
+                    potential_functions[index - 1]))
+        if len(independent_input_groups) == 1:
+            potential_functions['accepted'].extend(potential_functions[0])
+        return potential_functions['accepted']
+
+    def gather_potential_known_category_functions():
+        for index, group in enumerate(independent_input_groups):
+            search_key = str(index + 1) + group['category']
+            potential_functions[index].extend(
+                get_function_by_key(search_key, target))
+
+    def gather_potential_binary_functions():
+        for index, group in enumerate(independent_input_groups):
+            if group['category'] in known_categories and len(
+                    known_categories[group['category']]) == 2:
+                search_key = str(index + 1) + 'binary'
+                potential_functions[index].extend(
+                    get_function_by_key(search_key, target))
+
+    def gather_potential_categorical_functions():
+        for index, group in enumerate(independent_input_groups):
+            search_key = str(index + 1) + 'cat'
+            if group['category'] in known_categories:
+                potential_functions[index].extend(
+                    get_function_by_key(search_key, target))
+
+    potential_functions = {'accepted': []}
+    for index in range(len(independent_input_groups)):
+        potential_functions[index] = []
+
+    gather_potential_known_category_functions()
+    gather_potential_binary_functions()
+    gather_potential_categorical_functions()
+    return gather_accepted_functions()
 
 
 def graphics_from_responses(response_tracker, user_data, target):
@@ -688,6 +712,7 @@ def get_all_reponses(user_data, target):
                 'dependent_groups': None,
                 'independent_groups': [group_info],
                 'functions': get_functions_by_group([group_info], target)}
+            print(response['functions'])
             if len(response['functions']) > 0:
                 response_tracker[group_name] = response
         return response_tracker
