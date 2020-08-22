@@ -55,7 +55,7 @@ def countplot_bi_column_1cat_2cat(response_info, user_data):
         dep_name = response_info['dependent_groups']['name']
     # TODO: utilize group members (0, 1 are arbitrary)
     indep1 = response_info['independent_groups'][0]['variables'][0]
-    indep2 = response_info['independent_groups'][1]['variables'][1]
+    indep2 = response_info['independent_groups'][1]['variables'][0]
     # fig = plt.figure(figsize=(5 * len(var_list), 5))
     fig = plt.figure()
     sns.countplot(
