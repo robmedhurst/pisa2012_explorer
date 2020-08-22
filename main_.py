@@ -6,6 +6,7 @@ exploration of the PISA 2012 dataset. Specifically, groups of similar
 variables are explored concurrently.
 """
 
+import io
 import zipfile
 import pickle
 
@@ -53,7 +54,7 @@ def load_original_from_file():
 def initialize(user_data=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
-    return (
+    return user_request_delivery(
         user_request_multivariate_graphics(
             user_request_bivariate_graphics(
                 user_request_univariate_graphics(
@@ -221,29 +222,73 @@ def user_request_multivariate_graphics(user_data):
     return user_data
 
 
+# %%% user_request_delivery
+def user_request_delivery(user_data):
+    """."""
+    def rip_lanes(application):
+        for key in user_data.keys():
+            if 'graphic_objects' in key:
+                for group in user_data[key].values():
+                    for graphic in group.values():
+                        if graphic is not None:
+                            application(graphic)
+
+    def do_display_figures():
+        def do_display_figure(graphic):
+            graphic.seek(0)
+            pickle.load(graphic)
+            graphic.show()
+        rip_lanes(do_display_figure)
+
+    def do_store_pickles():
+        def do_store_pickle(graphic):
+            file_name = str(graphic)[-9:-1]
+            with open(file_name, "wb") as f:
+                f.write(graphic.getbuffer())
+        rip_lanes(do_store_pickle)
+
+    def do_store_images():
+        def do_store_image(graphic):
+            graphic.seek(0)
+            pickle.load(graphic).savefig(str(graphic)[-9:-1] + ".png")
+        rip_lanes(do_store_image)
+
+    # TODO: create OS display
+    def do_display_images():
+        from PIL import Image
+
+        def do_display_image(graphic):
+            file_name = str(graphic)[-9:-1] + ".png"
+            graphic.seek(0)
+            pickle.load(graphic).savefig(file_name)
+            image = Image.open(file_name)
+            image.show()
+        rip_lanes(do_display_image)
+
+    delivery_options = [
+        'Display figures through backend',
+        'Save figures to file as BytesIO Objects',
+        'Save figures to file as images'
+        # , 'Display figures as images through OS.'
+        ]
+    delivery_functions = [
+        do_display_figures,
+        do_store_pickles,
+        do_store_images
+        # , do_display_images
+        ]
+
+    print("\n\n\nDeliver graphics?")
+    for user_request in ui.multi_responses_from_list(delivery_options):
+        delivery_functions[delivery_options.index(user_request)]()
+
+    return user_data
+
+
 # %% Main
-
-
-def show_all_output(result):
-    """Display results."""
-    def rip_lanes(lanes):
-        target = result.copy()
-        for lane_name in lanes:
-            target = target[lane_name]
-        for group in target.values():
-            for graphic in group.values():
-                if graphic is not None:
-                    graphic.seek(0)
-                    pickle.load(graphic)
-    rip_lanes(['singlevariable_graphic_objects'])
-    rip_lanes(['univariate_graphic_objects'])
-    rip_lanes(['bivariate_graphic_objects'])
-    # rip_lanes(['multivariate_graphic_objects'])
-
 
 if __name__ == '__main__':
     # load a global copy to avoid reloading
     if 'PISA2012' not in globals():
         PISA2012 = load_original_from_file()
     OUTPUT = initialize()
-    show_all_output(OUTPUT)
