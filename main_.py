@@ -54,12 +54,13 @@ def initialize(user_data=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
     return (
-        user_request_bivariate_graphics(
-            user_request_univariate_graphics(
-                user_single_variable_graphics(
-                    post_wrangle(
-                        wrangle(
-                            user_initialize(user_data)))))))
+        user_request_multivariate_graphics(
+            user_request_bivariate_graphics(
+                user_request_univariate_graphics(
+                    user_single_variable_graphics(
+                        post_wrangle(
+                            wrangle(
+                                user_initialize(user_data))))))))
 
 
 def post_wrangle(user_data):
@@ -200,6 +201,23 @@ def user_request_bivariate_graphics(user_data):
     # UPDATES
     user_data['response_trackers']['bivariate'] = response_tracker
     user_data['bivariate_graphic_objects'] = graphic_buffer_objects
+    return user_data
+
+
+# %%% user_request_multivariate_graphics
+def user_request_multivariate_graphics(user_data):
+    """."""
+    print("\n\n")
+    print("Choose Multivariate Graphics")
+    # INPUTS
+    response_tracker = ui.initialize_tracker(
+        user_data, 'multivariate')
+    # GRAPHICS
+    graphic_buffer_objects = ui.graphics_from_responses(
+        response_tracker, user_data, 'multivariate')
+    # UPDATES
+    user_data['response_trackers']['multivariate'] = response_tracker
+    user_data['multivariate_graphic_objects'] = graphic_buffer_objects
     return user_data
 
 
