@@ -595,7 +595,7 @@ def initialize_tracker(user_data, target):
     def do_no_existing_trackers():
         user_options = [
             str("Bypass " + target + " graphics?"),
-            "Select graphics by group",
+            "Manually select " + target + " graphics by group",
             str("Generate all possible " + target + " graphics")]
         user_choice = single_response_from_list(user_options)
         if user_choice == user_options[0]:

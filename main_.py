@@ -6,7 +6,6 @@ exploration of the PISA 2012 dataset. Specifically, groups of similar
 variables are explored concurrently.
 """
 
-import io
 import zipfile
 import pickle
 
@@ -44,11 +43,23 @@ def load_original_from_file():
         try:
             print("Attempting", loader_name, "...")
             pisa = locals()[loader_name]()
-            print("Finished loading from", loader_name[-3:], "file.")
+            print("Finished loading from", loader_name[-3:], "file.\n\n")
             return pisa
         except FileNotFoundError:
             print("Failed loading from", loader_name[-3:], "file.")
-    print("Could not load from local csv or zip file.")
+    print("Could not load from local csv or zip file.\n\n")
+
+
+def load_pickled_ud_from_file(filename):
+    """."""
+    extracted_objects = []
+    with (open(filename, "rb")) as f:
+        while True:
+            try:
+                extracted_objects .append(pickle.load(f))
+            except EOFError:
+                break
+    return extracted_objects
 
 
 def initialize(user_data=None):
@@ -113,19 +124,34 @@ def user_initialize(parameter_input=None):
             return user_data
         return do_response_tracker_key(do_pisa_sample(user_data))
 
+    def do_build_user_data():
+        print("Initiailize by selecting groups of variables to explore.\n")
+        user_data = initialize_using_parameter()
+        if not user_data:
+            user_data = initialize_using_output()
+        if not user_data:
+            user_data = initialize_using_preset()
+        if not user_data:
+            user_data = initialize_using_user_input()
+        return user_data
+
     def initialize_using_parameter():
         if parameter_input is not None:
-            print("Skipping initialize, loaded selection from parameter.\n")
+            print("Loaded user selection from parameter.\n")
             return activate_preset(parameter_input)
 
     def initialize_using_output():
         if 'OUTPUT' in globals():
-            print("Would you like to reuse existing OUTPUT?")
+            print("Previous output found. Reuse previous groups and sample?")
             if ui.single_response_from_list(['yes', 'no']) == 'yes':
                 return activate_preset(OUTPUT.copy())
 
     def initialize_using_preset():
-        print("Use preset? ('no' to input sample size and groups)")
+        # TODO: Add preset selection:
+        #         - few meaningful selections with descriptions
+        #         - load presets from user specified file
+        #
+        print("Use preset? ('no' to manually enter groups)")
         if ui.single_response_from_list(['yes', 'no']) == 'yes':
             return activate_preset(PRESET1.copy())
 
@@ -138,18 +164,10 @@ def user_initialize(parameter_input=None):
         built_data['sample_size'] = ui.user_set_sample_size()
         return activate_preset(built_data)
 
-    def do_build_user_data():
-        user_data = initialize_using_parameter()
-        if not user_data:
-            user_data = initialize_using_output()
-        if not user_data:
-            user_data = initialize_using_preset()
-        if not user_data:
-            user_data = initialize_using_user_input()
-        return user_data
-
     try:
+        # TODO: Include option to reload and/or verify loaal files
         pisa2012 = PISA2012.copy()
+        print("Copying PISA2012 found in memory to avoid reloading.\n\n")
     except NameError:
         pisa2012 = load_original_from_file()
     return do_build_user_data()
@@ -225,6 +243,8 @@ def user_request_multivariate_graphics(user_data):
 # %%% user_request_delivery
 def user_request_delivery(user_data):
     """."""
+    # Helper functions
+    #
     def rip_lanes(application):
         for key in user_data.keys():
             if 'graphic_objects' in key:
@@ -233,6 +253,20 @@ def user_request_delivery(user_data):
                         if graphic is not None:
                             application(graphic)
 
+    def save_pickle_next_location(selection, base_name):
+        import os.path
+
+        def get_next_save_location():
+            save_num = 0
+            while os.path.isfile(base_name + "_" + str(save_num).zfill(3)):
+                save_num += 1
+            return base_name + "_" + str(save_num).zfill(3)
+
+        with open(get_next_save_location(), "wb") as f:
+            pickle.dump(selection, f)
+
+    # Delivery functions
+    #
     def do_display_figures():
         def do_display_figure(graphic):
             graphic.seek(0)
@@ -253,8 +287,8 @@ def user_request_delivery(user_data):
             pickle.load(graphic).savefig(str(graphic)[-9:-1] + ".png")
         rip_lanes(do_store_image)
 
-    # TODO: create OS display
     def do_display_images():
+        # TODO: create OS display
         from PIL import Image
 
         def do_display_image(graphic):
@@ -265,20 +299,42 @@ def user_request_delivery(user_data):
             image.show()
         rip_lanes(do_display_image)
 
+    def do_big_pickle():
+        selection = user_data
+        save_pickle_next_location(selection, "saved_user_data")
+
+    def do_little_pickle():
+        desired_keys = [
+            'dependent_groups',
+            'group_category_matches',
+            'independent_groups',
+            'response_trackers']
+        selection = {
+            k: user_data[k] for k in user_data.keys() if k in desired_keys}
+        save_pickle_next_location(selection, "saved_user_selections")
+
+    # User selection options and corresponding functions
+    #
     delivery_options = [
         'Display figures through backend',
-        'Save figures to file as BytesIO Objects',
-        'Save figures to file as images'
-        # , 'Display figures as images through OS.'
+        'Save all figures to file as BytesIO Objects',
+        'Save all figures to file as images',
+        # 'Display figures as images through OS.',
+        'Pickle and save all user_data to a single file',
+        'Pickle and save user selections to a single file'
         ]
     delivery_functions = [
         do_display_figures,
         do_store_pickles,
-        do_store_images
-        # , do_display_images
+        do_store_images,
+        # do_display_images,
+        do_big_pickle,
+        do_little_pickle
         ]
 
-    print("\n\n\nDeliver graphics?")
+    # Action
+    #
+    print("\n-Delivery Options-")
     for user_request in ui.multi_responses_from_list(delivery_options):
         delivery_functions[delivery_options.index(user_request)]()
 
@@ -292,3 +348,5 @@ if __name__ == '__main__':
     if 'PISA2012' not in globals():
         PISA2012 = load_original_from_file()
     OUTPUT = initialize()
+
+output_reloaded = load_pickled_ud_from_file('saved_user_data_saved_user_data')
