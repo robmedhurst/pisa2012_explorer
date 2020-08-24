@@ -12,3 +12,5 @@ pisadict2012.csv
 __pycache__/
 # Pylint files are not tracked
 .pylint.d/
+# Saved user data is not tracked
+saved_user*
