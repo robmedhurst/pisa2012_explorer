@@ -20,6 +20,7 @@ import main_ui as ui
 from main_definitions import PRESET1
 
 
+# %% Support
 def load_original_from_file():
     """."""
     def load_pisa_csv():
@@ -62,7 +63,8 @@ def load_pickled_ud_from_file(filename):
     return extracted_objects
 
 
-def initialize(user_data=None):
+# %% Process
+def initialize(user_data=None, pisa2012=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
     return user_request_delivery(
@@ -72,7 +74,7 @@ def initialize(user_data=None):
                     user_single_variable_graphics(
                         post_wrangle(
                             wrangle(
-                                user_initialize(user_data))))))))
+                                user_initialize(user_data, pisa2012))))))))
 
 
 def post_wrangle(user_data):
@@ -98,9 +100,10 @@ def post_wrangle(user_data):
     return user_data
 
 
+# %% User Interaction
 # %%% user_initialize
 
-def user_initialize(parameter_input=None):
+def user_initialize(parameter_input, original_pisa2012):
     """
     User inputs to initialize.
 
@@ -165,11 +168,12 @@ def user_initialize(parameter_input=None):
         return activate_preset(built_data)
 
     try:
-        # TODO: Include option to reload and/or verify loaal files
-        pisa2012 = PISA2012.copy()
-        print("Copying PISA2012 found in memory to avoid reloading.\n\n")
+        # TODO: Include option to reload and/or verify local files
+        pisa2012 = original_pisa2012.copy()
+        print("Copying PISA2012 avoid reloading.\n\n")
     except NameError:
         pisa2012 = load_original_from_file()
+
     return do_build_user_data()
 
 
@@ -271,7 +275,7 @@ def user_request_delivery(user_data):
         def do_display_figure(graphic):
             graphic.seek(0)
             pickle.load(graphic)
-            graphic.show()
+            # graphic.show()
         rip_lanes(do_display_figure)
 
     def do_store_pickles():
@@ -347,6 +351,4 @@ if __name__ == '__main__':
     # load a global copy to avoid reloading
     if 'PISA2012' not in globals():
         PISA2012 = load_original_from_file()
-    OUTPUT = initialize()
-
-output_reloaded = load_pickled_ud_from_file('saved_user_data_saved_user_data')
+    OUTPUT = initialize(PISA2012)
