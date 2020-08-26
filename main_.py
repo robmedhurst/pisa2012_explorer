@@ -130,8 +130,8 @@ def user_initialize(parameter_input, original_pisa2012):
     def do_build_user_data():
         print("Initiailize by selecting groups of variables to explore.\n")
         user_data = initialize_using_parameter()
-        if not user_data:
-            user_data = initialize_using_output()
+        # if not user_data:
+        #     user_data = initialize_using_output()
         if not user_data:
             user_data = initialize_using_preset()
         if not user_data:
@@ -143,11 +143,11 @@ def user_initialize(parameter_input, original_pisa2012):
             print("Loaded user selection from parameter.\n")
             return activate_preset(parameter_input)
 
-    def initialize_using_output():
-        if 'OUTPUT' in globals():
-            print("Previous output found. Reuse previous groups and sample?")
-            if ui.single_response_from_list(['yes', 'no']) == 'yes':
-                return activate_preset(OUTPUT.copy())
+    # def initialize_using_output():
+    #     if 'OUTPUT' in globals():
+    #         print("Previous output found. Reuse previous groups and sample?")
+    #         if ui.single_response_from_list(['yes', 'no']) == 'yes':
+    #             return activate_preset(OUTPUT.copy())
 
     def initialize_using_preset():
         # TODO: Add preset selection:
@@ -351,4 +351,7 @@ if __name__ == '__main__':
     # load a global copy to avoid reloading
     if 'PISA2012' not in globals():
         PISA2012 = load_original_from_file()
-    OUTPUT = initialize(PISA2012)
+    if 'OUTPUT' not in globals():
+        OUTPUT = initialize(pias2012=PISA2012)
+    else:
+        OUTPUT = initialize(OUTPUT, PISA2012)
