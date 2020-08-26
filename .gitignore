@@ -6,11 +6,15 @@ pisa2012.csv.zip
 pisa2012.csv
 pisadict2012.csv
 
-# Local spyder project files are not tracked
+# Local spyder project files
 .spyproject/
-# Local cache not tracked
+# Local cache
 __pycache__/
-# Pylint files are not tracked
+# Pylint files
 .pylint.d/
-# Saved user data is not tracked
+
+# User notebooks
+*.ipynb
+
+# Saved user data
 saved_user*
