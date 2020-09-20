@@ -5,7 +5,7 @@ This tool aims to aid in the exploration of the PISA 2012 dataset,
 allowing users to concurrently examine a group of similar variables.
 """
 
-import main_definitions
+import main.category_definitions as category_definitions
 
 
 # =============================================================================
@@ -14,8 +14,8 @@ import main_definitions
 
 def wrangle(user_data):
     """Wrap functions for wrangling. Return edited inputs."""
-    known_categories = main_definitions.KNOWN_CATEGORIES
-    preferred_naming = main_definitions.PREFERRED_NAMING
+    known_categories = category_definitions.KNOWN_CATEGORIES
+    preferred_naming = category_definitions.PREFERRED_NAMING
 
     pisa_df = user_data['pisa_sample'].copy()
     independent_groups = user_data['independent_groups']

@@ -5,7 +5,7 @@ Functions for bivariate group plotting with verbose names to be
 caught by keyword.
 """
 
-import graphics_ as gs
+import graphics.graphics as gs
 
 
 def violinplot_uni_row_1cat(response_info, user_data):

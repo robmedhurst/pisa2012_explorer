@@ -8,8 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import main_definitions as definitions
-# from main_ import get_longnames
+import main.category_definitions as definitions
 
 
 # =============================================================================

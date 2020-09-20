@@ -2,11 +2,11 @@
 
 import pandas as pd
 
-import main_definitions as definitions
-import graphics_pool_singlevar as singlevar_graphics_pool
-import graphics_pool_univariate as univariate_graphics_pool
-import graphics_pool_bivariate as bivariate_graphics_pool
-import graphics_pool_multivariate as multivariate_graphics_pool
+import main.category_definitions as definitions
+import graphics.pool_singlevar as singlevar_graphics_pool
+import graphics.pool_univariate as univariate_graphics_pool
+import graphics.pool_bivariate as bivariate_graphics_pool
+import graphics.pool_multivariate as multivariate_graphics_pool
 
 
 # =============================================================================
@@ -220,81 +220,6 @@ def user_set_sample_size():
     if sample_size == "Other value":
         sample_size = input_integer(50, None)
     return int(sample_size)
-
-
-# def user_batch_questioning(question_set=None):
-#     """
-#     Return user selections from set of selections options.
-
-#     Each key identifies a question.
-#     Values are dictionaries containting at least "type" and "selections"
-
-#     question_set is a dictionary, entries are questions to ask the user.
-#     Each entry is a dictionary whose keys represent the elements of a
-#     question.
-#     """
-#     # dumbie question set, delete once function is wrapped
-#     if question_set is None:
-#         # this is never called
-#         question_set = definitions.PLACEHOLDER_QUESTIONS
-
-#     # parse each question
-#     for question in question_set:
-#         # print("\n\n")
-#         try:
-#             print(question_set[question]['preface'])
-#         except KeyError:
-#             pass
-
-#         # default to single response if none specified
-#         try:
-#             question_type = question_set[question]['question_type']
-#         except KeyError:
-#             question_type = 'single'
-
-#         # default to y/n if no selection
-#         try:
-#             selection_options = question_set[question]['selection_options']
-#         except KeyError:
-#             selection_options = ['yes', 'no']
-
-#         # default to no maximum numer of selections
-#         try:
-#             max_selectable = question_set[question]['max_selectable']
-#         except KeyError:
-#             max_selectable = None
-
-#         # default to no excluded selections
-#         try:
-#             not_selectable = question_set[question]['not_selectable']
-#         except KeyError:
-#             not_selectable = None
-
-#         # default to no max or min
-#         try:
-#             max_min_vals = question_set[question]['max_min_vals']
-#         except KeyError:
-#             max_min_vals = (None, None)
-
-#         # user to select one or multiple
-#         if question_type in ['single']:
-#             question_set[question]['response'] = single_response_from_list(
-#                 selection_options, not_selectable
-#                 )
-
-#         elif question_type in ['multi']:
-#             question_set[question]['response'] = multi_responses_from_list(
-#                 selection_options, not_selectable, max_selectable
-#                 )
-
-#         elif question_type in ['integer']:
-#             question_set[question]['response'] = input_integer(*max_min_vals)
-
-#         elif question_type in ['string']:
-#             question_set[question]['response'] = input_simple_string(
-#                 *max_min_vals)
-
-#     return question_set
 
 
 # =============================================================================
