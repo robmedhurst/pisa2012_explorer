@@ -35,7 +35,7 @@ def initialize(parameter_input, original_pisa2012):
 
         def initialize_using_parameter():
             if parameter_input is not None:
-                print("Loaded user selection from parameter.\n")
+                print("Loaded variable selection from parameter.\n")
                 return activate_preset(parameter_input)
             return initialize_using_user_input()
 
