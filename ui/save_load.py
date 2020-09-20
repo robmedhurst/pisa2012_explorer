@@ -1,12 +1,15 @@
 """."""
 
-import os.path
 import zipfile
 import pickle
+
+from os.path import isfile
+from os import listdir
 
 import pandas as pd
 
 from ui.ui import multi_responses_from_list
+from ui.ui import single_response_from_list
 from graphics.graphics import close_figures
 
 
@@ -33,29 +36,37 @@ def load_original_from_file():
         print("Finished loading from", file_type, "file.\n\n")
         return pisa
 
-    if os.path.isfile('pisa2012.csv'):
+    if isfile('pisa2012.csv'):
         return do_load('csv', load_pisa_csv)
-    if os.path.isfile('pisa2012.csv.zip'):
+    if isfile('pisa2012.csv.zip'):
         return do_load('zip', load_pisa_zip)
     raise Exception('Could not load from local csv or zip file.')
 
 
-def pickled_objects_from_file(filename):
+def retrieve_save(save_keys=None):
     """."""
-    extracted_objects = []
-    with (open(filename, "rb")) as open_file:
-        while True:
-            try:
-                extracted_objects .append(pickle.load(open_file))
-            except EOFError:
-                break
-    return extracted_objects
+    save_keys = ['saved_user_data_', 'saved_user_selections_']
 
+    def pickled_objects_from_file(filename):
+        extracted_objects = []
+        with (open(filename, "rb")) as open_file:
+            while True:
+                try:
+                    extracted_objects .append(pickle.load(open_file))
+                except EOFError:
+                    break
+        return extracted_objects
 
-def retrieve_save():
-    """."""
-    filename = "test.save"
-    return pickled_objects_from_file(filename)
+    def detect_save_files():
+        detected_save_files = []
+        for file_name in listdir():
+            for base_name in save_keys:
+                if base_name in file_name:
+                    detected_save_files.append(file_name)
+        return detected_save_files
+
+    return pickled_objects_from_file(
+        single_response_from_list(detect_save_files()))[0]
 
 
 def request_delivery(user_data):
@@ -73,7 +84,7 @@ def request_delivery(user_data):
     def save_pickle_next_location(selection, base_name):
         def get_next_save_location():
             save_num = 0
-            while os.path.isfile(base_name + "_" + str(save_num).zfill(3)):
+            while isfile(base_name + "_" + str(save_num).zfill(3)):
                 save_num += 1
             return base_name + "_" + str(save_num).zfill(3)
 

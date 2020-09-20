@@ -58,9 +58,12 @@ if __name__ == '__main__':
     PISA2012_ORIGINAL = get_original()
 
     # initialize with pisa data and variables of interest
-    # without a preset, user may enter manually
     if 'OUTPUT' not in globals():
         OUTPUT = initialize(MY_PRESET, PISA2012_ORIGINAL)
+
+    # without a preset, user may enter manually
+    elif 'OUTPUT' not in globals():
+        OUTPUT = initialize(pisa2012=PISA2012_ORIGINAL)
 
     # initialize using previous output
     elif 'OUTPUT' in globals():
@@ -68,5 +71,4 @@ if __name__ == '__main__':
 
     # load previous output from file
     else:
-        # TODO: retrieve_save should detect saves and prompt user selection
         OUTPUT = initialize(save_load.retrieve_save(), PISA2012_ORIGINAL)
