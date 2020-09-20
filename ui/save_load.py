@@ -140,6 +140,22 @@ def request_delivery(user_data):
             k: user_data[k] for k in user_data.keys() if k in desired_keys}
         save_pickle_next_location(selection, "saved_user_selections")
 
+    def do_statistics():
+        def do_description(target):
+            for group_name, variables in user_data[target].items():
+                print("\n")
+                print("Group name: ", group_name)
+                print("Group category: ",
+                      user_data['group_category_matches'][target][group_name])
+                print(user_data['pisa_sample'][variables].describe())
+
+        print("\n\n")
+        print("'Independent Groups:'")
+        do_description('independent_groups')
+        print("\n\n")
+        print("'Dependent Groups:'")
+        do_description('dependent_groups')
+
     # User selection options and corresponding functions
     #
     delivery_options = [
@@ -148,7 +164,8 @@ def request_delivery(user_data):
         # 'Save all figures to file as images',
         # 'Display figures as images through OS.',
         'Pickle and save all user_data to a single file',
-        'Pickle and save user selections to a single file'
+        'Pickle and save user selections to a single file',
+        'Display pandas descriptive statistics'
         ]
     delivery_functions = [
         do_display_figures,
@@ -156,7 +173,8 @@ def request_delivery(user_data):
         # do_store_images,
         # do_display_images,
         do_big_pickle,
-        do_little_pickle
+        do_little_pickle,
+        do_statistics
         ]
 
     # Action
