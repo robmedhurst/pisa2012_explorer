@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-import main.category_definitions as definitions
+import ui.category_definitions as definitions
 import graphics.pool_singlevar as singlevar_graphics_pool
 import graphics.pool_univariate as univariate_graphics_pool
 import graphics.pool_bivariate as bivariate_graphics_pool

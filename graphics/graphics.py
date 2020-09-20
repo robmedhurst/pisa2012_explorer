@@ -8,31 +8,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import main.category_definitions as definitions
+import ui.category_definitions as definitions
 
 
-# =============================================================================
-# %% HELPER FUNCTIONS
-
-def pickle_buffer(fig):
-    """Given an object, return pickled version as io.BytesIO object."""
-    buf = io.BytesIO()
-    output = buf
-    pickle.dump(fig, output)
-    plt.close(fig)
-    return buf
-
-
-def load_longnames():
-    """."""
-    return pd.read_csv(
-        'pisadict2012.csv',
-        sep=',', encoding='latin-1', error_bad_lines=False,
-        dtype='unicode', index_col=False).rename(
-            columns={'Unnamed: 0': 'varname', 'x': 'description'})
-
-
-LOADED_LONGNAMES = pd.read_csv(
+LONGNAMES = pd.read_csv(
         'pisadict2012.csv',
         sep=',', encoding='latin-1', error_bad_lines=False,
         dtype='unicode', index_col=False).rename(
@@ -48,7 +27,21 @@ def get_longnames(names):
     Resource is read from local copy of pisadict2012.csv
     """
     names = list(names)
-    return list(LOADED_LONGNAMES.query("varname in @names")['description'])
+    return list(LONGNAMES.query("varname in @names")['description'])
+
+
+def pickle_buffer(fig):
+    """Given an object, return pickled version as io.BytesIO object."""
+    buf = io.BytesIO()
+    output = buf
+    pickle.dump(fig, output)
+    plt.close(fig)
+    return buf
+
+
+def close_figures(figures='all'):
+    """."""
+    plt.close(figures)
 
 
 # =============================================================================
