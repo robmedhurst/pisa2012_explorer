@@ -4,77 +4,7 @@ Global Static Definitions.
 known_categories are the expected values for PISA 2012 categorical variables.
 preferred_vales are the vales to replace expected_vales with.
 
-Some small dictionaries for testing also live here.
 """
-
-
-# =============================================================================
-# TEST VARIABLES
-# =============================================================================
-
-# test_grouping01
-# intial test set, no real meaning oustide of the study it emerged from
-INDEP_TEST_GROUPING01 = {
-    'family_home': ['ST11Q01', 'ST11Q02', 'ST11Q03', 'ST11Q04', 'ST11Q05'],
-    'parent_work': ['ST15Q01', 'ST19Q01'],
-    'parent_isei': ['BFMJ2', 'BMMJ1', 'HISEI'],
-    'HOMEPOS': ['HOMEPOS'],
-    'person_item': ['ST26Q02', 'ST26Q03', 'ST26Q08',
-                    'ST26Q09', 'ST26Q10', 'ST26Q11']}
-DEPEN_TEST_GROUPING01 = {
-    'math_result': ['PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH', 'PV5MATH'],
-    'read_result': ['PV1READ', 'PV2READ', 'PV3READ', 'PV4READ', 'PV5READ']}
-PRESET1 = {
-    'dependent_groups': DEPEN_TEST_GROUPING01,
-    'independent_groups': INDEP_TEST_GROUPING01,
-    'pisa_sample': 1000}
-
-# test_grouping02
-# intended to cover a few unresolved response types
-INDEP_TEST_GROUPING02 = {
-    'grpname1': ['ST05Q01'],
-    'grpname2': ['ST44Q07'],
-    'grpname3': ['ST28Q01'],
-    'grpname4': ['ST37Q02']}
-DEPEN_TEST_GROUPING02 = {
-    'grpname1': [],
-    'grpname2': []}
-
-
-# test_grouping99
-# empty test set
-INDEP_TEST_GROUPING99 = {
-    'grpname1': [],
-    'grpname2': [],
-    'grpname3': [],
-    'grpname4': [],
-    'grpname5': []}
-DEPEN_TEST_GROUPING99 = {
-    'grpname1': [],
-    'grpname2': []}
-
-
-PLACEHOLDER_QUESTIONS = {
-    'question1': {
-        'question_type': "single",
-        'not_selectable': [1],
-        'selection_options': [
-            'blue',
-            'red',
-            'green']
-        },
-    'question2': {
-        'preface': 'What are your favorite colors? ',
-        'question_type': "multi",
-        'not_selectable': [],
-        'max_selectable': 2,
-        'selection_options': [
-            'blue',
-            'red',
-            'green']
-        }
-    }
-
 
 # =============================================================================
 # CATEGORY DEFINITIONS

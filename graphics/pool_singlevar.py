@@ -5,7 +5,7 @@ Functions for single varible group plotting with verbose names to be
 caught by keyword.
 """
 
-import graphics_ as gs
+import graphics.graphics as gs
 
 
 def distplot_nokde_single_row_1float(group_info, user_data):

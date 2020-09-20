@@ -1,29 +1,14 @@
-"""
-Functions specific to group types.
-
-These functions handle independent and dependent variables seperately.
-These functions edit in place or return a graphic.
-"""
+"""Functions specific to group types."""
 
 
 # =============================================================================
 # GROUP_POST_WRANGLE FUNCTIONS
 # =============================================================================
-
 # handle independent and dependent variables seperately
-
-# # text_response
-# def text_response_group_post_wrangle(group_name, pisa_df, inputs):
-#     """Apply text only group operations: None."""
-
-
-# # integer
-# def integer_group_post_wrangle(group_name, pisa_df, inputs):
-#     """Apply integer group operations: None."""
 
 
 # float
-def float_group_post_wrangle(group_name, user_data):
+def float_post_wrangle(group_name, user_data):
     """
     Apply float group operations.
 
@@ -47,7 +32,7 @@ def float_group_post_wrangle(group_name, user_data):
 
 
 # binary_yn
-def binary_yn1_group_post_wrangle(group_name, user_data):
+def binary_yn1_post_wrangle(group_name, user_data):
     """
     Apply binary_yn group operations.
 
