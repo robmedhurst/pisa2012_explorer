@@ -6,13 +6,14 @@ exploration of the PISA 2012 dataset. Specifically, groups of similar
 variables are explored concurrently.
 """
 
-import ui.user_steps as user
-import ui.wrangle as wrangle
-import ui.save_load as save_load
+import main.interface.initialize as user_initialize
+import main.interface.graphics as user_graphics
+import main.interface.deliver as user_delivery
+import main.interface.loaders as loaders
+
+import main.wrangle as wrangle
 
 
-# test_grouping01
-# intial test set, no real meaning oustide of the study it emerged from
 MY_PRESET = {
     'dependent_groups': {
         'math_result': [
@@ -36,20 +37,21 @@ MY_PRESET = {
 def initialize(user_data=None, pisa2012=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
-    return save_load.request_delivery(
-        user.request_multivariate_graphics(
-            user.request_bivariate_graphics(
-                user.request_univariate_graphics(
-                    user.single_variable_graphics(
+    return user_delivery.request_delivery(
+        user_graphics.request_multivariate(
+            user_graphics.request_bivariate(
+                user_graphics.request_univariate(
+                    user_graphics.single_variable(
                         wrangle.post_wrangle(
                             wrangle.wrangle(
-                                user.initialize(user_data, pisa2012))))))))
+                                user_initialize.initialize(
+                                    user_data, pisa2012))))))))
 
 
 def get_original(original_name='PISA2012_ORIGINAL'):
     """."""
     if original_name not in globals():
-        return save_load.load_original_from_file()
+        return loaders.original_from_file()
     return original_name
 
 
@@ -71,4 +73,4 @@ if __name__ == '__main__':
 
     # load previous output from file
     else:
-        OUTPUT = initialize(save_load.retrieve_save(), PISA2012_ORIGINAL)
+        OUTPUT = initialize(loaders.retrieve_save(), PISA2012_ORIGINAL)
