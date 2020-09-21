@@ -117,7 +117,18 @@ def initialize_tracker(user_data, target):
     def create_response(user_data, target):
         """."""
         def user_accept_selection(user_response):
-            print(user_response)
+            # TODO: Display current selection
+            print()
+            print("'dependent group':")
+            print(user_response['dependent_groups']['name'])
+            print("'independent groups':")
+            for group in user_response['independent_groups']:
+                print(group['name'])
+            print("'functions':")
+            for function_name in user_response['functions']:
+                print(function_name + ":  " + getattr(
+                    pool_string_to_loc(target), function_name).__doc__)
+            print()
             print("Is this selection correct?")
             return single_response_from_list([
                     'Yes, continue.',
@@ -211,6 +222,7 @@ def initialize_tracker(user_data, target):
             # create new response and update response_trackers with it
             do_update_response_tracker(create_response(user_data, target))
             # user choose to exit univariate selection
+            print()
             print("Enter another selection?")
             if single_response_from_list(
                     ['Yes, enter another.', 'No, done for now.']
