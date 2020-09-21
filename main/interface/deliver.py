@@ -116,10 +116,8 @@ def request_delivery(user_data):
         do_statistics
         ]
 
-    # Action
-    #
+    close_figures()
     print("\n-Delivery Options-")
     for user_request in multi_responses_from_list(delivery_options):
         delivery_functions[delivery_options.index(user_request)]()
-    close_figures()
     return user_data
