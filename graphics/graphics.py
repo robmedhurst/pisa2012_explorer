@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import ui.category_definitions as definitions
+import main.category_definitions as definitions
 
 
 LONGNAMES = pd.read_csv(
