@@ -5,8 +5,8 @@ This tool aims to aid in the exploration of the PISA 2012 dataset,
 allowing users to concurrently examine a group of similar variables.
 """
 
-import main.category_definitions as category_definitions
-import main.category_actions as category_actions
+import main.definitions as category_definitions
+import main.actions as category_actions
 
 
 def post_wrangle(user_data):
