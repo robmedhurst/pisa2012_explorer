@@ -169,14 +169,20 @@ def initialize_tracker(user_data, target):
                 return multivarselection()
 
         def build_response():
+            def function_select(function_list):
+                verbose_list = []
+                for function_name in function_list:
+                    verbose_list.append(function_name + ":  " + getattr(
+                        pool_string_to_loc(target), function_name).__doc__)
+                function_list = []
+                for selection in multi_responses_from_list(verbose_list):
+                    function_list.append(selection.split(":")[0])
+                return function_list
             independent_groups = get_independent_groups()
-            user_response = {
-                'independent_groups': independent_groups,
-                'dependent_groups': get_dependent_groups(),
-                'functions': multi_responses_from_list(
-                    get_functions_by_group(
+            return {'independent_groups': independent_groups,
+                    'dependent_groups': get_dependent_groups(),
+                    'functions': function_select(get_functions_by_group(
                         independent_groups, target))}
-            return user_response
 
         # loop for user correct input error
         while True:

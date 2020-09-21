@@ -9,5 +9,5 @@ import graphics.graphics as gs
 
 
 def countplot_bi_grid_1cat_2cat(response_info, user_data):
-    """."""
+    """Return a grid of countplots."""
     return gs.countplot_bi_grid_1cat_2cat(response_info, user_data)
