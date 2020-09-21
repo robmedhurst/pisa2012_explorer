@@ -1,6 +1,6 @@
 """."""
 
-import main.category_definitions as definitions
+import main.definitions as definitions
 
 from main.interface.helpers import (
     single_response_from_list, multi_responses_from_list, pool_string_to_loc)
@@ -116,6 +116,11 @@ def initialize_tracker(user_data, target):
 
     def create_response(user_data, target):
         """."""
+        def function_description(function_name, target):
+            return (
+                function_name + ":\n   " + getattr(
+                    pool_string_to_loc(target), function_name).__doc__)
+
         def user_accept_selection(user_response):
             # TODO: Display current selection
             print()
@@ -126,8 +131,7 @@ def initialize_tracker(user_data, target):
                 print(group['name'])
             print("'functions':")
             for function_name in user_response['functions']:
-                print(function_name + ":  " + getattr(
-                    pool_string_to_loc(target), function_name).__doc__)
+                print(function_description(function_name, target))
             print()
             print("Is this selection correct?")
             return single_response_from_list([
@@ -183,8 +187,8 @@ def initialize_tracker(user_data, target):
             def function_select(function_list):
                 verbose_list = []
                 for function_name in function_list:
-                    verbose_list.append(function_name + ":  " + getattr(
-                        pool_string_to_loc(target), function_name).__doc__)
+                    verbose_list.append(
+                        function_description(function_name, target))
                 function_list = []
                 for selection in multi_responses_from_list(verbose_list):
                     function_list.append(selection.split(":")[0])
@@ -225,8 +229,8 @@ def initialize_tracker(user_data, target):
             print()
             print("Enter another selection?")
             if single_response_from_list(
-                    ['Yes, enter another.', 'No, done for now.']
-                    ) == 'No, done for now.':
+                    ['Yes, enter another.', 'No, selection complete.']
+                    ) != 'Yes, enter another.':
                 return response_tracker
 
     def fresh_trackers(existing_trackers):
