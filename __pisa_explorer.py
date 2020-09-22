@@ -14,26 +14,6 @@ import main.interface.loaders as loaders
 import main.wrangle as wrangle
 
 
-MY_PRESET = {
-    'dependent_groups': {
-        'math_result': [
-            'PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH', 'PV5MATH'],
-        'read_result': [
-            'PV1READ', 'PV2READ', 'PV3READ', 'PV4READ', 'PV5READ']},
-    'independent_groups': {
-        'family_home': [
-            'ST11Q01', 'ST11Q02', 'ST11Q03', 'ST11Q04', 'ST11Q05'],
-        'parent_work': [
-            'ST15Q01', 'ST19Q01'],
-        'parent_isei': [
-            'BFMJ2', 'BMMJ1', 'HISEI'],
-        'HOMEPOS': [
-            'HOMEPOS'],
-        'person_item': [
-            'ST26Q02', 'ST26Q03', 'ST26Q08', 'ST26Q09', 'ST26Q10', 'ST26Q11']},
-    'pisa_sample': 1000}
-
-
 def initialize(user_data=None, pisa2012=None):
     """Wrap function calls."""
     # returns pisa_df, inputs, categories_found, and graphics_objects
@@ -55,22 +35,26 @@ def get_original(original_name='PISA2012_ORIGINAL'):
     return original_name
 
 
-if __name__ == '__main__':
-    # load a global copy of original pisa data to avoid reloading
-    PISA2012_ORIGINAL = get_original()
+def load_saved(filename=None):
+    """Return ouput from a previous session restored from file."""
+    return loaders.retrieve_save()
 
-    # initialize with pisa data and variables of interest
-    if 'OUTPUT' not in globals():
-        OUTPUT = initialize(MY_PRESET, PISA2012_ORIGINAL)
 
-    # without a preset, user may enter manually
-    elif 'OUTPUT' not in globals():
-        OUTPUT = initialize(pisa2012=PISA2012_ORIGINAL)
-
-    # initialize using previous output
-    elif 'OUTPUT' in globals():
-        OUTPUT = initialize(OUTPUT, PISA2012_ORIGINAL)
-
-    # load previous output from file
-    else:
-        OUTPUT = initialize(loaders.retrieve_save(), PISA2012_ORIGINAL)
+PRESET1 = {
+    'dependent_groups': {
+        'math_result': [
+            'PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH', 'PV5MATH'],
+        'read_result': [
+            'PV1READ', 'PV2READ', 'PV3READ', 'PV4READ', 'PV5READ']},
+    'independent_groups': {
+        'family_home': [
+            'ST11Q01', 'ST11Q02', 'ST11Q03', 'ST11Q04', 'ST11Q05'],
+        'parent_work': [
+            'ST15Q01', 'ST19Q01'],
+        'parent_isei': [
+            'BFMJ2', 'BMMJ1', 'HISEI'],
+        'HOMEPOS': [
+            'HOMEPOS'],
+        'person_item': [
+            'ST26Q02', 'ST26Q03', 'ST26Q08', 'ST26Q09', 'ST26Q10', 'ST26Q11']},
+    'pisa_sample': 1000}

@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import main.category_definitions as definitions
+import main.definitions as definitions
 
 
 LONGNAMES = pd.read_csv(
@@ -50,6 +50,20 @@ def close_figures(figures='all'):
 
 # =============================================================================
 # %% BIVARIATE
+
+
+def heatmap_grid_float(response_info, user_data):
+    """."""
+    numeric_vars = response_info['dependent_groups']['variables'].copy()
+    for indep_group in response_info['independent_groups']:
+        numeric_vars += indep_group['variables']
+
+    # correlation plot
+    fig = plt.figure(figsize=[8, 5])
+    sns.heatmap(user_data['custom_dataframe'][numeric_vars].corr(),
+                annot=True, fmt='.3f', cmap='vlag_r', center=0)
+    return pickle_buffer(fig)
+
 
 def countplot_bi_grid_1cat_2cat(response_info, user_data):
     """."""
