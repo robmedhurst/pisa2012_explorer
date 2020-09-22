@@ -54,34 +54,14 @@ def close_figures(figures='all'):
 
 def heatmap_grid_float(response_info, user_data):
     """."""
-    print("YAY IT RAN xD")
-    # print(response_info)
-    # print()
-    # {
-    #  'independent_groups': [
-    #     {'name': 'parent_isei',
-    #      'variables': ['BFMJ2', 'BMMJ1', 'HISEI'],
-    #      'category': 'float'},
-    #     {'name': 'parent_isei',
-    #      'variables': ['BFMJ2', 'BMMJ1', 'HISEI'],
-    #      'category': 'float'}],
-    #  'dependent_groups':
-    #     {'name': 'math_result',
-    #      'variables':
-    #              ['PV1MATH', 'PV2MATH', 'PV3MATH', 'PV4MATH', 'PV5MATH'],
-    #          'category': 'float'},
-    #  'functions': [
-    #      'heatmap_bi_grid_1float_2float']}
-
     numeric_vars = response_info['dependent_groups']['variables'].copy()
     for indep_group in response_info['independent_groups']:
         numeric_vars += indep_group['variables']
 
     # correlation plot
     fig = plt.figure(figsize=[8, 5])
-    sns.heatmap(user_data['pisa_sample'][numeric_vars].corr(),
+    sns.heatmap(user_data['custom_dataframe'][numeric_vars].corr(),
                 annot=True, fmt='.3f', cmap='vlag_r', center=0)
-
     return pickle_buffer(fig)
 
 
