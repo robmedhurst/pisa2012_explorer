@@ -11,6 +11,8 @@ import seaborn as sns
 import main.definitions as definitions
 
 
+# =============================================================================
+# %% HELPER
 LONGNAMES = pd.read_csv(
         'pisadict2012.csv',
         sep=',', encoding='latin-1', error_bad_lines=False,
@@ -47,11 +49,6 @@ def close_figures(figures='all'):
 # =============================================================================
 # %% MULIVARIATE
 
-
-# =============================================================================
-# %% BIVARIATE
-
-
 def heatmap_grid_float(response_info, user_data):
     """."""
     numeric_vars = response_info['dependent_groups']['variables'].copy()
@@ -64,6 +61,9 @@ def heatmap_grid_float(response_info, user_data):
                 annot=True, fmt='.3f', cmap='vlag_r', center=0)
     return pickle_buffer(fig)
 
+
+# =============================================================================
+# %% BIVARIATE
 
 def countplot_bi_grid_1cat_2cat(response_info, user_data):
     """."""
