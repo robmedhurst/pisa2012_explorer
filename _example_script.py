@@ -6,7 +6,7 @@
 #  original data reloaded
 # OUTPUT = initialize(None, None)
 
-from __pisa_explorer import initialize
+from pisa_explorer import initialize
 OUTPUT = initialize()
 
 
@@ -14,7 +14,7 @@ OUTPUT = initialize()
 #  avoid reloading original data by passing global copy to initialize
 #  user prompt
 
-from __pisa_explorer import get_original, initialize
+from pisa_explorer import get_original, initialize
 if 'PISA2012_ORIGINAL' not in globals():
     PISA2012_ORIGINAL = get_original()
 OUTPUT = initialize(None, PISA2012_ORIGINAL)
@@ -24,7 +24,7 @@ OUTPUT = initialize(None, PISA2012_ORIGINAL)
 #  avoid reloading original data by passing global copy to initialize
 #  previous output
 
-from __pisa_explorer import get_original, initialize
+from pisa_explorer import get_original, initialize
 if 'PISA2012_ORIGINAL' not in globals():
     PISA2012_ORIGINAL = get_original()
 OUTPUT = initialize(OUTPUT, PISA2012_ORIGINAL)
@@ -34,7 +34,7 @@ OUTPUT = initialize(OUTPUT, PISA2012_ORIGINAL)
 #  avoid reloading original data by passing global copy to initialize
 #  preset selection from global
 
-from __pisa_explorer import get_original, initialize, PRESET1
+from pisa_explorer import get_original, initialize, PRESET1
 if 'PISA2012_ORIGINAL' not in globals():
     PISA2012_ORIGINAL = get_original()
 OUTPUT = initialize(PRESET1.copy(), PISA2012_ORIGINAL)
@@ -44,7 +44,7 @@ OUTPUT = initialize(PRESET1.copy(), PISA2012_ORIGINAL)
 #  avoid reloading original data by passing global copy to initialize
 #  directly load old file
 
-from __pisa_explorer import get_original, initialize, load_saved
+from pisa_explorer import get_original, initialize, load_saved
 if 'PISA2012_ORIGINAL' not in globals():
     PISA2012_ORIGINAL = get_original()
 OUTPUT = initialize(load_saved(), PISA2012_ORIGINAL)
