@@ -5,42 +5,25 @@ This tool aims to aid in the exploration of the PISA 2012 dataset,
 allowing users to concurrently examine a group of similar variables.
 """
 
+import numpy as np
+
 import main.definitions as category_definitions
 import main.actions as category_actions
 
 
 def post_wrangle(user_data):
     """Apply category specific post wrangle functions."""
-    group_category_matches = user_data['group_category_matches']
-    pisa_df = user_data['custom_dataframe']
-
-    # group_category_matches holds indep and dependent groups seperately
-    for subset in group_category_matches:
-        # iterate group category matches
-        for group_name in group_category_matches[subset]:
-            category = group_category_matches[subset][group_name]
-
-            # check if associated post wrangling group actions are available
+    for target in ['dependent_groups', 'independent_groups']:
+        for group in user_data[target].values():
+            category = group['category']
             if category + "_post_wrangle" in dir(category_actions):
-                # function call using getattr
-                getattr(
-                    category_actions,
-                    (category + "_post_wrangle"))(
-                        group_name, user_data)
-    # update and return user_data
-    user_data['custom_dataframe'] = pisa_df
+                getattr(category_actions, (
+                    category + "_post_wrangle"))(group['name'], user_data)
     return user_data
 
 
 def wrangle(user_data):
     """Wrap functions for wrangling. Return edited inputs."""
-    known_categories = category_definitions.KNOWN_CATEGORIES
-    preferred_naming = category_definitions.PREFERRED_NAMING
-
-    pisa_df = user_data['pisa_sample'].copy()
-    independent_groups = user_data['independent_groups']
-    dependent_groups = user_data['dependent_groups']
-
     def select_columns_and_drop_nulls():
         """
         Discard unspecified columns and remove rows with Null values.
@@ -48,17 +31,84 @@ def wrangle(user_data):
         Remove columns from that are not in any given groups.
         Remove observations containing nulls.
         """
+        pisa_df = user_data['pisa_sample'].copy()
+
         # drop unused columns
-        pisa_df.drop(pisa_df.columns.difference(
-            [var_name for sublist in list(independent_groups.values())
-             for var_name in sublist] +
-            [var_name for sublist in list(dependent_groups.values())
-             for var_name in sublist]),
+        def all_var_names():
+            variable_list = []
+            for target in ['dependent_groups', 'independent_groups']:
+                for group in user_data[target].values():
+                    variable_list.extend(group['variable_names'])
+            return variable_list
+
+        pisa_df.drop(pisa_df.columns.difference(all_var_names()),
                      axis='columns', inplace=True)
         # drop nulls
         pisa_df.dropna(inplace=True)
 
-    def get_category(pisa_group):
+        # update user_data
+        user_data['custom_dataframe'] = pisa_df
+
+    def apply_preferred_values():
+        """
+        Apply preferred values to groups of known category.
+
+        Update strings to preferred values (ex: "Yes" == True) or
+        raise ValueError if incomplete preferred values found.
+        """
+        def do_know_category():
+            # update to corresponding preferred values
+            for var in group_var_list:
+
+                # strip white space to match know_categories
+                pisa_df[var] = pisa_df[var].map(lambda x: x.strip())
+
+                # replace each known value
+                for known, preferred in zip(
+                        category_definitions.KNOWN_CATEGORIES[category_key],
+                        category_definitions.PREFERRED_NAMING[category_key]):
+                    pisa_df.loc[pisa_df[var] == known, var] = preferred
+
+                # confirm values are from preferred_naming, none overlooked
+                if not set(pisa_df[var].unique()).issubset(
+                        category_definitions.PREFERRED_NAMING[category_key]):
+                    raise ValueError(var + ': incomplete preferred values.')
+
+        def do_float():
+            pisa_df[group_var_list] = pisa_df[group_var_list].astype(float)
+
+        def do_int():
+            pisa_df[group_var_list] = pisa_df[group_var_list].astype(int)
+
+        def do_str():
+            pisa_df[group_var_list] = pisa_df[group_var_list].astype(str)
+
+        pisa_df = user_data['custom_dataframe']
+
+        for target in ['independent_groups', 'dependent_groups']:
+            for group in user_data[target].values():
+                group_var_list = group['variable_names']
+                category_key = group['category']
+                if category_key in category_definitions.KNOWN_CATEGORIES:
+                    do_know_category()
+                elif category_key == "float":
+                    do_float()
+                elif category_key == "integer":
+                    do_int()
+                else:
+                    do_str()
+    # CAUTION:    large sets of variables will reduce the sample size
+    # Reason:     each variable has its own set of nulls
+    # Solution:   reduce variable sets after finding interactions
+    select_columns_and_drop_nulls()
+    do_group_categories(user_data)
+    apply_preferred_values()
+    return user_data
+
+
+def do_group_categories(user_data):
+    """."""
+    def get_known_category(pisa_group):
         """
         Fetch and return category associated with group.
 
@@ -74,9 +124,10 @@ def wrangle(user_data):
 
             # gather unique values for this variable
             unique_values = set({})
-            for unique_val in set(pisa_df[variable_name].unique()):
-                # trailing white spaces do occur in the dataset
-                unique_values.add(unique_val.strip())
+            for unique_val in set(pisa_ref[variable_name].unique()):
+                # trailing white spaces occur in the dataset
+                if unique_val not in ['nan', np.nan]:
+                    unique_values.add(unique_val.strip())
 
             # check first variable for potential group category will suffice
             if index == 0:
@@ -92,33 +143,7 @@ def wrangle(user_data):
                     break
         return category_key
 
-    def apply_preferred_values(pisa_group, category_key):
-        """
-        Apply preferred values to groups of known category.
-
-        Update strings to preferred values (ex: "Yes" == True) or
-        raise ValueError if incomplete preferred values found.
-        """
-        # ignore numerical and text_response types
-        if category_key in known_categories:
-            # update to corresponding preferred values
-            for var in pisa_group:
-
-                # strip white space to match know_categories
-                pisa_df[var] = pisa_df[var].map(lambda x: x.strip())
-
-                # replace each known value
-                for known, preferred in zip(
-                        known_categories[category_key],
-                        preferred_naming[category_key]):
-                    pisa_df.loc[pisa_df[var] == known, var] = preferred
-
-                # confirm values are from preferred_naming, none overlooked
-                if not set(pisa_df[var].unique()).issubset(
-                        preferred_naming[category_key]):
-                    raise ValueError(var + ': incomplete preferred values.')
-
-    def process_pisa_set_of_groups(pisa_set_of_groups):
+    def do_group_category():
         """
         Parse groups and convert to numeric type or determine category.
 
@@ -126,46 +151,29 @@ def wrangle(user_data):
         Set corresponding values for each group.
         Return dictionary containting found group/category key pairs.
         """
-        matches = {}
-        for group_name in pisa_set_of_groups:
+        pisa_group = group['variable_names']
 
-            pisa_group = pisa_set_of_groups[group_name]
-            # attempt to convert group to numeric
-
+        # TODO: Detect and return integer and float types without conversion
+        try:
+            pisa_ref[pisa_group].astype(int)
+            category = "integer"
+        except ValueError:
             try:
-                pisa_df[pisa_group] = pisa_df[pisa_group].astype(int)
-                category = "integer"
-
+                pisa_ref[pisa_group].astype(float)
+                category = "float"
             except ValueError:
-                try:
-                    pisa_df[pisa_group] = pisa_df[pisa_group].astype(float)
-                    category = "float"
-                except ValueError:
-                    category = None
+                category = None
 
-            if not category:
-                pisa_df[pisa_group] = pisa_df[pisa_group].astype(str)
-                # attempt to match and update values to known PISA category
-                category = get_category(pisa_group)
-                apply_preferred_values(pisa_group, category)
+        if not category:
+            # attempt to match values to known PISA category
+            category = get_known_category(pisa_group)
 
-            matches[group_name] = category
-        return matches
+        return category
 
-    # CAUTION:    large sets of variables will reduce the sample size
-    # Reason:     each variable has its own set of nulls
-    # Solution:   reduce variable sets after finding interactions
-    select_columns_and_drop_nulls()
+    known_categories = category_definitions.KNOWN_CATEGORIES
+    pisa_ref = user_data['pisa_sample'].copy()
+    for target in ['independent_groups', 'dependent_groups']:
+        for group_name, group in user_data[target].items():
+            user_data[target][group_name]['category'] = do_group_category()
 
-    # group_category_matches = process_pisa_set_of_groups(
-    #     {**independent_groups, **dependent_groups})
-
-    # independent_groups_keys = process_pisa_set_of_groups(independent_groups)
-    group_category_matches = {
-        'independent_groups': process_pisa_set_of_groups(independent_groups),
-        'dependent_groups': process_pisa_set_of_groups(dependent_groups)}
-
-    # update and return user_data
-    user_data['custom_dataframe'] = pisa_df
-    user_data['group_category_matches'] = group_category_matches
     return user_data

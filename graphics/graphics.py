@@ -13,6 +13,7 @@ import main.definitions as definitions
 
 # =============================================================================
 # %% HELPER
+
 LONGNAMES = pd.read_csv(
         'pisadict2012.csv',
         sep=',', encoding='latin-1', error_bad_lines=False,
@@ -28,6 +29,7 @@ def get_longnames(names):
     shortnames given by list name.
     Resource is read from local copy of pisadict2012.csv
     """
+
     names = list(names)
     return list(LONGNAMES.query("varname in @names")['description'])
 
@@ -51,9 +53,10 @@ def close_figures(figures='all'):
 
 def heatmap_grid_float(response_info, user_data):
     """."""
-    numeric_vars = response_info['dependent_groups']['variables'].copy()
+    numeric_vars = response_info[
+        'dependent_groups'][0]['variable_names'].copy()
     for indep_group in response_info['independent_groups']:
-        numeric_vars += indep_group['variables']
+        numeric_vars += indep_group['variable_names']
 
     # correlation plot
     fig = plt.figure(figsize=[8, 5])
@@ -70,8 +73,10 @@ def countplot_bi_grid_1cat_2cat(response_info, user_data):
     pisa_df = user_data['custom_dataframe']
 
     # names of selected independent group variables
-    primary_var_names = response_info['independent_groups'][0]['variables']
-    secondary_var_names = response_info['independent_groups'][0]['variables']
+    primary_var_names = response_info[
+        'independent_groups'][0]['variable_names']
+    secondary_var_names = response_info[
+        'independent_groups'][0]['variable_names']
 
     # size of primary group
     total_rows = len(primary_var_names)
@@ -150,11 +155,6 @@ def countplot_bi_grid_1cat_2cat(response_info, user_data):
                        response_info['independent_groups'][0]['name'])
     fig.suptitle(figure_title, fontsize=16)
 
-    # if len(response_info['dependent_groups']['variables']) > 1:
-    #     dep_name = response_info['dependent_groups']['name'] + "_mean"
-    # else:
-    #     dep_name = response_info['dependent_groups']['name']
-
     return pickle_buffer(fig)
 
 
@@ -165,11 +165,11 @@ def violinplot_uni_row_1cat(response_info, user_data):
     """Placeholer function."""
     # gather readable varaibles
     pisa_df = user_data['custom_dataframe']
-    var_list = response_info['independent_groups'][0]['variables']
+    var_list = response_info['independent_groups'][0]['variable_names']
     category_order = (
         definitions.PREFERRED_NAMING[
             response_info['independent_groups'][0]['category']])
-    dep_var = response_info['dependent_groups']['name'] + "_mean"
+    dep_var = response_info['dependent_groups'][0]['name'] + "_mean"
     max_ylim, min_ylim = 0, 0
     # first generate subplots and extract max y limit,then apply y limit
     for first_pass in [True, False]:
@@ -229,11 +229,11 @@ def boxplot_uni_row_1cat(response_info, user_data):
     """."""
     # gather readable varaibles
     pisa_df = user_data['custom_dataframe']
-    var_list = response_info['independent_groups'][0]['variables']
+    var_list = response_info['independent_groups'][0]['variable_names']
     category_order = (
         definitions.PREFERRED_NAMING[
             response_info['independent_groups'][0]['category']])
-    dep_var = response_info['dependent_groups']['name'] + "_mean"
+    dep_var = response_info['dependent_groups'][0]['name'] + "_mean"
     # first generate subplots and extract max y limit,then apply y limit
     for first_pass in [True, False]:
         # initialize figure
@@ -300,7 +300,7 @@ def boxplot_uni_row_1cat(response_info, user_data):
 def barplot_single_single_1binary(response, user_data):
     """Return binary group summary as counts bar chart."""
     pisa_df = user_data['custom_dataframe']
-    var_list = response['independent_groups'][0]['variables']
+    var_list = response['independent_groups'][0]['variable_names']
 
     base_color = sns.color_palette()[0]
     fig = plt.figure()
@@ -319,7 +319,7 @@ def barplot_single_single_1binary(response, user_data):
 def countplot_single_row_1cat(response, user_data):
     """."""
     pisa_df = user_data['custom_dataframe']
-    var_list = response['independent_groups'][0]['variables']
+    var_list = response['independent_groups'][0]['variable_names']
     category = response['independent_groups'][0]['category']
     max_ylim = 0
 
@@ -378,7 +378,7 @@ def countplot_single_row_1cat(response, user_data):
 def distplot_single_row_1float(response, user_data, kde):
     """Return a subplot of scatterplots of these float type varibles."""
     pisa_df = user_data['custom_dataframe']
-    var_list = response['independent_groups'][0]['variables']
+    var_list = response['independent_groups'][0]['variable_names']
     max_ylim = 0
 
     if kde == "float_yes_kde":

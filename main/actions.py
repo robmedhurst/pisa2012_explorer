@@ -18,17 +18,18 @@ def float_post_wrangle(group_name, user_data):
     independent_groups = user_data['independent_groups']
     dependent_groups = user_data['dependent_groups']
 
-    def create_mean(name, grp):
-        pisa_df[name + '_mean'] = pisa_df[grp].transpose(
+    def create_mean(variable_names):
+        pisa_df[group_name + '_mean'] = pisa_df[variable_names].transpose(
             ).mean().astype(float)
 
     # handle dependent and independent variable groups seperately
     if group_name in independent_groups:
-        if len(independent_groups[group_name]) > 1:
-            create_mean(group_name, independent_groups[group_name])
+        variable_names = independent_groups[group_name]['variable_names']
     elif group_name in dependent_groups:
-        if len(dependent_groups[group_name]) > 1:
-            create_mean(group_name, dependent_groups[group_name])
+        variable_names = dependent_groups[group_name]['variable_names']
+
+    if len(variable_names) > 1:
+        create_mean(variable_names)
 
 
 # binary_yn
@@ -42,12 +43,14 @@ def binary_yn1_post_wrangle(group_name, user_data):
     independent_groups = user_data['independent_groups']
     dependent_groups = user_data['dependent_groups']
 
-    def create_count(name, grp):
-        pisa_df[name + '_count'] = pisa_df[grp].transpose().sum().astype(int)
+    def create_count(variables):
+        pisa_df[group_name + '_count'] = pisa_df[variables].transpose(
+            ).sum().astype(int)
 
     # handle dependent and independent variable groups seperately
-    if len(independent_groups[group_name]) > 1:
+    if len(independent_groups[group_name]['variable_names']) > 1:
+
         if group_name in independent_groups:
-            create_count(group_name, independent_groups[group_name])
+            create_count(independent_groups[group_name]['variable_names'])
         elif group_name in dependent_groups:
-            create_count(group_name, dependent_groups[group_name])
+            create_count(dependent_groups[group_name]['variable_names'])

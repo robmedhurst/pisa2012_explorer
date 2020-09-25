@@ -127,24 +127,27 @@ def input_pisa_var_name(valid_names):
             return response
 
 
-def user_input_group(pisa_var_list, group_size=None, group_name=None):
+def user_input_group(var_list, known_names, group_size=None, group_name=None):
     """Return user defined group of pisa variables."""
-    group = []
+    group = {'name': group_name, 'size': group_size, 'variable_names': []}
     if not group_name:
         print("\n")
         print("Enter short name for this group...")
         # user input group name
-        group_name = input_simple_string(1, 20)
+        group['name'] = input_simple_string(1, 20)
+        while group['name'] in known_names:
+            print("That group name is already used.")
+            group['name'] = input_simple_string(1, 20)
     if not group_size:
         print("\n")
         print("How many variables will this group contain?")
         # user input group size
-        group_size = input_integer(1, 5)
-    while len(group) < group_size:
+        group['size'] = input_integer(1, 5)
+    while len(group['variable_names']) < group['size']:
         # user input variable names
         print("\n")
-        group.append(input_pisa_var_name(pisa_var_list))
-    return group, group_name
+        group['variable_names'].append(input_pisa_var_name(var_list))
+    return group
 
 
 def multi_responses_from_list(list_input, not_selectable_indices=None,
@@ -204,7 +207,7 @@ def user_set_sample_size():
     """."""
     # User sample/resample
     print("Select a sample size.")
-    sample_size = multi_responses_from_list([
+    sample_size = single_response_from_list([
         "500",
         "5000",
         "50000",

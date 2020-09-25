@@ -10,8 +10,18 @@ import graphics.graphics as gs
 
 def distplot_nokde_single_row_1float(group_info, user_data):
     """Return a row of distribution plots."""
-    return gs.distplot_single_row_1float(
-        group_info, user_data, "float_no_kde")
+    def check_compatability():
+        # here is where to check if requirements are met
+        if 'requirements' in group_info:
+            group_info['requirements'][0] != 'float'
+            return False
+        return True
+
+    if 'functions' in group_info:
+        return gs.distplot_single_row_1float(
+            group_info, user_data, "float_no_kde")
+    else:
+        return check_compatability()
 
 
 def distplot_kde_single_row_1float(group_info, user_data):
