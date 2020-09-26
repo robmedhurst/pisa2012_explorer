@@ -10,75 +10,33 @@ def build_group_selection_key(target, response, delimeter='_vs_'):
     """."""
     if target == 'singlevariable':
         return response['independent_groups'][0]['name']
-    group_selection_key = response['dependent_groups']['name']
+    group_selection_key = response['dependent_groups'][0]['name']
     for indep_group in response['independent_groups']:
         group_selection_key += delimeter
         group_selection_key += indep_group['name']
     return group_selection_key
 
 
-def get_functions_by_group(independent_input_groups, target):
+def get_functions_by_group_selection(
+        dependent_selection, independent_selection, target):
     """."""
-    # independent_input_groups are in order of plot primacy
-    # two entries implies a bivariate plot, where the second is
-    # the more specific visualization
-    known_categories = definitions.KNOWN_CATEGORIES
+    graphics_pool = pool_string_to_loc(target)
+    accepted_functions = []
 
-    def get_function_by_key(name_key, target):
-        """Return functions from local_py_file.py that contain name_key."""
-        matching_functions = []
-        for function_name in dir(pool_string_to_loc(target))[8:]:
-            if name_key in function_name:
-                matching_functions.append(function_name)
-        return matching_functions
+    info = {'dependent_selection': dependent_selection,
+            'independent_selection': independent_selection}
 
-    def gather_accepted_functions():
-        def list_common(a, b):
-            c = [value for value in a if value in b]
-            return c
-        for index in range(len(independent_input_groups)):
-            if index > 0:
-                potential_functions['accepted'].extend(list_common(
-                    potential_functions[index],
-                    potential_functions[index - 1]))
-        if len(independent_input_groups) == 1:
-            potential_functions['accepted'].extend(potential_functions[0])
-        return potential_functions['accepted']
+    for function_name in dir(graphics_pool)[8:]:
+        if len(function_name) > 4:
+            if getattr(graphics_pool, (function_name))(info, None):
+                accepted_functions.append(function_name)
 
-    def gather_potential_known_category_functions():
-        for index, group in enumerate(independent_input_groups):
-            search_key = str(index + 1) + group['category']
-            potential_functions[index].extend(
-                get_function_by_key(search_key, target))
-
-    def gather_potential_binary_functions():
-        for index, group in enumerate(independent_input_groups):
-            if group['category'] in known_categories and len(
-                    known_categories[group['category']]) == 2:
-                search_key = str(index + 1) + 'binary'
-                potential_functions[index].extend(
-                    get_function_by_key(search_key, target))
-
-    def gather_potential_categorical_functions():
-        for index, group in enumerate(independent_input_groups):
-            search_key = str(index + 1) + 'cat'
-            if group['category'] in known_categories:
-                potential_functions[index].extend(
-                    get_function_by_key(search_key, target))
-
-    potential_functions = {'accepted': []}
-    for index in range(len(independent_input_groups)):
-        potential_functions[index] = []
-
-    gather_potential_known_category_functions()
-    gather_potential_binary_functions()
-    gather_potential_categorical_functions()
-    return gather_accepted_functions()
+    return accepted_functions
 
 
 def initialize_tracker(user_data, target):
     """."""
-    def user_select_group(user_data, expected_groups):
+    def user_select_group(expected_groups):
         """
         Return group properties of user selected group.
 
@@ -88,44 +46,43 @@ def initialize_tracker(user_data, target):
         """
         messages = [str("Entered as dependent_groups:"),
                     str("Entered as independent_groups:")]
-        if expected_groups:
+        if expected_groups in [None, False]:
+            expected_groups = 'dependent_groups'
+        else:
             messages = [str(expected_groups + ":"),
                         str("Not entered as " + expected_groups + ":")]
-        else:
-            expected_groups = 'dependent_groups'
         unexpected_groups = 'dependent_groups'
         if expected_groups == 'dependent_groups':
             unexpected_groups = 'independent_groups'
         # place expected groups at top of selection_list
         selection_list = []
         selection_list.append(messages[0])  # index is 0
-        selection_list.extend(user_data[expected_groups])
+        selection_list.extend(list(user_data[expected_groups].keys()))
         selection_list.append(messages[1])
-        selection_list.extend(user_data[unexpected_groups])
+        selection_list.extend(list(user_data[unexpected_groups].keys()))
         # user makes selection (messages can not be selected)
         group_name = single_response_from_list(
             selection_list, [0, len(user_data[expected_groups]) + 1])
         location = expected_groups  # location of selection
         if selection_list.index(group_name) > len(user_data[expected_groups]):
             location = unexpected_groups
-        return {
-            'name': group_name,
-            'variables': user_data[location][group_name],
-            'category':
-                user_data['group_category_matches'][location][group_name]}
+        # return group info
+        return user_data[location][group_name]
 
-    def create_response(user_data, target):
+    def create_response(target):
         """."""
+        # targets : singlevariable, univariate, ...
+
         def function_description(function_name, target):
             return (
                 function_name + ":\n   " + getattr(
                     pool_string_to_loc(target), function_name).__doc__)
 
         def user_accept_selection(user_response):
-            # TODO: Display current selection
             print()
-            print("'dependent group':")
-            print(user_response['dependent_groups']['name'])
+            if target != 'singlevariable':
+                print("'dependent group':")
+                print(user_response['dependent_groups'][0]['name'])
             print("'independent groups':")
             for group in user_response['independent_groups']:
                 print(group['name'])
@@ -141,16 +98,15 @@ def initialize_tracker(user_data, target):
         def get_dependent_groups():
             # single variable dont need a dependent
             if target == 'singlevariable':
-                return None
+                return []
             else:
                 print("Select a dependent group.")
-                return user_select_group(user_data, 'dependent_groups')
+                return [user_select_group('dependent_groups')]
 
         def get_independent_groups():
 
             def singlevarselection():
-                return[
-                    user_select_group(user_data, False)]
+                return[user_select_group(False)]
 
             def multivarselection():
                 independent_groups_list = []
@@ -161,7 +117,7 @@ def initialize_tracker(user_data, target):
                     else:
                         print("Select another independent group.")
                     independent_groups_list.append(
-                        user_select_group(user_data, 'independent_groups'))
+                        user_select_group('independent_groups'))
 
                 add_independent()
                 if target == 'bivariate':
@@ -193,11 +149,16 @@ def initialize_tracker(user_data, target):
                 for selection in multi_responses_from_list(verbose_list):
                     function_list.append(selection.split(":")[0])
                 return function_list
-            independent_groups = get_independent_groups()
-            return {'independent_groups': independent_groups,
-                    'dependent_groups': get_dependent_groups(),
-                    'functions': function_select(get_functions_by_group(
-                        independent_groups, target))}
+
+            independent_group_selection = get_independent_groups()
+            dependent_group_selection = get_dependent_groups()
+
+            functions = function_select(get_functions_by_group_selection(
+                dependent_group_selection, independent_group_selection,
+                target))
+            return {'dependent_groups': dependent_group_selection,
+                    'independent_groups': independent_group_selection,
+                    'functions': functions}
 
         # loop for user correct input error
         while True:
@@ -224,7 +185,7 @@ def initialize_tracker(user_data, target):
         # loop for multiple selections
         while True:
             # create new response and update response_trackers with it
-            do_update_response_tracker(create_response(user_data, target))
+            do_update_response_tracker(create_response(target))
             # user choose to exit univariate selection
             print()
             print("Enter another selection?")
@@ -290,6 +251,7 @@ def initialize_tracker(user_data, target):
             "Reuse selections", "Create new selections", "Add to selections",
             str("Generate all possible " + target + " graphics"),
             str("Bypass " + target + "_graphics")]
+
         user_choice = single_response_from_list(user_options)
 
         if user_choice == user_options[0]:  # resuse
@@ -341,26 +303,23 @@ def get_all_reponses(user_data, target):
                 indices[j] = indices[j-1] + 1
             yield tuple(pool[i] for i in indices)
 
-    def all_responses(dependent_selection, num_independent_needed):
+    def all_responses(dependent_group, num_independent_needed):
         """."""
         responses = {}
         for indep_selections in combination_generator(
                 list(user_data['independent_groups'].keys()),
                 num_independent_needed):
             independent_groups = []
+
             for group_name in indep_selections:
                 independent_groups.append(
-                    {'name': group_name,
-                     'variables':
-                         user_data['independent_groups'][group_name],
-                     'category':
-                         user_data['group_category_matches'
-                                   ]['independent_groups'][group_name]})
+                    user_data['independent_groups'][group_name])
+
             response = {
-                'dependent_groups': dependent_selection,
+                'dependent_groups': [dependent_group],
                 'independent_groups': independent_groups,
-                'functions':
-                    get_functions_by_group(independent_groups, target)}
+                'functions': get_functions_by_group_selection(
+                    [dependent_group], independent_groups, target)}
             group_selection_key = build_group_selection_key(target, response)
             if len(response['functions']) > 0:
                 responses[group_selection_key] = response
@@ -368,16 +327,12 @@ def get_all_reponses(user_data, target):
 
     def single_independent_groups():
         response_tracker = {}
-        for group_name, variables in user_data['independent_groups'].items():
-            group_info = {
-                'name': group_name,
-                'variables': variables,
-                'category': user_data['group_category_matches'
-                                      ]['independent_groups'][group_name]}
+        for group_name, group in user_data['independent_groups'].items():
             response = {
-                'dependent_groups': None,
-                'independent_groups': [group_info],
-                'functions': get_functions_by_group([group_info], target)}
+                'dependent_groups': [],
+                'independent_groups': [group],
+                'functions': get_functions_by_group_selection(
+                    [], [group], target)}
             if len(response['functions']) > 0:
                 response_tracker[group_name] = response
         return response_tracker
@@ -385,21 +340,9 @@ def get_all_reponses(user_data, target):
     if target == 'singlevariable':
         overgrown_response_tracker.update(single_independent_groups())
 
-    for group_name, variables in user_data['dependent_groups'].items():
-        dependent_group = {
-            'name': group_name,
-            'variables': variables,
-            'category': user_data[
-                'group_category_matches']['dependent_groups'][group_name]}
+    for dependent_group in user_data['dependent_groups'].values():
 
-        if target == 'singlevariable':  # depth = 0
-            overgrown_response_tracker[group_name] = {
-                'dependent_groups': None,
-                'independent_groups': [dependent_group],
-                'functions':
-                    get_functions_by_group([dependent_group], target)}
-
-        elif target == 'univariate':  # depth = 1
+        if target == 'univariate':  # depth = 1
             overgrown_response_tracker.update(
                 all_responses(dependent_group, 1))
 
@@ -409,7 +352,7 @@ def get_all_reponses(user_data, target):
 
         elif target == 'multivariate':  # infinite depth
             max_num_indep = len(user_data['independent_groups'].keys())
-            for num_indep in range(max_num_indep):
+            for num_indep in range(3, max_num_indep + 1):
                 overgrown_response_tracker.update(
                     all_responses(dependent_group, num_indep))
 

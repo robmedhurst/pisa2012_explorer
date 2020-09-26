@@ -71,7 +71,6 @@ def request_delivery(user_data):
     def do_little_pickle():
         desired_keys = [
             'dependent_groups',
-            'group_category_matches',
             'independent_groups',
             'response_trackers',
             'sample_size']
@@ -85,7 +84,7 @@ def request_delivery(user_data):
                 print("\n")
                 print("Group name: ", group_name)
                 print("Group category: ",
-                      user_data['group_category_matches'][target][group_name])
+                      user_data[target][group_name]['category'])
                 print(user_data['pisa_sample'][variables].describe())
 
         print("\n\n")
