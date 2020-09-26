@@ -85,7 +85,7 @@ def request_delivery(user_data):
                 print("Group name: ", group_name)
                 print("Group category: ",
                       user_data[target][group_name]['category'])
-                print(user_data['pisa_sample'][variables].describe())
+                print(user_data['custom_dataframe'][variables].describe())
 
         print("\n\n")
         print("'Independent Groups:'")

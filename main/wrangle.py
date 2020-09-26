@@ -13,6 +13,10 @@ import main.actions as category_actions
 
 def post_wrangle(user_data):
     """Apply category specific post wrangle functions."""
+    if 'processed' in user_data and user_data['processed']:
+        # already sampled and wrangled
+        return user_data
+
     for target in ['dependent_groups', 'independent_groups']:
         for group in user_data[target].values():
             category = group['category']
@@ -24,6 +28,10 @@ def post_wrangle(user_data):
 
 def wrangle(user_data):
     """Wrap functions for wrangling. Return edited inputs."""
+    if 'processed' in user_data and user_data['processed']:
+        # already sampled and wrangled
+        return user_data
+
     def select_columns_and_drop_nulls():
         """
         Discard unspecified columns and remove rows with Null values.
