@@ -13,8 +13,11 @@ def heatmap_multi_grid_1float_2float_3float(response, user_data):
     if 'functions' in response:
         return gs.heatmap_grid_float(response, user_data)
     else:
+        # do checks
+        dep, indep, categories = gs.concise_reponse_info(response)
         return (
-            response['dependent_selection'][0]['category'] == 'float' and
-            response['independent_selection'][0]['category'] == 'float' and
-            response['independent_selection'][1]['category'] == 'float' and
-            response['independent_selection'][2]['category'] == 'float')
+            dep[0]['category'] == 'float' and
+            indep[0]['category'] == 'float' and
+            indep[1]['category'] == 'float' and
+            indep[2]['category'] == 'float'
+            )

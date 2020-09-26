@@ -8,10 +8,17 @@ caught by keyword.
 import graphics.graphics as gs
 
 
-def countplot_bi_grid_1cat_2cat(response_info, user_data):
+def countplot_bi_grid_1cat_2cat(response, user_data):
     """Return a grid of countplots."""
-    if 'functions' in response_info:
-        return gs.countplot_bi_grid_1cat_2cat(response_info, user_data)
+    if 'functions' in response:
+        return gs.countplot_bi_grid_1cat_2cat(response, user_data)
+    else:
+        # do checks
+        dep, indep, categories = gs.concise_reponse_info(response)
+        return (
+            indep[0]['category'] in categories and
+            indep[1]['category'] in categories
+            )
 
 
 def heatmap_bi_grid_1float_2float(response, user_data):
@@ -19,7 +26,10 @@ def heatmap_bi_grid_1float_2float(response, user_data):
     if 'functions' in response:
         return gs.heatmap_grid_float(response, user_data)
     else:
+        # do checks
+        dep, indep, categories = gs.concise_reponse_info(response)
         return (
-            response['dependent_selection'][0]['category'] == 'float' and
-            response['independent_selection'][0]['category'] == 'float' and
-            response['independent_selection'][1]['category'] == 'float')
+            dep[0]['category'] == 'float' and
+            indep[0]['category'] == 'float' and
+            indep[1]['category'] == 'float'
+            )
