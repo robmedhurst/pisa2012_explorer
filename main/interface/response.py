@@ -17,66 +17,21 @@ def build_group_selection_key(target, response, delimeter='_vs_'):
     return group_selection_key
 
 
-def get_functions_by_group(independent_input_groups, target):
-    """."""
-    known_categories = definitions.KNOWN_CATEGORIES
-
-    def get_function_by_key(name_key, target):
-        """Return functions from local_py_file.py that contain name_key."""
-        matching_functions = []
-        for function_name in dir(pool_string_to_loc(target))[8:]:
-            if name_key in function_name:
-                matching_functions.append(function_name)
-        return matching_functions
-
-    def gather_accepted_functions():
-        def list_common(a, b):
-            c = [value for value in a if value in b]
-            return c
-        for index in range(len(independent_input_groups)):
-            if index > 0:
-                potential_functions['accepted'].extend(list_common(
-                    potential_functions[index],
-                    potential_functions[index - 1]))
-        if len(independent_input_groups) == 1:
-            potential_functions['accepted'].extend(potential_functions[0])
-        return potential_functions['accepted']
-
-    def gather_potential_known_category_functions():
-        for index, group in enumerate(independent_input_groups):
-            search_key = str(index + 1) + group['category']
-            potential_functions[index].extend(
-                get_function_by_key(search_key, target))
-
-    def gather_potential_binary_functions():
-        for index, group in enumerate(independent_input_groups):
-            if group['category'] in known_categories and len(
-                    known_categories[group['category']]) == 2:
-                search_key = str(index + 1) + 'binary'
-                potential_functions[index].extend(
-                    get_function_by_key(search_key, target))
-
-    def gather_potential_categorical_functions():
-        for index, group in enumerate(independent_input_groups):
-            search_key = str(index + 1) + 'cat'
-            if group['category'] in known_categories:
-                potential_functions[index].extend(
-                    get_function_by_key(search_key, target))
-
-    potential_functions = {'accepted': []}
-    for index in range(len(independent_input_groups)):
-        potential_functions[index] = []
-
-    gather_potential_known_category_functions()
-    gather_potential_binary_functions()
-    gather_potential_categorical_functions()
-    return gather_accepted_functions()
-
-
 def get_functions_by_group_selection(
         dependent_selection, independent_selection, target):
     """."""
-    return get_functions_by_group(independent_selection, target)
+    graphics_pool = pool_string_to_loc(target)
+    accepted_functions = []
+
+    info = {'dependent_selection': dependent_selection,
+            'independent_selection': independent_selection}
+
+    for function_name in dir(graphics_pool)[8:]:
+        if len(function_name) > 4:
+            if getattr(graphics_pool, (function_name))(info, None):
+                accepted_functions.append(function_name)
+
+    return accepted_functions
 
 
 def initialize_tracker(user_data, target):
@@ -397,7 +352,7 @@ def get_all_reponses(user_data, target):
 
         elif target == 'multivariate':  # infinite depth
             max_num_indep = len(user_data['independent_groups'].keys())
-            for num_indep in range(max_num_indep):
+            for num_indep in range(3, max_num_indep + 1):
                 overgrown_response_tracker.update(
                     all_responses(dependent_group, num_indep))
 
