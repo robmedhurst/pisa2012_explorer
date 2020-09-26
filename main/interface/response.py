@@ -44,26 +44,37 @@ def initialize_tracker(user_data, target):
         and independent groups interchangably for univariate plots, without
         conflating the two when presenting the user with selection.
         """
-        messages = [str("Entered as dependent_groups:"),
-                    str("Entered as independent_groups:")]
-        if expected_groups in [None, False]:
-            expected_groups = 'dependent_groups'
-        else:
-            messages = [str(expected_groups + ":"),
-                        str("Not entered as " + expected_groups + ":")]
-        unexpected_groups = 'dependent_groups'
-        if expected_groups == 'dependent_groups':
-            unexpected_groups = 'independent_groups'
-        # place expected groups at top of selection_list
-        selection_list = []
-        selection_list.append(messages[0])  # index is 0
-        selection_list.extend(list(user_data[expected_groups].keys()))
-        selection_list.append(messages[1])
-        selection_list.extend(list(user_data[unexpected_groups].keys()))
+        def build_strings(expected_groups):
+            if expected_groups in [None, False]:
+                messages = [str("Entered as dependent_groups:"),
+                            str("Entered as independent_groups:")]
+                expected_groups = 'dependent_groups'
+            else:
+                messages = [str(expected_groups + ":"),
+                            str("Not entered as " + expected_groups + ":")]
+            unexpected_groups = 'dependent_groups'
+            if expected_groups == 'dependent_groups':
+                unexpected_groups = 'independent_groups'
+            return expected_groups, unexpected_groups, messages
+
+        def build_selection(expected_groups, unexpected_groups, messages):
+            # place expected groups at top of selection_list
+            selection_list = []
+            selection_list.append(messages[0])  # index is 0
+            selection_list.extend(list(user_data[expected_groups].keys()))
+            selection_list.append(messages[1])
+            selection_list.extend(list(user_data[unexpected_groups].keys()))
+            return expected_groups, unexpected_groups, selection_list
+
+        expected_groups, unexpected_groups, selection_list = build_selection(
+            build_strings(expected_groups))
+
         # user makes selection (messages can not be selected)
         group_name = single_response_from_list(
             selection_list, [0, len(user_data[expected_groups]) + 1])
-        location = expected_groups  # location of selection
+
+        # location of selection
+        location = expected_groups
         if selection_list.index(group_name) > len(user_data[expected_groups]):
             location = unexpected_groups
         # return group info
