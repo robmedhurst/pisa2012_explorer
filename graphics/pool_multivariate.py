@@ -8,6 +8,13 @@ caught by keyword.
 import graphics.graphics as gs
 
 
-def heatmap_multi_grid_1float_2float_3float(response_info, user_data):
+def heatmap_multi_grid_1float_2float_3float(response, user_data):
     """Return a correlation matrix with heatmap."""
-    return gs.heatmap_grid_float(response_info, user_data)
+    if 'functions' in response:
+        return gs.heatmap_grid_float(response, user_data)
+    else:
+        return (
+            response['dependent_selection'][0]['category'] == 'float' and
+            response['independent_selection'][0]['category'] == 'float' and
+            response['independent_selection'][1]['category'] == 'float' and
+            response['independent_selection'][2]['category'] == 'float')
