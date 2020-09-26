@@ -29,9 +29,17 @@ def get_longnames(names):
     shortnames given by list name.
     Resource is read from local copy of pisadict2012.csv
     """
-
     names = list(names)
     return list(LONGNAMES.query("varname in @names")['description'])
+
+
+def concise_reponse_info(response):
+    """Expand and return response information."""
+    return (
+        response['dependent_selection'],
+        response['independent_selection'],
+        definitions.KNOWN_CATEGORIES
+        )
 
 
 def pickle_buffer(fig):
