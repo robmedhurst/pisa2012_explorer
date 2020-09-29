@@ -66,8 +66,8 @@ def initialize_tracker(user_data, target):
             selection_list.extend(list(user_data[unexpected_groups].keys()))
             return expected_groups, unexpected_groups, selection_list
 
-        expected_groups, unexpected_groups, selection_list = build_selection(
-            build_strings(expected_groups))
+        expected_groups, unexpected_groups, selection_list = (
+            build_selection(*build_strings(expected_groups)))
 
         # user makes selection (messages can not be selected)
         group_name = single_response_from_list(

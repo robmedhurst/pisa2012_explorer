@@ -59,22 +59,38 @@ def close_figures(figures='all'):
 # =============================================================================
 # %% MULIVARIATE
 
-def heatmap_grid_float(response_info, user_data):
+def heatmap_grid_float(response, user_data):
     """."""
-    numeric_vars = response_info[
-        'dependent_groups'][0]['variable_names'].copy()
-    for indep_group in response_info['independent_groups']:
+    numeric_vars = response['dependent_groups'][0]['variable_names'].copy()
+    for indep_group in response['independent_groups']:
         numeric_vars += indep_group['variable_names']
 
     # correlation plot
     fig = plt.figure(figsize=[8, 5])
     sns.heatmap(user_data['custom_dataframe'][numeric_vars].corr(),
                 annot=True, fmt='.3f', cmap='vlag_r', center=0)
+
     return pickle_buffer(fig)
 
 
 # =============================================================================
 # %% BIVARIATE
+
+
+def pairplot_hist_diag_scatter(response, user_data):
+    """Return paried grid of scatter plots with hist plots on the diagonal."""
+    numeric_vars = response['independent_groups'][0]['variable_names'].copy()
+    numeric_vars += response['independent_groups'][1]['variable_names']
+    custom_dataframe = user_data['custom_dataframe']
+
+    g = sns.pairplot(
+        data=custom_dataframe,
+        vars=numeric_vars)
+    g.map_diag(plt.hist, bins=20)
+    g.map_offdiag(plt.scatter)
+
+    return pickle_buffer(g.fig)
+
 
 def countplot_bi_grid_1cat_2cat(response_info, user_data):
     """."""
