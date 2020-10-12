@@ -3,6 +3,7 @@
 import io
 import pickle
 
+import numpy as np
 import pandas as pd
 
 import matplotlib.pyplot as plt
@@ -59,6 +60,24 @@ def close_figures(figures='all'):
 # =============================================================================
 # %% MULIVARIATE
 
+def single_heatmap_facted(response, user_data):
+    """."""
+    def hist2dgrid(x, y, **kwargs):
+        palette = kwargs.pop('color')
+        plt.hist2d(x, y, cmap=palette, cmin=0.5)
+
+    return pickle_buffer(
+        sns.FacetGrid(
+            data=user_data['custom_dataframe'],
+            col=response['independent_groups'][1]['variable_names'][0]
+            ).map(
+                hist2dgrid,
+                response['independent_groups'][0]['variable_names'][0],
+                response['dependent_groups'][0]['variable_names'][1],
+                color='inferno_r'
+                ).fig)
+
+
 def heatmap_grid_float(response, user_data):
     """."""
     numeric_vars = response['dependent_groups'][0]['variable_names'].copy()
@@ -76,12 +95,12 @@ def heatmap_grid_float(response, user_data):
 # =============================================================================
 # %% BIVARIATE
 
-
 def pairplot_hist_diag_scatter(response, user_data):
     """Return paried grid of scatter plots with hist plots on the diagonal."""
+    custom_dataframe = user_data['custom_dataframe']
+
     numeric_vars = response['independent_groups'][0]['variable_names'].copy()
     numeric_vars += response['independent_groups'][1]['variable_names']
-    custom_dataframe = user_data['custom_dataframe']
 
     g = sns.pairplot(
         data=custom_dataframe,
@@ -109,6 +128,7 @@ def countplot_bi_grid_1cat_2cat(response_info, user_data):
 
     # two passes: one to get information about the plots, another to use it
     y_limits = {}
+    # TODO: sharey sharex rather than two passes
     for first_pass in [True, False]:
         # allow a 5x5 space for each supplot
         if first_pass:

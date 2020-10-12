@@ -21,3 +21,39 @@ def heatmap_multi_grid_1float_2float_3float(response, user_data):
             indep[1]['category'] == 'float' and
             indep[2]['category'] == 'float'
             )
+
+
+def single_heatmap_facted(response, user_data):
+    """Return a heat map faceted by category."""
+    # Return plot if trigger, else return true if valid.
+
+    # TODO: replace with a meaningful key/value trigger (ex: 'do_plot': Bool)
+    if 'functions' in response:
+        return gs.single_heatmap_facted(response, user_data)
+
+    # get group information for selected groups
+    deps, indeps, categories = gs.concise_reponse_info(response)
+
+    # non-critical
+    def check_warnings():
+        def notifiy_user(warning_message):
+            print(warning_message)
+        # check group sizes are one; this plot uses only one variable
+        message = ("Note: This plot uses one variable per group, ",
+                   "only using first var from selected group.")
+        if len(indeps[0]) > 1:
+            notifiy_user(message)
+        if len(indeps[1]) > 1:
+            notifiy_user(message)
+
+    # requirements
+    def necessary_conditions_met():
+        return (
+            deps[0]['category'] == 'float' and
+            indeps[0]['category'] == 'float' and
+            indeps[1]['category'] in categories
+            )
+
+    if necessary_conditions_met():
+        check_warnings()
+        return True
