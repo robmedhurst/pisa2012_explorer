@@ -3,7 +3,6 @@
 import io
 import pickle
 
-import numpy as np
 import pandas as pd
 
 import matplotlib.pyplot as plt
@@ -32,6 +31,15 @@ def get_longnames(names):
     """
     names = list(names)
     return list(LONGNAMES.query("varname in @names")['description'])
+
+
+def get_longest_title(var_name):
+    """Return given string with longname if available."""
+    longest_title = var_name
+    if get_longnames([var_name]):
+        longest_title = (
+            var_name + ': ' + str(get_longnames([var_name])[0]))
+    return longest_title
 
 
 def concise_reponse_info(response):
@@ -111,14 +119,14 @@ def pairplot_hist_diag_scatter(response, user_data):
     return pickle_buffer(g.fig)
 
 
-def countplot_bi_grid_1cat_2cat(response_info, user_data):
+def countplot_bi_grid_1cat_2cat(response, user_data):
     """."""
     pisa_df = user_data['custom_dataframe']
 
     # names of selected independent group variables
-    primary_var_names = response_info[
+    primary_var_names = response[
         'independent_groups'][0]['variable_names']
-    secondary_var_names = response_info[
+    secondary_var_names = response[
         'independent_groups'][0]['variable_names']
 
     # size of primary group
@@ -194,9 +202,9 @@ def countplot_bi_grid_1cat_2cat(response_info, user_data):
                         ylabel=y_lab
                         )
 
-    figure_title = str(response_info['independent_groups'][1]['name'] +
+    figure_title = str(response['independent_groups'][1]['name'] +
                        " vs " +
-                       response_info['independent_groups'][0]['name'])
+                       response['independent_groups'][0]['name'])
     fig.suptitle(figure_title, fontsize=16)
 
     return pickle_buffer(fig)
@@ -205,15 +213,15 @@ def countplot_bi_grid_1cat_2cat(response_info, user_data):
 # ============================================================================
 # %% UNIVARIATE
 
-def violinplot_uni_row_1cat(response_info, user_data):
+def violinplot_uni_row_1cat(response, user_data):
     """Placeholer function."""
     # gather readable varaibles
     pisa_df = user_data['custom_dataframe']
-    var_list = response_info['independent_groups'][0]['variable_names']
+    var_list = response['independent_groups'][0]['variable_names']
     category_order = (
         definitions.PREFERRED_NAMING[
-            response_info['independent_groups'][0]['category']])
-    dep_var = response_info['dependent_groups'][0]['name'] + "_mean"
+            response['independent_groups'][0]['category']])
+    dep_var = response['dependent_groups'][0]['name'] + "_mean"
     max_ylim, min_ylim = 0, 0
     # first generate subplots and extract max y limit,then apply y limit
     for first_pass in [True, False]:
@@ -269,73 +277,59 @@ def violinplot_uni_row_1cat(response_info, user_data):
     return pickle_buffer(fig)
 
 
-def boxplot_uni_row_1cat(response_info, user_data):
+def boxplot_uni_row_1cat(response, user_data):
     """."""
-    # gather readable varaibles
+    # shortened variable names
     pisa_df = user_data['custom_dataframe']
-    var_list = response_info['independent_groups'][0]['variable_names']
+    var_list = response['independent_groups'][0]['variable_names']
     category_order = (
         definitions.PREFERRED_NAMING[
-            response_info['independent_groups'][0]['category']])
-    dep_var = response_info['dependent_groups'][0]['name'] + "_mean"
-    # first generate subplots and extract max y limit,then apply y limit
-    for first_pass in [True, False]:
-        # initialize figure
-        # width 5*n_vars, heighty5, force close to 1:1 aspect ratio
-        if first_pass:
-            fig = plt.figure(figsize=(5 * len(var_list), 5))
+            response['independent_groups'][0]['category']])
+    dep_var = response['dependent_groups'][0]['name'] + "_mean"
+
+    # Figure size 5 by (num_vars*5)
+    fig = plt.figure(figsize=(5 * len(var_list), 5))
+
+    # add a subplot for each var_name in var_list by subplot index
+    for var_index, var_name in enumerate(var_list):
+        subplot_index = int("1" + str(len(var_list)) + str(var_index + 1))
+
+        # sequential subplots:
+        yname = None
+        if var_index == 0:
+            axis = plt.subplot(subplot_index)    # no axis to share yet
+            yname = dep_var    # only for first subplot since y is shared
+        # following subplots:
         else:
-            # discard first draft
-            plt.close(fig)
-            fig = plt.figure(figsize=(5 * len(var_list), 5))
+            axis = plt.subplot(subplot_index, sharey=axis)    # share yaxis
 
-        for var_index, var_name in enumerate(var_list):
-            # add a subplot for each var_name in var_list
-            axis = fig.add_subplot(1, len(var_list), var_index + 1)
+        # populate subplot with sns boxplot
+        sns.boxplot(data=pisa_df, x=var_name, y=dep_var,
+                    color=sns.color_palette()[0], order=category_order)
 
-            sns.boxplot(data=pisa_df, x=var_name, y=dep_var,
-                        color=sns.color_palette()[0], order=category_order)
+        # set subfigure axis titles
+        axis.set(xlabel=get_longest_title(var_name), ylabel=yname)
 
-            # Customize axis properties:
-            # Get y limits on first pass
-            if first_pass:
-                axis = plt.gca()
-                # start with max/min y values from first plot
-                if var_index == 0:
-                    min_ylim, max_ylim = axis.get_ylim()[0:2]
-                    # max_ylim = 0
-                    # min_ylim = 0
-                new_ymin, new_ymax = axis.get_ylim()[0:2]
-                if new_ymax > max_ylim:
-                    max_ylim = new_ymax
-                if new_ymin < min_ylim:
-                    min_ylim = new_ymin
-                axis.get_ylim()
-
-            # Apply max y lim to all subplots on second pass
-            else:
-                # only display y label on first subplot
-                if var_index == 0:
-                    try:
-                        yname = get_longnames([dep_var])[0]
-                    except IndexError:
-                        yname = dep_var
-                else:
-                    yname = None
-                # subbplot x label longnames if available
-                xname = str(var_list[var_index])
-                if get_longnames([var_list[var_index]]):
-                    xname = xname + ': ' + str(
-                        get_longnames([var_list[var_index]])[0])
-                # set axis limits and titles
-                axis.set(
-                    # ylim=(0, max_ylim),
-                    ylim=(min_ylim, max_ylim),
-                    xlabel=xname,
-                    ylabel=yname
-                    )
+    # set figure title
+    figure_title = (response['dependent_groups'][0]['name'] + "  vs  " +
+                    response['independent_groups'][0]['name'])
+    fig.suptitle(figure_title, fontsize=16)
 
     return pickle_buffer(fig)
+
+
+def boxplot_grid(response, user_data):
+    """."""
+    def box_plot_placeholder(x, y, **kwargs):
+        default_color = sns.color_palette()[0]
+        sns.boxplot(x, y, color=default_color)
+    boxplot_parigrid = sns.PairGrid(
+        data=user_data['custom_dataframe'],
+        y_vars=response['dependent_groups'][0]['variable_names'],
+        x_vars=response['independent_groups'][0]['variable_names'],
+        height=3, aspect=1.5)
+    boxplot_parigrid.map(box_plot_placeholder)
+    return pickle_buffer(boxplot_parigrid.fig)
 
 
 # =============================================================================

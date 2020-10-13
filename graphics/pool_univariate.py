@@ -34,6 +34,19 @@ def boxplot_uni_row_1cat(response, user_data):
             )
 
 
+def boxplot_grid(response, user_data):
+    """Return a grid of box plots."""
+    if 'functions' in response:
+        return gs.boxplot_grid(response, user_data)
+    else:
+        # do checks
+        dep, indep, categories = gs.concise_reponse_info(response)
+        return (
+            dep[0]['category'] == 'float' and
+            indep[0]['category'] in categories
+            )
+
+
 def heatmap_uni_grid_1float(response, user_data):
     """Return a correlation matrix with heatmap."""
     if 'functions' in response:
