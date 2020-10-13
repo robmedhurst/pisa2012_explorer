@@ -24,7 +24,7 @@ def violinplot_uni_row_1cat(response, user_data):
 def boxplot_uni_row_1cat(response, user_data):
     """Return a row of box plots."""
     if 'functions' in response:
-        return gs.boxplot_grid(response, user_data)
+        return gs.boxplot_uni_row_1cat(response, user_data)
     else:
         # do checks
         dep, indep, categories = gs.concise_reponse_info(response)
@@ -35,7 +35,7 @@ def boxplot_uni_row_1cat(response, user_data):
 
 
 def boxplot_grid(response, user_data):
-    """Return a row of box plots."""
+    """Return a grid of box plots."""
     if 'functions' in response:
         return gs.boxplot_grid(response, user_data)
     else:
