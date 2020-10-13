@@ -3,7 +3,6 @@
 import io
 import pickle
 
-import numpy as np
 import pandas as pd
 
 import matplotlib.pyplot as plt
@@ -99,9 +98,6 @@ def heatmap_grid_float(response, user_data):
                 annot=True, fmt='.3f', cmap='vlag_r', center=0)
 
     return pickle_buffer(fig)
-
-
-
 
 
 # =============================================================================
@@ -333,50 +329,7 @@ def boxplot_grid(response, user_data):
         x_vars=response['independent_groups'][0]['variable_names'],
         height=3, aspect=1.5)
     boxplot_parigrid.map(box_plot_placeholder)
-
     return pickle_buffer(boxplot_parigrid.fig)
-
-    # # independent groups
-    # for group_index, group in enumerate(response['independent_groups']):
-    #     category_order = (definitions.PREFERRED_NAMING[group['category']])
-    #     var_list = group['variable_names']
-    #     # add group name to figure title
-    #     if len(response['independent_groups']) == group_index + 1:
-    #         figure_title = figure_title + group['name']
-    #     else:
-    #         figure_title += group['name'] + ", "
-
-    #     # group variables
-    #     for var_index, var_name in enumerate(var_list):
-    #         subplot_index = int(
-    #             str(group_index + 1) + str(len(var_list)) + str(var_index + 1)
-    #             )
-
-    #         # subplot and shared y axis
-    #         if var_index == 0:    # shared across row
-    #             axis = plt.subplot(subplot_index)    # no axis to share yet
-    #         # # shared across grid
-    #         # if group_index == 0 and var_index == 0:
-    #         #     axis = plt.subplot(subplot_index)
-    #         else:    # following subplots share y axis
-    #             axis = plt.subplot(subplot_index, sharey=axis)
-
-    #         # populate subplot with sns boxplot
-    #         sns.boxplot(data=pisa_df, x=var_name, y=dep_var,
-    #                     color=sns.color_palette()[0], order=category_order)
-
-    #         # shared y labels
-    #         yname = None    # default blank y lable
-    #         if group_index == 0 and var_index == 0:    # one lable for grid
-    #             yname = dep_var
-    #         if var_index == 0:    # one lable per row
-    #             yname = dep_var
-    #         # set subfigure axis titles
-    #         axis.set(xlabel=get_longest_title(var_name), ylabel=yname)
-    # # set figure title
-    # fig.suptitle(figure_title, fontsize=16)
-
-    # return pickle_buffer(fig)
 
 
 # =============================================================================
