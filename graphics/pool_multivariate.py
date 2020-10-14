@@ -1,14 +1,14 @@
 """
-Placeholder functions for looking up multivariate plots.
+Functions for looking up multivariate plots functions.
 
-Functions for multivariate group plotting with verbose names to be
-caught by keyword.
+If 'functions' already exists in given 'response', return associated plot.
+Else, if 'response' meets criteria, check warnings, then return true.
 """
 
 import graphics.graphics as gs
 
 
-def heatmap_multi_grid_1float_2float_3float(response, user_data):
+def heatmap_grid_float(response, user_data):
     """Return a correlation matrix with heatmap."""
     if 'functions' in response:
         return gs.heatmap_grid_float(response, user_data)
@@ -25,9 +25,6 @@ def heatmap_multi_grid_1float_2float_3float(response, user_data):
 
 def single_heatmap_facted(response, user_data):
     """Return a heat map faceted by category."""
-    # Return plot if trigger, else return true if valid.
-
-    # TODO: replace with a meaningful key/value trigger (ex: 'do_plot': Bool)
     if 'functions' in response:
         return gs.single_heatmap_facted(response, user_data)
 
@@ -35,7 +32,7 @@ def single_heatmap_facted(response, user_data):
     deps, indeps, categories = gs.concise_reponse_info(response)
 
     # non-critical
-    def check_warnings():
+    def do_warnings():
         def notifiy_user(warning_message):
             print(warning_message)
         # check group sizes are one; this plot uses only one variable
@@ -55,5 +52,5 @@ def single_heatmap_facted(response, user_data):
             )
 
     if necessary_conditions_met():
-        check_warnings()
+        do_warnings()
         return True
