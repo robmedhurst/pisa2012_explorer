@@ -45,7 +45,7 @@ def count_row_categorical(response, user_data):
             )
 
 
-def bar_binary_counts(response, user_data):
+def bar_single_binary_counts(response, user_data):
     """Return binary group summary as counts bar chart."""
     if 'functions' in response:
         return gs.barplot_single_single_1binary(response, user_data)

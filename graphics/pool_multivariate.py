@@ -3,12 +3,14 @@ Functions for looking up multivariate plots functions.
 
 If 'functions' already exists in given 'response', return associated plot.
 Else, if 'response' meets criteria, check warnings, then return true.
+
+For graphing functions themselves, see   main.graphics.graphics.py
 """
 
 import graphics.graphics as gs
 
 
-def heatmap_grid_float(response, user_data):
+def heatmap_single_float(response, user_data):
     """Return a correlation matrix with heatmap."""
     if 'functions' in response:
         return gs.heatmap_grid_float(response, user_data)
@@ -23,7 +25,7 @@ def heatmap_grid_float(response, user_data):
             )
 
 
-def single_heatmap_facted(response, user_data):
+def heatmap_single_facted_mixed(response, user_data):
     """Return a heat map faceted by category."""
     if 'functions' in response:
         return gs.single_heatmap_facted(response, user_data)
