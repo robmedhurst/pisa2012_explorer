@@ -64,21 +64,28 @@ def initialize_tracker(user_data, target):
             selection_list.extend(list(user_data[expected_groups].keys()))
             selection_list.append(messages[1])
             selection_list.extend(list(user_data[unexpected_groups].keys()))
+            selection_list.append("NONE")
             return expected_groups, unexpected_groups, selection_list
 
         expected_groups, unexpected_groups, selection_list = (
             build_selection(*build_strings(expected_groups)))
 
         # user makes selection (messages can not be selected)
-        group_name = single_response_from_list(
-            selection_list, [0, len(user_data[expected_groups]) + 1])
+        inactive = [0, len(user_data[expected_groups]) + 1]
+        selection = single_response_from_list(selection_list, inactive)
+
+        # User selected NONE
+        if selection == "NONE":
+            # TODO: None is not very informative, maybe pass an empty group
+            return {'name': None, 'size': None,
+                    'variable_names': None, 'category': None}
 
         # location of selection
         location = expected_groups
-        if selection_list.index(group_name) > len(user_data[expected_groups]):
+        if selection_list.index(selection) > len(user_data[expected_groups]):
             location = unexpected_groups
         # return group info
-        return user_data[location][group_name]
+        return user_data[location][selection]
 
     def create_response(target):
         """."""
